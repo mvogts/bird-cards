@@ -938,30 +938,78 @@ function cacheGet(key, ttl = CACHE_TTL) {
   } catch(e) { return null; }
 }
 
+// ── Loc ID → Region lookup ──
+// Maps known loc IDs directly to their region codes.
+// This is more reliable than the eBird hotspot API since it uses
+// the actual loc IDs from your sighting data.
+// Auto-expands as new loc IDs are encountered (via eBird API fallback).
+const LOC_TO_REGION = {
+  // St. Barths
+  "L71880744": "BL", "L71886946": "BL", "L71819252": "BL",
+  "L71778790": "BL", "L71693109": "BL",
+  // New York — Brooklyn (US-NY-047)
+  "L66584382": "US-NY-047", "L66578148": "US-NY-047",
+  "L66572290": "US-NY-047", "L66563730": "US-NY-047",
+  "L66121421": "US-NY-047", "L62700968": "US-NY-047",
+  "L51659146": "US-NY-047", "L51657930": "US-NY-047",
+  "L51614987": "US-NY-047",
+  // New York — Manhattan (US-NY-061)
+  "L52785029": "US-NY-061", "L53053791": "US-NY-061",
+  // New York — other NY (Rockaway = Queens US-NY-081)
+  "L70660746": "US-NY-081",
+  // California
+  "L52916457": "US-CA",
+  // Illinois
+  "L51346711": "US-IL", "L50893216": "US-IL", "L50951781": "US-IL",
+  // Texas
+  "L56404253": "US-TX", "L56328641": "US-TX",
+  // Mexico
+  "L58723651": "MX-ROO",
+  // Chile
+  "L52330270": "CL-RM", "L52323079": "CL-RM",
+  "L52321398": "CL-RM", "L52280736": "CL-RM", "L52174836": "CL-RM",
+  // Brazil — Rio de Janeiro (BR-RJ)
+  "L55618723": "BR-RJ", "L55534009": "BR-RJ",
+  "L55451607": "BR-RJ", "L55455434": "BR-RJ", "L55346290": "BR-RJ",
+};
+
+// Get region code for a bird — use loc ID map first, fall back to country field
+function getRegionCode(bird) {
+  return LOC_TO_REGION[bird.locId] || bird.country || '';
+}
+
+// Helper: does a region code belong to a parent region?
+function regionMatches(code, packId) {
+  if (!code) return false;
+  // Exact match
+  if (code === packId) return true;
+  // Country match: code starts with packId (e.g. "US-NY-047" starts with "US")
+  if (packId.length === 2 && code.startsWith(packId)) return true;
+  // State match: code starts with packId (e.g. "US-NY-047" starts with "US-NY")
+  if (packId.length === 5 && code.startsWith(packId)) return true;
+  return false;
+}
+
 // ── Pack definitions ──
-// matchFn uses the full subnational code stored in the Country field
-// and known loc IDs from the user's actual sighting data
 const PACKS = [
-  // Countries — match on 2-letter country prefix
-  { id: "US",        name: "United States",       type: "Country", emoji: "🇺🇸", matchFn: b => b.country === "US" },
-  { id: "BR",        name: "Brazil",              type: "Country", emoji: "🇧🇷", matchFn: b => b.country === "BR" },
-  { id: "MX",        name: "Mexico",              type: "Country", emoji: "🇲🇽", matchFn: b => b.country === "MX" },
-  { id: "CL",        name: "Chile",               type: "Country", emoji: "🇨🇱", matchFn: b => b.country === "CL" },
-  { id: "BL",        name: "St. Barths",          type: "Country", emoji: "🇧🇱", matchFn: b => b.country === "BL" },
-  // State — match on subnational code stored in subCode field
-  { id: "US-NY",     name: "New York State",      type: "State",   emoji: "🗽", matchFn: b => b.subCode === "US-NY" },
-  // Rio de Janeiro state
-  { id: "BR-RJ",     name: "Rio de Janeiro",      type: "State",   emoji: "🌴", matchFn: b => b.subCode === "BR-RJ" },
-  // Boroughs — match on known Brooklyn/Queens/Manhattan loc IDs
-  // (eBird hotspot endpoint for county matching deferred to API call)
-  { id: "US-NY-047", name: "Brooklyn",            type: "Borough", emoji: "🌉", matchFn: null },
-  { id: "US-NY-081", name: "Queens",              type: "Borough", emoji: "✈️",  matchFn: null },
-  { id: "US-NY-061", name: "Manhattan",           type: "Borough", emoji: "🏙️", matchFn: null },
-  { id: "US-NY-005", name: "The Bronx",           type: "Borough", emoji: "🦅", matchFn: null },
-  { id: "US-NY-085", name: "Staten Island",       type: "Borough", emoji: "🚢", matchFn: null },
-  // Hotspots — exact locId match
-  { id: "L109516",   name: "Prospect Park",       type: "Hotspot", emoji: "🌿", matchFn: b => b.locId === "L109516" },
-  { id: "L285884",   name: "Green-Wood Cemetery", type: "Hotspot", emoji: "⚰️", matchFn: b => b.locId === "L285884" },
+  // Countries
+  { id: "US",        name: "United States",       type: "Country", emoji: "🇺🇸" },
+  { id: "BR",        name: "Brazil",              type: "Country", emoji: "🇧🇷" },
+  { id: "MX",        name: "Mexico",              type: "Country", emoji: "🇲🇽" },
+  { id: "CL",        name: "Chile",               type: "Country", emoji: "🇨🇱" },
+  { id: "BL",        name: "St. Barths",          type: "Country", emoji: "🇧🇱" },
+  // States
+  { id: "US-NY",     name: "New York State",      type: "State",   emoji: "🗽" },
+  { id: "BR-RJ",     name: "Rio de Janeiro",      type: "State",   emoji: "🌴" },
+  // Boroughs
+  { id: "US-NY-047", name: "Brooklyn",            type: "Borough", emoji: "🌉" },
+  { id: "US-NY-081", name: "Queens",              type: "Borough", emoji: "✈️"  },
+  { id: "US-NY-061", name: "Manhattan",           type: "Borough", emoji: "🏙️" },
+  { id: "US-NY-005", name: "The Bronx",           type: "Borough", emoji: "🦅" },
+  { id: "US-NY-085", name: "Staten Island",       type: "Borough", emoji: "🚢" },
+  // Hotspots
+  { id: "L109516",   name: "Prospect Park",       type: "Hotspot", emoji: "🌿" },
+  { id: "L285884",   name: "Green-Wood Cemetery", type: "Hotspot", emoji: "⚰️" },
 ];
 
 // ── eBird API with caching ──
@@ -987,19 +1035,6 @@ async function getRegionSpeciesCodes(regionCode) {
   return Array.isArray(data) ? data : [];
 }
 
-// Get county hotspot loc IDs
-async function getCountyLocIds(countyCode) {
-  const cacheKey = 'locs_' + countyCode;
-  const cached = cacheGet(cacheKey);
-  if (cached) return new Set(cached);
-
-  const text = await ebirdFetch(`/ref/hotspot/${countyCode}`);
-  if (!text || typeof text !== 'string') return new Set();
-  const ids = text.split('\n').slice(1).map(r => r.split(',')[0].trim()).filter(Boolean);
-  cacheSet(cacheKey, ids);
-  return new Set(ids);
-}
-
 // Get full taxonomy (cached aggressively — changes rarely)
 async function getTaxonomy() {
   const cacheKey = 'ebird_taxonomy';
@@ -1016,26 +1051,13 @@ async function getTaxonomy() {
 
 // ── Determine which birds belong to a pack ──
 async function getBirdsForPack(packId) {
-  const pack = PACKS.find(p => p.id === packId);
-  if (!pack) return [];
-
-  // Country and state packs have a matchFn — use it directly
-  if (pack.matchFn) {
-    return allBirds.filter(pack.matchFn);
+  // Hotspot packs — exact locId match
+  if (packId.startsWith('L')) {
+    return allBirds.filter(b => b.locId === packId);
   }
 
-  // Borough packs — fetch county hotspot loc IDs from eBird, match against bird locIds
-  if (packId.startsWith('US-NY-0')) {
-    const locIds = await getCountyLocIds(packId);
-    if (locIds.size > 0) {
-      return allBirds.filter(b => locIds.has(b.locId));
-    }
-    // Fallback: no hotspot data returned, return empty
-    return [];
-  }
-
-  // Hotspot packs — exact locId match (already in matchFn but just in case)
-  return allBirds.filter(b => b.locId === packId);
+  // All other packs — use loc ID region lookup with regionMatches helper
+  return allBirds.filter(b => regionMatches(getRegionCode(b), packId));
 }
 
 // ── Build ghost cards for unseen species ──
