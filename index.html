@@ -259,6 +259,15 @@
     margin-top: 2px;
   }
 
+  .card-sighting-label {
+    font-size: 6px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-top: 6px;
+    margin-bottom: 3px;
+  }
+
   .card-bottom {
     display: flex;
     justify-content: space-between;
@@ -698,6 +707,7 @@ function cardHTML(bird, index) {
         <div class="card-name">${commonName}</div>
         <div class="card-sci">${sciName}</div>
 
+        <div class="card-sighting-label">First Sighting</div>
         <div class="card-bottom">
           <span class="card-loc">${[location, fullCountry].filter(Boolean).join(', ')}</span>
           <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
