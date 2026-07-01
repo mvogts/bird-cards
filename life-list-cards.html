@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life List — mvogts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #111109;
+    --bg2:        #1a1a14;
+    --cream:      #f4edd8;
+    --cream-dark: #e8dfc4;
+    --gold:       #c8a84a;
+    --gold-soft:  #8a7240;
+    --ink:        #1e160a;
+    --ink-soft:   #6a5830;
+    --green:      #253320;
+    --green-mid:  #3a5430;
+    --green-text: #c8e0a8;
+    --green-soft: #7a9a60;
+    --rare:       #8a3a20;
+    --uncommon:   #4a6a30;
+    --rarity-very-rare: #6a1a40;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    padding: 48px 32px 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-bottom: 8px;
+  }
+
+  .title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .stats {
+    display: flex;
+    gap: 32px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .stat-block { text-align: right; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-top: 3px;
+  }
+
+  .header-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold-soft), transparent);
+    opacity: 0.4;
+  }
+
+  /* ── FILTERS ── */
+  .filters {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    padding: 0 32px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid #3a3020;
+    color: #6a5830;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
+  .filter-btn.active { background: var(--gold-soft); border-color: var(--gold-soft); color: var(--cream); }
+
+  /* ── GALLERY ── */
+  .gallery {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+  }
+
+  /* ── CARD ── */
+  .scene {
+    aspect-ratio: 5 / 7.5;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+  }
+
+  .scene.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* FRONT */
+  .card-front {
+    background: var(--cream);
+    border: 1px solid #c4a86a;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .card-eyebrow {
+    font-size: 7px;
+    letter-spacing: 0.16em;
+    color: var(--gold-soft);
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .card-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c4a86a, transparent);
+    margin-bottom: 10px;
+  }
+
+  .photo-frame {
+    flex: 1;
+    position: relative;
+    border-radius: 3px;
+    overflow: hidden;
+    background: var(--cream-dark);
+    margin-bottom: 10px;
+  }
+
+  .photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .photo-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(120,100,50,0.2) 100%);
+    pointer-events: none;
+  }
+
+  .photo-credit {
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    font-size: 6px;
+    color: rgba(255,255,255,0.55);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+    z-index: 2;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .no-photo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-soft);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .card-sci {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 9px;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    gap: 4px;
+  }
+
+  .card-loc {
+    font-size: 6px;
+    color: var(--gold-soft);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-date {
+    font-size: 6px;
+    color: var(--gold-soft);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .rarity-badge {
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .rarity-Common    { background: var(--green); color: var(--green-text); }
+  .rarity-Uncommon  { background: #3a5020; color: #a8d080; }
+  .rarity-Rare      { background: #5a2a10; color: #e09060; }
+  .rarity-Very-Rare { background: #4a1030; color: #e080c0; }
+
+  /* Corners */
+  .corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .corner svg { width: 100%; height: 100%; }
+  .c-tl { top: 8px; left: 8px; }
+  .c-tr { top: 8px; right: 8px; transform: scaleX(-1); }
+  .c-bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+  .c-br { bottom: 8px; right: 8px; transform: scale(-1); }
+
+  /* BACK */
+  .card-back {
+    background: var(--green);
+    border: 1px solid var(--green-mid);
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    padding: 14px 12px;
+  }
+
+  .back-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .back-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #e8dcc0;
+    line-height: 1.1;
+  }
+
+  .back-sci {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 8px;
+    color: var(--green-soft);
+    margin-top: 2px;
+  }
+
+  .back-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--green-mid), transparent);
+    margin: 9px 0;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-item {}
+  .stat-item-label {
+    font-size: 6px;
+    color: var(--green-soft);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 1px;
+  }
+  .stat-item-value {
+    font-size: 9px;
+    color: var(--green-text);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .back-desc {
+    font-family: 'IM Fell English', serif;
+    font-size: 10px;
+    line-height: 1.55;
+    color: #a8c088;
+    flex: 1;
+    margin-top: 4px;
+  }
+
+  .sighting-block { margin-top: auto; }
+  .sighting-label {
+    font-size: 6px;
+    color: var(--green-soft);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .sighting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sighting-loc { font-size: 8px; color: var(--green-text); }
+  .sighting-date { font-size: 8px; color: var(--green-soft); }
+
+  .back-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #2a4020;
+  }
+  .back-footer span {
+    font-size: 6px;
+    color: #3a5030;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── LOADING / EMPTY ── */
+  .loading {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--gold-soft);
+  }
+  .loading-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+  .loading-sub {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    line-height: 1.8;
+  }
+
+  .error-msg {
+    max-width: 480px;
+    margin: 60px auto;
+    text-align: center;
+    padding: 32px;
+    border: 1px solid #3a2010;
+    border-radius: 4px;
+    color: var(--gold-soft);
+  }
+  .error-msg strong { display: block; color: var(--cream); font-size: 14px; margin-bottom: 8px; }
+  .error-msg p { font-size: 10px; line-height: 1.8; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 8px;
+    color: #3a3020;
+    letter-spacing: 0.08em;
+    border-top: 1px solid #1e1e14;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .header { padding: 32px 16px 20px; }
+    .gallery { padding: 0 12px 60px; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .filters { padding: 0 16px; }
+    .stats { gap: 20px; }
+    .stat-num { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="eyebrow">Field Guide Collection</div>
+      <div class="title">Life List</div>
+    </div>
+    <div class="stats" id="stats" style="display:none">
+      <div class="stat-block">
+        <div class="stat-num" id="stat-species">—</div>
+        <div class="stat-label">Species</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" id="stat-countries">—</div>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" id="stat-rare">—</div>
+        <div class="stat-label">Rare or better</div>
+      </div>
+    </div>
+  </div>
+  <div class="header-rule"></div>
+</div>
+
+<div class="filters" id="filters" style="display:none">
+  <span class="filter-label">Filter</span>
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="Common">Common</button>
+  <button class="filter-btn" data-filter="Uncommon">Uncommon</button>
+  <button class="filter-btn" data-filter="Rare">Rare</button>
+  <button class="filter-btn" data-filter="Very Rare">Very Rare</button>
+</div>
+
+<div id="gallery" class="gallery">
+  <div class="loading" style="grid-column:1/-1">
+    <div class="loading-title">Loading your life list…</div>
+    <div class="loading-sub">Fetching from the field journal</div>
+  </div>
+</div>
+
+<footer>tap any card to flip &nbsp;·&nbsp; data via eBird &amp; Merlin &nbsp;·&nbsp; photos via iNaturalist &amp; Wikimedia Commons &nbsp;·&nbsp; mvogts</footer>
+
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT08K40NOkO2mHsil2ZaR_LKfRFvj_HUCT2D4KZ1NJdAC_BapkVa15lSTcgBeKKGXLn0giGTwP4fDX_/pub?gid=932256652&single=true&output=csv";
+
+const CORNER_SVG = `<svg viewBox="0 0 28 28" fill="none"><path d="M2 26 L2 2 L26 2" stroke="#8a7240" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#8a7240"/></svg>`;
+
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const row = [];
+    let inQ = false, cur = '';
+    for (let c = 0; c < line.length; c++) {
+      const ch = line[c];
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    row.push(cur.trim());
+    rows.push(row);
+  }
+  return rows;
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const parts = d.split('-');
+  if (parts.length !== 3) return d;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const m = parseInt(parts[1], 10) - 1;
+  return `${months[m]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
+}
+
+function rarityClass(tier) {
+  if (!tier) return 'rarity-Common';
+  return 'rarity-' + tier.replace(/\s+/g, '-');
+}
+
+function cardHTML(bird, index) {
+  const {
+    date, commonName, sciName, speciesCode,
+    location, country, family, order,
+    rarity, photoUrl, photoLicense
+  } = bird;
+
+  const badgeClass = rarityClass(rarity);
+  const badgeLabel = rarity || 'Common';
+  const photoBlock = photoUrl
+    ? `<img src="${photoUrl}" alt="${commonName}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
+    : `<div class="no-photo">No photo</div>`;
+
+  const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
+
+  return `
+  <div class="scene" id="card-${index}" onclick="this.classList.toggle('flipped')">
+    <div class="card-inner">
+
+      <div class="card-face card-front">
+        <div class="corner c-tl">${CORNER_SVG}</div>
+        <div class="corner c-tr">${CORNER_SVG}</div>
+        <div class="corner c-bl">${CORNER_SVG}</div>
+        <div class="corner c-br">${CORNER_SVG}</div>
+
+        <div class="card-eyebrow">Life List &nbsp;·&nbsp; No. ${String(index + 1).padStart(3, '0')}</div>
+        <div class="card-rule"></div>
+
+        <div class="photo-frame">
+          ${photoBlock}
+          ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
+        </div>
+
+        <div class="card-rule"></div>
+        <div class="card-name">${commonName}</div>
+        <div class="card-sci">${sciName}</div>
+
+        <div class="card-bottom">
+          <span class="card-loc">${location || '—'}</span>
+          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+          <span class="card-date">${formatDate(date)}</span>
+        </div>
+      </div>
+
+      <div class="card-face card-back">
+        <div class="back-header">
+          <div>
+            <div class="back-name">${commonName}</div>
+            <div class="back-sci">${sciName}</div>
+          </div>
+          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+
+        <div class="back-rule"></div>
+
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-item-label">Order</div>
+            <div class="stat-item-value">${order || '—'}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item-label">Family</div>
+            <div class="stat-item-value">${family || '—'}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item-label">Country</div>
+            <div class="stat-item-value">${country || '—'}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item-label">Species Code</div>
+            <div class="stat-item-value">${speciesCode || '—'}</div>
+          </div>
+        </div>
+
+        <div class="back-rule"></div>
+
+        <p class="back-desc">First recorded via eBird · Merlin. Tap to return.</p>
+
+        <div class="sighting-block">
+          <div class="back-rule"></div>
+          <div class="sighting-label">First Sighting</div>
+          <div class="sighting-row">
+            <span class="sighting-loc">${location || '—'}</span>
+            <span class="sighting-date">${formatDate(date)}</span>
+          </div>
+        </div>
+
+        <div class="back-footer">
+          <span>#${String(index + 1).padStart(3,'0')} · Life List</span>
+          <span>mvogts</span>
+        </div>
+      </div>
+
+    </div>
+  </div>`;
+}
+
+let allBirds = [];
+
+function renderGallery(birds) {
+  const gallery = document.getElementById('gallery');
+  if (!birds.length) {
+    gallery.innerHTML = `<div class="error-msg" style="grid-column:1/-1"><strong>No cards found</strong><p>Try a different filter.</p></div>`;
+    return;
+  }
+  gallery.innerHTML = birds.map((b, i) => cardHTML(b, allBirds.indexOf(b))).join('');
+}
+
+function setupFilters(birds) {
+  document.getElementById('filters').style.display = 'flex';
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      renderGallery(f === 'all' ? allBirds : allBirds.filter(b => b.rarity === f));
+    });
+  });
+}
+
+async function loadData() {
+  const gallery = document.getElementById('gallery');
+  try {
+    const res = await fetch(SHEET_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if (rows.length < 2) throw new Error('Sheet appears empty');
+
+    // Header row: Date,Common Name,Scientific Name,Species Code,Location,Country,Loc ID,Taxon Order,Family,Order,Global Frequency %,Rarity Tier,Photo URL,Photo License,Exotic,Sub ID
+    allBirds = rows.slice(1).map(r => ({
+      date:         r[0]  || '',
+      commonName:   r[1]  || '',
+      sciName:      r[2]  || '',
+      speciesCode:  r[3]  || '',
+      location:     r[4]  || '',
+      country:      r[5]  || '',
+      locId:        r[6]  || '',
+      taxonOrder:   r[7]  || '',
+      family:       r[8]  || '',
+      order:        r[9]  || '',
+      globalFreq:   r[10] || '',
+      rarity:       r[11] || 'Common',
+      photoUrl:     r[12] || '',
+      photoLicense: r[13] || '',
+      exotic:       r[14] || '',
+      subId:        r[15] || '',
+    })).filter(b => b.commonName);
+
+    // Stats
+    const countries = new Set(allBirds.map(b => b.country).filter(Boolean));
+    const rareCount = allBirds.filter(b => b.rarity === 'Rare' || b.rarity === 'Very Rare').length;
+    document.getElementById('stat-species').textContent = allBirds.length;
+    document.getElementById('stat-countries').textContent = countries.size;
+    document.getElementById('stat-rare').textContent = rareCount;
+    document.getElementById('stats').style.display = 'flex';
+
+    setupFilters(allBirds);
+    renderGallery(allBirds);
+
+  } catch(e) {
+    gallery.innerHTML = `
+      <div class="error-msg" style="grid-column:1/-1">
+        <strong>Couldn't load your life list</strong>
+        <p>Make sure the Google Sheet is published to the web as CSV and the URL is correct.<br><br>Error: ${e.message}</p>
+      </div>`;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
