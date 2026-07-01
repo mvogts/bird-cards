@@ -359,22 +359,29 @@
     margin-bottom: 9px;
   }
 
-  /* Taxonomy pills row */
-  .tax-row {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    margin-bottom: 9px;
+  /* Stat grid */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+    margin-bottom: 2px;
   }
 
-  .tax-pill {
+  .stat-item {}
+
+  .stat-item-label {
     font-size: 6px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
     color: var(--green-soft);
-    border: 1px solid #3a5430;
-    padding: 2px 6px;
-    border-radius: 2px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .stat-item-value {
+    font-size: 9px;
+    color: var(--green-text);
+    font-weight: 700;
+    line-height: 1.2;
   }
 
   /* Description */
@@ -535,6 +542,52 @@ const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT08K40NOkO2m
 
 const CORNER_SVG = `<svg viewBox="0 0 28 28" fill="none"><path d="M2 26 L2 2 L26 2" stroke="#8a7240" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#8a7240"/></svg>`;
 
+// eBird country code → full name
+const COUNTRY_NAMES = {
+  US: "United States", BR: "Brazil", MX: "Mexico", CL: "Chile",
+  BL: "St. Barths", FR: "France", GB: "United Kingdom", AR: "Argentina",
+  CO: "Colombia", PE: "Peru", EC: "Ecuador", VE: "Venezuela",
+  CR: "Costa Rica", PA: "Panama", CU: "Cuba", JM: "Jamaica",
+  HT: "Haiti", DO: "Dominican Republic", PR: "Puerto Rico",
+  TT: "Trinidad & Tobago", BB: "Barbados", LC: "St. Lucia",
+  VC: "St. Vincent", GD: "Grenada", AG: "Antigua", DM: "Dominica",
+  KN: "St. Kitts", BS: "Bahamas", TC: "Turks & Caicos",
+  CA: "Canada", AU: "Australia", NZ: "New Zealand", ZA: "South Africa",
+  KE: "Kenya", TZ: "Tanzania", UG: "Uganda", GH: "Ghana",
+  SN: "Senegal", ET: "Ethiopia", MG: "Madagascar", IN: "India",
+  CN: "China", JP: "Japan", TH: "Thailand", ID: "Indonesia",
+  PH: "Philippines", MY: "Malaysia", SG: "Singapore", VN: "Vietnam",
+  DE: "Germany", ES: "Spain", IT: "Italy", PT: "Portugal",
+  NL: "Netherlands", BE: "Belgium", CH: "Switzerland", AT: "Austria",
+  SE: "Sweden", NO: "Norway", DK: "Denmark", FI: "Finland",
+  PL: "Poland", CZ: "Czech Republic", HU: "Hungary", RO: "Romania",
+  GR: "Greece", TR: "Turkey", IL: "Israel", EG: "Egypt",
+};
+
+function countryName(code) {
+  return COUNTRY_NAMES[code] || code || '—';
+}
+
+function daysSince(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+  if (diff === 0) return 'Today';
+  if (diff === 1) return '1 day ago';
+  if (diff < 30) return `${diff} days ago`;
+  if (diff < 365) return `${Math.floor(diff/30)}mo ago`;
+  const yrs = Math.floor(diff/365);
+  return `${yrs}yr${yrs > 1 ? 's' : ''} ago`;
+}
+
+function exoticLabel(code) {
+  if (!code) return 'Native';
+  if (code === 'N') return 'Naturalized';
+  if (code === 'X') return 'Exotic';
+  return 'Native';
+}
+
 // Cache descriptions so we don't re-fetch on every flip
 const descCache = {};
 
@@ -607,7 +660,7 @@ async function fetchDescription(sciName, commonName) {
 function cardHTML(bird, index) {
   const {
     date, commonName, sciName, speciesCode,
-    location, country, family, order, rarity, photoUrl, photoLicense
+    location, country, family, order, rarity, photoUrl, photoLicense, exotic
   } = bird;
 
   const badgeClass = rarityClass(rarity);
@@ -619,8 +672,9 @@ function cardHTML(bird, index) {
 
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
 
-  // Build taxonomy pills
-  const pills = [order, family].filter(Boolean).map(t => `<span class="tax-pill">${t}</span>`).join('');
+  const fullCountry = countryName(country);
+  const since = daysSince(date);
+  const status = exoticLabel(bird.exotic);
 
   return `
   <div class="scene" id="card-${index}" onclick="handleFlip(this, '${sciName.replace(/'/g,"\\'")}', '${commonName.replace(/'/g,"\\'")}', ${index})">
@@ -645,7 +699,7 @@ function cardHTML(bird, index) {
         <div class="card-sci">${sciName}</div>
 
         <div class="card-bottom">
-          <span class="card-loc">${location || '—'}</span>
+          <span class="card-loc">${[location, fullCountry].filter(Boolean).join(', ')}</span>
           <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
           <span class="card-date">${formatDate(date)}</span>
         </div>
@@ -662,7 +716,34 @@ function cardHTML(bird, index) {
 
         <div class="back-rule"></div>
 
-        <div class="tax-row">${pills}${country ? `<span class="tax-pill">${country}</span>` : ''}${speciesCode ? `<span class="tax-pill">${speciesCode}</span>` : ''}</div>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-item-label">Order</div>
+            <div class="stat-item-value">${order || '—'}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item-label">Family</div>
+            <div class="stat-item-value">${family || '—'}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item-label">Country</div>
+            <div class="stat-item-value">${fullCountry}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item-label">First Seen</div>
+            <div class="stat-item-value">${since || '—'}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item-label">Species Code</div>
+            <div class="stat-item-value">${speciesCode || '—'}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item-label">Status</div>
+            <div class="stat-item-value">${status}</div>
+          </div>
+        </div>
+
+        <div class="back-rule"></div>
 
         <p class="back-desc loading" id="desc-${index}">Loading field notes…</p>
 
