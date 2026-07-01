@@ -4,7 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Life List — mvogts</title>
+<!-- Preconnect to all external domains so DNS + TLS handshakes happen immediately -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://docs.google.com">
+<link rel="preconnect" href="https://api.ebird.org">
+<link rel="preconnect" href="https://en.wikipedia.org">
+<link rel="preconnect" href="https://api.inaturalist.org">
+<link rel="preconnect" href="https://inaturalist-open-data.s3.amazonaws.com">
+<link rel="preconnect" href="https://cdn.download.ams.birds.cornell.edu">
+<link rel="dns-prefetch" href="https://upload.wikimedia.org">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -96,15 +105,73 @@
     opacity: 0.4;
   }
 
-  /* ── FILTERS ── */
-  .filters {
+  /* ── CONTROLS BAR ── */
+  .controls-bar {
     max-width: 1200px;
-    margin: 0 auto 24px;
+    margin: 0 auto 8px;
     padding: 0 32px;
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 12px;
     align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* Search */
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 160px;
+    max-width: 280px;
+  }
+
+  .search-input {
+    width: 100%;
+    background: #1a1a14;
+    border: 1px solid #3a3020;
+    color: var(--cream);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 7px 10px 7px 28px;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input:focus { border-color: var(--gold-soft); }
+  .search-input::placeholder { color: #4a4030; }
+
+  .search-icon {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4a4030;
+    font-size: 10px;
+    pointer-events: none;
+  }
+
+  /* Sort */
+  .sort-select {
+    background: #1a1a14;
+    border: 1px solid #3a3020;
+    color: #6a5830;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    padding: 7px 10px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .sort-select:focus { border-color: var(--gold-soft); }
+
+  /* Filter buttons */
+  .filter-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
   .filter-label {
@@ -112,7 +179,6 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--gold-soft);
-    margin-right: 4px;
   }
 
   .filter-btn {
@@ -123,7 +189,7 @@
     font-size: 9px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 6px 12px;
+    padding: 6px 10px;
     border-radius: 2px;
     cursor: pointer;
     transition: all 0.15s;
@@ -131,6 +197,103 @@
 
   .filter-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
   .filter-btn.active { background: var(--gold-soft); border-color: var(--gold-soft); color: var(--cream); }
+
+  /* ── PACKS ── */
+  .packs-section {
+    max-width: 1200px;
+    margin: 0 auto 8px;
+    padding: 0 32px;
+  }
+
+  .packs-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0 0 12px;
+  }
+
+  .packs-toggle-label {
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+  }
+
+  .packs-toggle-arrow {
+    font-size: 8px;
+    color: var(--gold-soft);
+    transition: transform 0.2s;
+  }
+
+  .packs-toggle.open .packs-toggle-arrow { transform: rotate(180deg); }
+
+  .packs-grid {
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .packs-grid.open { display: grid; }
+
+  .pack-card {
+    background: var(--bg2);
+    border: 1px solid #2a2a1a;
+    border-radius: 6px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .pack-card:hover { border-color: var(--gold-soft); }
+  .pack-card.active { border-color: var(--gold); background: #1e1c10; }
+
+  .pack-type {
+    font-size: 6px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #4a4030;
+    margin-bottom: 4px;
+  }
+
+  .pack-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .pack-progress-bar {
+    width: 100%;
+    height: 2px;
+    background: #2a2a1a;
+    border-radius: 1px;
+    margin-bottom: 5px;
+    overflow: hidden;
+  }
+
+  .pack-progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 1px;
+    transition: width 0.6s ease;
+  }
+
+  .pack-count { font-size: 8px; color: var(--gold-soft); letter-spacing: 0.06em; }
+  .pack-count strong { color: var(--gold); }
+  .pack-loading { font-size: 8px; color: #4a4030; font-style: italic; }
+
+  .packs-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, #2a2a1a, transparent);
+    margin-bottom: 16px;
+  }
 
   /* ── GALLERY ── */
   .gallery {
@@ -226,7 +389,6 @@
     color: rgba(255,255,255,0.55);
     text-shadow: 0 1px 3px rgba(0,0,0,0.9);
     z-index: 2;
-    font-family: 'Space Mono', monospace;
   }
 
   .no-photo {
@@ -272,7 +434,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 8px;
     gap: 4px;
   }
 
@@ -312,7 +473,6 @@
   .rarity-Rare      { background: #5a2a10; color: #e09060; }
   .rarity-Very-Rare { background: #4a1030; color: #e080c0; }
 
-  /* Corners */
   .corner {
     position: absolute;
     width: 18px;
@@ -334,7 +494,6 @@
     display: flex;
     flex-direction: column;
     padding: 14px 12px;
-    gap: 0;
   }
 
   .back-header {
@@ -368,15 +527,12 @@
     margin-bottom: 9px;
   }
 
-  /* Stat grid */
   .stat-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px 12px;
     margin-bottom: 2px;
   }
-
-  .stat-item {}
 
   .stat-item-label {
     font-size: 6px;
@@ -393,23 +549,17 @@
     line-height: 1.2;
   }
 
-  /* Description */
   .back-desc {
     font-family: 'IM Fell English', serif;
     font-size: 11px;
     line-height: 1.6;
     color: #b8d098;
     flex: 1;
-    overflow: hidden;
+    margin-top: 4px;
   }
 
-  .back-desc.loading {
-    color: var(--green-soft);
-    font-style: italic;
-    font-size: 10px;
-  }
+  .back-desc.loading { color: var(--green-soft); font-style: italic; font-size: 10px; }
 
-  /* Sighting footer */
   .sighting-footer {
     margin-top: 10px;
     padding-top: 9px;
@@ -428,7 +578,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2px;
   }
 
   .sighting-loc  { font-size: 8px; color: var(--green-text); }
@@ -447,6 +596,96 @@
     text-transform: uppercase;
   }
 
+  /* ── GHOST CARDS ── */
+  .ghost-scene { aspect-ratio: 5 / 7.5; cursor: default; }
+
+  .ghost-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    border: 1px dashed #252318;
+    background: #141410;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
+  }
+
+  .ghost-silhouette {
+    width: 56px;
+    height: 56px;
+    opacity: 0.07;
+    margin-bottom: 14px;
+  }
+
+  .ghost-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #302e20;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .ghost-family {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 8px;
+    color: #252318;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .ghost-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #252318;
+    border: 1px solid #252318;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  .ghost-unseen {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 6px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #252318;
+  }
+
+  /* Show more */
+  .show-more-wrap {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    padding: 16px 0 8px;
+  }
+
+  .show-more-btn {
+    background: transparent;
+    border: 1px solid #3a3020;
+    color: #6a5830;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 24px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .show-more-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
+
   /* ── LOADING / ERROR ── */
   .loading-state {
     text-align: center;
@@ -462,11 +701,7 @@
     margin-bottom: 8px;
   }
 
-  .loading-sub {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    line-height: 1.8;
-  }
+  .loading-sub { font-size: 10px; letter-spacing: 0.1em; line-height: 1.8; }
 
   .error-msg {
     max-width: 480px;
@@ -494,11 +729,13 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
-    .header { padding: 32px 16px 20px; }
+    .header { padding: 24px 16px 16px; }
     .gallery { padding: 0 12px 60px; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-    .filters { padding: 0 16px; }
-    .stats { gap: 20px; }
-    .stat-num { font-size: 24px; }
+    .controls-bar { padding: 0 16px; }
+    .packs-section { padding: 0 16px; }
+    .stats { gap: 16px; }
+    .stat-num { font-size: 22px; }
+    .search-wrap { max-width: 100%; }
   }
 </style>
 </head>
@@ -513,7 +750,7 @@
     <div class="stats" id="stats" style="display:none">
       <div class="stat-block">
         <div class="stat-num" id="stat-species">—</div>
-        <div class="stat-label">Species</div>
+        <div class="stat-label">Species / World</div>
       </div>
       <div class="stat-block">
         <div class="stat-num" id="stat-countries">—</div>
@@ -528,13 +765,38 @@
   <div class="header-rule"></div>
 </div>
 
-<div class="filters" id="filters" style="display:none">
-  <span class="filter-label">Filter</span>
-  <button class="filter-btn active" data-filter="all">All</button>
-  <button class="filter-btn" data-filter="Common">Common</button>
-  <button class="filter-btn" data-filter="Uncommon">Uncommon</button>
-  <button class="filter-btn" data-filter="Rare">Rare</button>
-  <button class="filter-btn" data-filter="Very Rare">Very Rare</button>
+<div class="controls-bar" id="controls-bar" style="display:none">
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search-input" id="search-input" type="text" placeholder="Search birds…" oninput="handleSearch()">
+  </div>
+
+  <select class="sort-select" id="sort-select" onchange="handleSort()">
+    <option value="default">Sort: Date added</option>
+    <option value="name">Sort: A → Z</option>
+    <option value="date-asc">Sort: Oldest first</option>
+    <option value="date-desc">Sort: Newest first</option>
+    <option value="rarity">Sort: Rarity</option>
+    <option value="taxon">Sort: Taxonomic order</option>
+  </select>
+
+  <div class="filter-group">
+    <span class="filter-label">Rarity</span>
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="Common">Common</button>
+    <button class="filter-btn" data-filter="Uncommon">Uncommon</button>
+    <button class="filter-btn" data-filter="Rare">Rare</button>
+    <button class="filter-btn" data-filter="Very Rare">Very Rare</button>
+  </div>
+</div>
+
+<div class="packs-section" id="packs-section" style="display:none">
+  <button class="packs-toggle" id="packs-toggle" onclick="togglePacks()">
+    <span class="packs-toggle-label">Packs</span>
+    <span class="packs-toggle-arrow">▾</span>
+  </button>
+  <div class="packs-grid" id="packs-grid"></div>
+  <div class="packs-divider"></div>
 </div>
 
 <div id="gallery" class="gallery">
@@ -548,46 +810,179 @@
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT08K40NOkO2mHsil2ZaR_LKfRFvj_HUCT2D4KZ1NJdAC_BapkVa15lSTcgBeKKGXLn0giGTwP4fDX_/pub?gid=932256652&single=true&output=csv";
+const EBIRD_KEY = "vk0egudpdsm";
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in ms
 
+// ── LocalStorage cache helpers ──
+function cacheSet(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  } catch(e) {}
+}
+
+function cacheGet(key, ttl = CACHE_TTL) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > ttl) { localStorage.removeItem(key); return null; }
+    return data;
+  } catch(e) { return null; }
+}
+
+// ── Pack definitions ──
+const PACKS = [
+  { id: "US",        name: "United States",      type: "Country", emoji: "🇺🇸" },
+  { id: "BR",        name: "Brazil",             type: "Country", emoji: "🇧🇷" },
+  { id: "MX",        name: "Mexico",             type: "Country", emoji: "🇲🇽" },
+  { id: "CL",        name: "Chile",              type: "Country", emoji: "🇨🇱" },
+  { id: "BL",        name: "St. Barths",         type: "Country", emoji: "🇧🇱" },
+  { id: "US-NY",     name: "New York State",     type: "State",   emoji: "🗽" },
+  { id: "US-NY-047", name: "Brooklyn",           type: "Borough", emoji: "🌉" },
+  { id: "US-NY-081", name: "Queens",             type: "Borough", emoji: "✈️" },
+  { id: "US-NY-061", name: "Manhattan",          type: "Borough", emoji: "🏙️" },
+  { id: "US-NY-005", name: "The Bronx",          type: "Borough", emoji: "🦅" },
+  { id: "US-NY-085", name: "Staten Island",      type: "Borough", emoji: "🚢" },
+  { id: "L109516",   name: "Prospect Park",      type: "Hotspot", emoji: "🌿" },
+  { id: "L285884",   name: "Green-Wood Cemetery",type: "Hotspot", emoji: "⚰️" },
+];
+
+// ── eBird API with caching ──
+async function ebirdFetch(path) {
+  const cacheKey = 'ebird_' + path;
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached;
+
+  const res = await fetch(`https://api.ebird.org/v2${path}`, {
+    headers: { 'X-eBirdApiToken': EBIRD_KEY }
+  });
+  if (!res.ok) return null;
+
+  const isJson = res.headers.get('content-type')?.includes('json');
+  const data = isJson ? await res.json() : await res.text();
+  cacheSet(cacheKey, data);
+  return data;
+}
+
+// Get species codes for a region (returns ordered array)
+async function getRegionSpeciesCodes(regionCode) {
+  const data = await ebirdFetch(`/product/spplist/${regionCode}`);
+  return Array.isArray(data) ? data : [];
+}
+
+// Get county hotspot loc IDs
+async function getCountyLocIds(countyCode) {
+  const cacheKey = 'locs_' + countyCode;
+  const cached = cacheGet(cacheKey);
+  if (cached) return new Set(cached);
+
+  const text = await ebirdFetch(`/ref/hotspot/${countyCode}`);
+  if (!text || typeof text !== 'string') return new Set();
+  const ids = text.split('\n').slice(1).map(r => r.split(',')[0].trim()).filter(Boolean);
+  cacheSet(cacheKey, ids);
+  return new Set(ids);
+}
+
+// Get full taxonomy (cached aggressively — changes rarely)
+async function getTaxonomy() {
+  const cacheKey = 'ebird_taxonomy';
+  const cached = cacheGet(cacheKey, 7 * 24 * 60 * 60 * 1000); // 7 days
+  if (cached) return cached;
+
+  const data = await ebirdFetch(`/ref/taxonomy/ebird?fmt=json&locale=en`);
+  if (!Array.isArray(data)) return [];
+  const map = {};
+  data.forEach(t => { map[t.speciesCode] = t; });
+  cacheSet(cacheKey, map);
+  return map;
+}
+
+// ── Determine which birds belong to a pack ──
+async function getBirdsForPack(packId) {
+  // Country packs — match by country code directly
+  const countryMap = { US: 'US', BR: 'BR', MX: 'MX', CL: 'CL', BL: 'BL' };
+  if (countryMap[packId]) {
+    return allBirds.filter(b => b.country === countryMap[packId]);
+  }
+
+  // New York State — match locIds against NY hotspot list
+  if (packId === 'US-NY') {
+    const locIds = await getCountyLocIds('US-NY');
+    // Also include any bird with country US and a known NY locId
+    // Fallback: match by country US if locId lookup fails
+    if (locIds.size > 0) {
+      return allBirds.filter(b => locIds.has(b.locId));
+    }
+    return allBirds.filter(b => b.country === 'US');
+  }
+
+  // Borough packs
+  if (packId.startsWith('US-NY-0')) {
+    const locIds = await getCountyLocIds(packId);
+    return allBirds.filter(b => locIds.has(b.locId));
+  }
+
+  // Hotspot packs — exact locId match
+  return allBirds.filter(b => b.locId === packId);
+}
+
+// ── Build ghost cards for unseen species ──
+async function getUnseenForPack(packId, myBirds) {
+  const [codes, taxMap] = await Promise.all([
+    getRegionSpeciesCodes(packId),
+    getTaxonomy()
+  ]);
+
+  const mySpeciesCodes = new Set(myBirds.map(b => b.speciesCode).filter(Boolean));
+  const myNames = new Set(myBirds.map(b => b.commonName.toLowerCase()));
+
+  return codes
+    .filter(code => {
+      const t = taxMap[code];
+      return t && t.category === 'species' &&
+        !mySpeciesCodes.has(code) &&
+        !myNames.has((t.comName || '').toLowerCase());
+    })
+    .map(code => taxMap[code]);
+}
+
+// ── SVG helpers ──
 const CORNER_SVG = `<svg viewBox="0 0 28 28" fill="none"><path d="M2 26 L2 2 L26 2" stroke="#8a7240" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#8a7240"/></svg>`;
 
-// eBird country code → full name
+const BIRD_SVG = `<svg viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="55" cy="55" rx="22" ry="14"/>
+  <circle cx="76" cy="42" r="12"/>
+  <path d="M83 39 Q96 33 99 36 Q95 42 84 43Z"/>
+  <path d="M35 57 Q18 60 13 68 Q24 64 37 63Z"/>
+  <path d="M49 67 Q50 76 46 82 Q53 75 55 67Z"/>
+  <path d="M60 67 Q61 76 57 82 Q64 75 66 67Z"/>
+</svg>`;
+
+// ── Country names ──
 const COUNTRY_NAMES = {
-  US: "United States", BR: "Brazil", MX: "Mexico", CL: "Chile",
-  BL: "St. Barths", FR: "France", GB: "United Kingdom", AR: "Argentina",
-  CO: "Colombia", PE: "Peru", EC: "Ecuador", VE: "Venezuela",
-  CR: "Costa Rica", PA: "Panama", CU: "Cuba", JM: "Jamaica",
-  HT: "Haiti", DO: "Dominican Republic", PR: "Puerto Rico",
-  TT: "Trinidad & Tobago", BB: "Barbados", LC: "St. Lucia",
-  VC: "St. Vincent", GD: "Grenada", AG: "Antigua", DM: "Dominica",
-  KN: "St. Kitts", BS: "Bahamas", TC: "Turks & Caicos",
-  CA: "Canada", AU: "Australia", NZ: "New Zealand", ZA: "South Africa",
-  KE: "Kenya", TZ: "Tanzania", UG: "Uganda", GH: "Ghana",
-  SN: "Senegal", ET: "Ethiopia", MG: "Madagascar", IN: "India",
-  CN: "China", JP: "Japan", TH: "Thailand", ID: "Indonesia",
-  PH: "Philippines", MY: "Malaysia", SG: "Singapore", VN: "Vietnam",
-  DE: "Germany", ES: "Spain", IT: "Italy", PT: "Portugal",
-  NL: "Netherlands", BE: "Belgium", CH: "Switzerland", AT: "Austria",
-  SE: "Sweden", NO: "Norway", DK: "Denmark", FI: "Finland",
-  PL: "Poland", CZ: "Czech Republic", HU: "Hungary", RO: "Romania",
-  GR: "Greece", TR: "Turkey", IL: "Israel", EG: "Egypt",
+  US:"United States",BR:"Brazil",MX:"Mexico",CL:"Chile",BL:"St. Barths",
+  FR:"France",GB:"United Kingdom",AR:"Argentina",CO:"Colombia",PE:"Peru",
+  EC:"Ecuador",VE:"Venezuela",CR:"Costa Rica",PA:"Panama",CU:"Cuba",
+  JM:"Jamaica",HT:"Haiti",DO:"Dominican Republic",PR:"Puerto Rico",
+  TT:"Trinidad & Tobago",BB:"Barbados",LC:"St. Lucia",VC:"St. Vincent",
+  GD:"Grenada",AG:"Antigua",DM:"Dominica",KN:"St. Kitts",BS:"Bahamas",
+  TC:"Turks & Caicos",CA:"Canada",AU:"Australia",NZ:"New Zealand",
+  ZA:"South Africa",KE:"Kenya",TZ:"Tanzania",IN:"India",CN:"China",
+  JP:"Japan",DE:"Germany",ES:"Spain",IT:"Italy",PT:"Portugal",
+  NL:"Netherlands",SE:"Sweden",NO:"Norway",DK:"Denmark",
 };
 
-function countryName(code) {
-  return COUNTRY_NAMES[code] || code || '—';
-}
+function countryName(code) { return COUNTRY_NAMES[code] || code || '—'; }
 
 function daysSince(dateStr) {
   if (!dateStr) return null;
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diff = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+  const diff = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
   if (diff === 0) return 'Today';
   if (diff === 1) return '1 day ago';
   if (diff < 30) return `${diff} days ago`;
   if (diff < 365) return `${Math.floor(diff/30)}mo ago`;
-  const yrs = Math.floor(diff/365);
-  return `${yrs}yr${yrs > 1 ? 's' : ''} ago`;
+  const y = Math.floor(diff/365);
+  return `${y}yr${y > 1 ? 's' : ''} ago`;
 }
 
 function exoticLabel(code) {
@@ -597,67 +992,34 @@ function exoticLabel(code) {
   return 'Native';
 }
 
-// Cache descriptions so we don't re-fetch on every flip
-const descCache = {};
-
-function parseCSV(text) {
-  const rows = [];
-  const lines = text.split(/\r?\n/);
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    const row = [];
-    let inQ = false, cur = '';
-    for (let c = 0; c < line.length; c++) {
-      const ch = line[c];
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
-    }
-    row.push(cur.trim());
-    rows.push(row);
-  }
-  return rows;
+function rarityClass(tier) {
+  return 'rarity-' + (tier || 'Common').replace(/\s+/g, '-');
 }
 
 function formatDate(d) {
   if (!d) return '';
-  const parts = d.split('-');
-  if (parts.length !== 3) return d;
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const m = parseInt(parts[1], 10) - 1;
-  return `${months[m]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
+  const p = d.split('-');
+  if (p.length !== 3) return d;
+  const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${m[parseInt(p[1])-1]} ${parseInt(p[2])}, ${p[0]}`;
 }
 
-function rarityClass(tier) {
-  if (!tier) return 'rarity-Common';
-  return 'rarity-' + tier.replace(/\s+/g, '-');
-}
+// ── Description cache ──
+const descCache = {};
 
-// Fetch a species description from Wikipedia
 async function fetchDescription(sciName, commonName) {
   const key = sciName || commonName;
   if (descCache[key]) return descCache[key];
 
-  // Try scientific name first, then common name
-  const tries = [
-    sciName.replace(/ /g, '_'),
-    commonName.replace(/ /g, '_')
-  ];
-
-  for (const term of tries) {
+  for (const term of [sciName.replace(/ /g,'_'), commonName.replace(/ /g,'_')]) {
     try {
       const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(term)}`);
       if (!res.ok) continue;
       const data = await res.json();
       if (data.extract && data.type !== 'disambiguation') {
-        // Take first 2 sentences max
         const sentences = data.extract.match(/[^.!?]+[.!?]+/g) || [];
         const desc = sentences.slice(0, 2).join(' ').trim();
-        if (desc.length > 20) {
-          descCache[key] = desc;
-          return desc;
-        }
+        if (desc.length > 20) { descCache[key] = desc; return desc; }
       }
     } catch(e) {}
   }
@@ -666,47 +1028,42 @@ async function fetchDescription(sciName, commonName) {
   return descCache[key];
 }
 
+// ── Card HTML ──
 function cardHTML(bird, index) {
-  const {
-    date, commonName, sciName, speciesCode,
-    location, country, family, order, rarity, photoUrl, photoLicense, exotic
-  } = bird;
+  const { date, commonName, sciName, speciesCode, location, country,
+          family, order, rarity, photoUrl, photoLicense, exotic } = bird;
 
   const badgeClass = rarityClass(rarity);
   const badgeLabel = rarity || 'Common';
-
-  const photoBlock = photoUrl
-    ? `<img src="${photoUrl}" alt="${commonName}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
-    : `<div class="no-photo">No photo</div>`;
-
-  const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
-
   const fullCountry = countryName(country);
   const since = daysSince(date);
-  const status = exoticLabel(bird.exotic);
+  const status = exoticLabel(exotic);
+  const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
+
+  const photoBlock = photoUrl
+    ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
+    : `<div class="no-photo">No photo</div>`;
+
+  const safeScí = sciName.replace(/'/g,"\\'");
+  const safeName = commonName.replace(/'/g,"\\'");
 
   return `
-  <div class="scene" id="card-${index}" onclick="handleFlip(this, '${sciName.replace(/'/g,"\\'")}', '${commonName.replace(/'/g,"\\'")}', ${index})">
+  <div class="scene" id="card-${index}" onclick="handleFlip(this,'${safeScí}','${safeName}',${index})">
     <div class="card-inner">
-
       <div class="card-face card-front">
         <div class="corner c-tl">${CORNER_SVG}</div>
         <div class="corner c-tr">${CORNER_SVG}</div>
         <div class="corner c-bl">${CORNER_SVG}</div>
         <div class="corner c-br">${CORNER_SVG}</div>
-
-        <div class="card-eyebrow">Life List &nbsp;·&nbsp; No. ${String(index + 1).padStart(3, '0')}</div>
+        <div class="card-eyebrow">Life List &nbsp;·&nbsp; No. ${String(index+1).padStart(3,'0')}</div>
         <div class="card-rule"></div>
-
         <div class="photo-frame">
           ${photoBlock}
           ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
         </div>
-
         <div class="card-rule"></div>
         <div class="card-name">${commonName}</div>
         <div class="card-sci">${sciName}</div>
-
         <div class="card-sighting-label">First Sighting</div>
         <div class="card-bottom">
           <span class="card-loc">${[location, fullCountry].filter(Boolean).join(', ')}</span>
@@ -714,7 +1071,6 @@ function cardHTML(bird, index) {
           <span class="card-date">${formatDate(date)}</span>
         </div>
       </div>
-
       <div class="card-face card-back">
         <div class="back-header">
           <div>
@@ -723,61 +1079,48 @@ function cardHTML(bird, index) {
           </div>
           <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
         </div>
-
         <div class="back-rule"></div>
-
         <div class="stat-grid">
-          <div class="stat-item">
-            <div class="stat-item-label">Order</div>
-            <div class="stat-item-value">${order || '—'}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-item-label">Family</div>
-            <div class="stat-item-value">${family || '—'}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-item-label">Country</div>
-            <div class="stat-item-value">${fullCountry}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-item-label">First Seen</div>
-            <div class="stat-item-value">${since || '—'}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-item-label">Species Code</div>
-            <div class="stat-item-value">${speciesCode || '—'}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-item-label">Status</div>
-            <div class="stat-item-value">${status}</div>
-          </div>
+          <div><div class="stat-item-label">Order</div><div class="stat-item-value">${order||'—'}</div></div>
+          <div><div class="stat-item-label">Family</div><div class="stat-item-value">${family||'—'}</div></div>
+          <div><div class="stat-item-label">Country</div><div class="stat-item-value">${fullCountry}</div></div>
+          <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
+          <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
+          <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
         </div>
-
         <div class="back-rule"></div>
-
         <p class="back-desc loading" id="desc-${index}">Loading field notes…</p>
-
         <div class="sighting-footer">
           <div class="sighting-label">First Sighting</div>
           <div class="sighting-row">
-            <span class="sighting-loc">${location || '—'}</span>
+            <span class="sighting-loc">${location||'—'}</span>
             <span class="sighting-date">${formatDate(date)}</span>
           </div>
           <div class="back-footer">
-            <span>#${String(index + 1).padStart(3,'0')} · Life List</span>
+            <span>#${String(index+1).padStart(3,'0')} · Life List</span>
             <span>mvogts</span>
           </div>
         </div>
       </div>
+    </div>
+  </div>`;
+}
 
+function ghostCardHTML(species) {
+  return `
+  <div class="ghost-scene">
+    <div class="ghost-card">
+      <span class="ghost-unseen">Unseen</span>
+      <span class="ghost-badge">? Not Yet</span>
+      <div class="ghost-silhouette">${BIRD_SVG}</div>
+      <div class="ghost-name">${species.comName}</div>
+      <div class="ghost-family">${species.familyComName||''}</div>
     </div>
   </div>`;
 }
 
 async function handleFlip(el, sciName, commonName, index) {
   el.classList.toggle('flipped');
-
-  // Fetch description when flipping to back
   if (el.classList.contains('flipped')) {
     const descEl = document.getElementById(`desc-${index}`);
     if (descEl && descEl.classList.contains('loading')) {
@@ -788,67 +1131,317 @@ async function handleFlip(el, sciName, commonName, index) {
   }
 }
 
+// ── State ──
 let allBirds = [];
+let activeFilter = 'all';
+let activeSearch = '';
+let activeSort = 'default';
+let currentPackId = null;
+let packState = null;
+
+// ── Filtering + sorting ──
+const RARITY_ORDER = { 'Very Rare': 0, 'Rare': 1, 'Uncommon': 2, 'Common': 3, 'Unknown': 4 };
+
+function applyFiltersAndSort(birds) {
+  let result = [...birds];
+
+  // Search
+  if (activeSearch) {
+    const q = activeSearch.toLowerCase();
+    result = result.filter(b =>
+      b.commonName.toLowerCase().includes(q) ||
+      b.sciName.toLowerCase().includes(q) ||
+      (b.family || '').toLowerCase().includes(q) ||
+      (b.order || '').toLowerCase().includes(q)
+    );
+  }
+
+  // Rarity filter
+  if (activeFilter !== 'all') {
+    result = result.filter(b => b.rarity === activeFilter);
+  }
+
+  // Sort
+  switch(activeSort) {
+    case 'name':
+      result.sort((a,b) => a.commonName.localeCompare(b.commonName)); break;
+    case 'date-asc':
+      result.sort((a,b) => (a.date||'').localeCompare(b.date||'')); break;
+    case 'date-desc':
+      result.sort((a,b) => (b.date||'').localeCompare(a.date||'')); break;
+    case 'rarity':
+      result.sort((a,b) => (RARITY_ORDER[a.rarity]??3) - (RARITY_ORDER[b.rarity]??3)); break;
+    case 'taxon':
+      result.sort((a,b) => parseFloat(a.taxonOrder||9999) - parseFloat(b.taxonOrder||9999)); break;
+  }
+
+  return result;
+}
+
+function handleSearch() {
+  activeSearch = document.getElementById('search-input').value.trim();
+  currentPackId = null;
+  document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+  renderGallery(applyFiltersAndSort(allBirds));
+}
+
+function handleSort() {
+  activeSort = document.getElementById('sort-select').value;
+  if (currentPackId && packState) {
+    renderPackGallery(packState.myBirds, packState.unseenSpecies, false);
+  } else {
+    renderGallery(applyFiltersAndSort(allBirds));
+  }
+}
+
+// ── Intersection Observer for lazy card photo loading ──
+// Images only load when a card scrolls into the viewport
+let cardObserver = null;
+
+function setupCardObserver() {
+  if (cardObserver) cardObserver.disconnect();
+  cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const img = entry.target.querySelector('img[data-src]');
+      if (img) {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+      }
+      cardObserver.unobserve(entry.target);
+    });
+  }, { rootMargin: '200px' }); // start loading 200px before entering viewport
+
+  document.querySelectorAll('.scene').forEach(el => cardObserver.observe(el));
+}
 
 function renderGallery(birds) {
   const gallery = document.getElementById('gallery');
   if (!birds.length) {
-    gallery.innerHTML = `<div class="error-msg"><strong>No cards found</strong><p>Try a different filter.</p></div>`;
+    gallery.innerHTML = `<div class="error-msg"><strong>No cards found</strong><p>Try a different search or filter.</p></div>`;
     return;
   }
   gallery.innerHTML = birds.map((b, i) => cardHTML(b, allBirds.indexOf(b))).join('');
+  setupCardObserver();
 }
 
+// ── Filters ──
 function setupFilters() {
-  document.getElementById('filters').style.display = 'flex';
+  document.getElementById('controls-bar').style.display = 'flex';
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const f = btn.dataset.filter;
-      renderGallery(f === 'all' ? allBirds : allBirds.filter(b => b.rarity === f));
+      activeFilter = btn.dataset.filter;
+      currentPackId = null;
+      document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+      renderGallery(applyFiltersAndSort(allBirds));
     });
   });
 }
 
+// ── Packs ──
+let packsOpen = false;
+let packsLoaded = false;
+
+function togglePacks() {
+  packsOpen = !packsOpen;
+  document.getElementById('packs-toggle').classList.toggle('open', packsOpen);
+  document.getElementById('packs-grid').classList.toggle('open', packsOpen);
+
+  // Lazy-load pack counts only when packs panel is first opened
+  if (packsOpen && !packsLoaded) {
+    packsLoaded = true;
+    loadPackCounts();
+  }
+}
+
+// Render pack shells immediately (no API calls) so layout is instant
+function renderPackShells() {
+  const grid = document.getElementById('packs-grid');
+  grid.innerHTML = PACKS.map(pack => `
+    <div class="pack-card" id="pack-${pack.id}" onclick="filterByPack('${pack.id}')">
+      <div class="pack-type">${pack.emoji} ${pack.type}</div>
+      <div class="pack-name">${pack.name}</div>
+      <div class="pack-progress-bar"><div class="pack-progress-fill" id="fill-${pack.id}" style="width:0%"></div></div>
+      <div class="pack-count" id="count-${pack.id}"><span class="pack-loading">Open to load…</span></div>
+    </div>
+  `).join('');
+}
+
+// Load pack counts — only called when user opens the packs panel
+async function loadPackCounts() {
+  for (const pack of PACKS) {
+    (async () => {
+      const myBirds = await getBirdsForPack(pack.id);
+      const userCount = new Set(myBirds.map(b => b.speciesCode || b.commonName)).size;
+      const codes = await getRegionSpeciesCodes(pack.id);
+      const total = codes.length;
+      const pct = total ? Math.round((userCount / total) * 100) : 0;
+
+      const countEl = document.getElementById(`count-${pack.id}`);
+      const fillEl = document.getElementById(`fill-${pack.id}`);
+      if (countEl) countEl.innerHTML = total
+        ? `<strong>${userCount}</strong> / ${total.toLocaleString()} species &nbsp;·&nbsp; ${pct}%`
+        : `<strong>${userCount}</strong> species`;
+      if (fillEl) fillEl.style.width = `${pct}%`;
+    })();
+  }
+}
+
+async function renderPacks() {
+  // Legacy — now handled by renderPackShells + loadPackCounts
+  renderPackShells();
+}
+
+async function filterByPack(packId) {
+  const packEl = document.getElementById(`pack-${packId}`);
+
+  if (currentPackId === packId) {
+    currentPackId = null;
+    packState = null;
+    document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+    document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+    activeFilter = 'all';
+    renderGallery(applyFiltersAndSort(allBirds));
+    return;
+  }
+
+  currentPackId = packId;
+  document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+  packEl.classList.add('active');
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+
+  const pack = PACKS.find(p => p.id === packId);
+  if (!pack) return;
+
+  document.getElementById('gallery').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-title">Loading ${pack.name} pack…</div>
+      <div class="loading-sub">Fetching species list from eBird</div>
+    </div>`;
+
+  const [myBirds, unseenSpecies] = await Promise.all([
+    getBirdsForPack(packId),
+    (async () => {
+      const myB = await getBirdsForPack(packId);
+      return getUnseenForPack(packId, myB);
+    })()
+  ]);
+
+  packState = { myBirds, unseenSpecies };
+  renderPackGallery(myBirds, unseenSpecies, false);
+}
+
+function renderPackGallery(myBirds, unseenSpecies, showAll) {
+  const GHOST_CAP = 50;
+  const gallery = document.getElementById('gallery');
+
+  const sorted = applyFiltersAndSort(myBirds);
+  const seenCards = sorted.map(b => cardHTML(b, allBirds.indexOf(b))).join('');
+  const ghosts = showAll ? unseenSpecies : unseenSpecies.slice(0, GHOST_CAP);
+  const ghostCards = ghosts.map(s => ghostCardHTML(s)).join('');
+
+  const showMore = !showAll && unseenSpecies.length > GHOST_CAP
+    ? `<div class="show-more-wrap">
+        <button class="show-more-btn" onclick="showAllGhosts()">
+          Show ${(unseenSpecies.length - GHOST_CAP).toLocaleString()} more unseen species ▾
+        </button>
+       </div>`
+    : '';
+
+  gallery.innerHTML = seenCards + ghostCards + showMore;
+  setupCardObserver();
+}
+
+function showAllGhosts() {
+  if (packState) renderPackGallery(packState.myBirds, packState.unseenSpecies, true);
+}
+
+// ── Parse CSV ──
+function parseCSV(text) {
+  const rows = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const row = [];
+    let inQ = false, cur = '';
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    row.push(cur.trim());
+    rows.push(row);
+  }
+  return rows;
+}
+
+// ── Load data ──
+const SHEET_CACHE_KEY = 'birdlist_csv';
+const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
 async function loadData() {
   const gallery = document.getElementById('gallery');
   try {
-    const res = await fetch(SHEET_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    const rows = parseCSV(text);
+    let csvText = null;
+
+    // Try localStorage cache first
+    const cached = cacheGet(SHEET_CACHE_KEY, SHEET_CACHE_TTL);
+    if (cached) {
+      csvText = cached;
+    } else {
+      // Fetch fresh from Google Sheets
+      const res = await fetch(SHEET_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      csvText = await res.text();
+      cacheSet(SHEET_CACHE_KEY, csvText);
+    }
+
+    const rows = parseCSV(csvText);
     if (rows.length < 2) throw new Error('Sheet appears empty');
 
     allBirds = rows.slice(1).map(r => ({
-      date:         r[0]  || '',
-      commonName:   r[1]  || '',
-      sciName:      r[2]  || '',
-      speciesCode:  r[3]  || '',
-      location:     r[4]  || '',
-      country:      r[5]  || '',
-      locId:        r[6]  || '',
-      taxonOrder:   r[7]  || '',
-      family:       r[8]  || '',
-      order:        r[9]  || '',
-      globalFreq:   r[10] || '',
-      rarity:       r[11] || 'Common',
-      photoUrl:     r[12] || '',
-      photoLicense: r[13] || '',
-      exotic:       r[14] || '',
-      subId:        r[15] || '',
+      date:        r[0]  || '',
+      commonName:  r[1]  || '',
+      sciName:     r[2]  || '',
+      speciesCode: r[3]  || '',
+      location:    r[4]  || '',
+      country:     r[5]  || '',
+      locId:       r[6]  || '',
+      taxonOrder:  r[7]  || '',
+      family:      r[8]  || '',
+      order:       r[9]  || '',
+      globalFreq:  r[10] || '',
+      rarity:      r[11] || 'Common',
+      photoUrl:    r[12] || '',
+      photoLicense:r[13] || '',
+      exotic:      r[14] || '',
+      subId:       r[15] || '',
     })).filter(b => b.commonName);
 
+    // Stats
     const countries = new Set(allBirds.map(b => b.country).filter(Boolean));
     const rareCount = allBirds.filter(b => b.rarity === 'Rare' || b.rarity === 'Very Rare').length;
-
     document.getElementById('stat-species').textContent = allBirds.length;
     document.getElementById('stat-countries').textContent = countries.size;
     document.getElementById('stat-rare').textContent = rareCount;
     document.getElementById('stats').style.display = 'flex';
 
+    // World total async — non-blocking
+    getRegionSpeciesCodes('world').then(codes => {
+      if (codes.length) {
+        document.getElementById('stat-species').textContent =
+          `${allBirds.length} / ${codes.length.toLocaleString()}`;
+      }
+    });
+
     setupFilters();
     renderGallery(allBirds);
+
+    // Show packs section but DON'T load pack counts yet —
+    // defer until user actually opens the packs panel
+    document.getElementById('packs-section').style.display = 'block';
+    renderPackShells(); // render empty pack cards immediately
 
   } catch(e) {
     gallery.innerHTML = `
