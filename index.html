@@ -665,26 +665,17 @@
 
   .modal-close:hover { color: var(--cream); }
 
-  .modal-flip-btn {
+  .modal-hint {
     position: absolute;
-    bottom: -44px;
+    bottom: -32px;
     left: 50%;
     transform: translateX(-50%);
-    background: transparent;
-    border: 1px solid #3a3020;
-    color: #6a5830;
     font-family: 'Space Mono', monospace;
     font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 8px 20px;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.15s;
+    letter-spacing: 0.1em;
+    color: #4a4030;
     white-space: nowrap;
   }
-
-  .modal-flip-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
 
   /* Larger text inside modal for readability */
   .modal-card-wrap .card-name     { font-size: 22px; }
@@ -877,8 +868,8 @@
 <div class="modal-overlay" id="modal-overlay" onclick="handleModalOverlayClick(event)">
   <div class="modal-card-wrap" id="modal-card-wrap">
     <button class="modal-close" onclick="closeModal()" title="Close">✕</button>
-    <div id="modal-card-content"></div>
-    <button class="modal-flip-btn" id="modal-flip-btn" onclick="flipModalCard()">Flip card</button>
+    <div id="modal-card-content" onclick="flipModalCard()"></div>
+    <span class="modal-hint">tap to flip · esc to close</span>
   </div>
 </div>
 
@@ -1286,7 +1277,7 @@ function openModal(index, sciName, commonName) {
   const img = content.querySelector('img[data-src]');
   if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
 
-  document.getElementById('modal-flip-btn').textContent = 'Flip card ↩';
+  document.getElementById('modal-flip-btn') && (document.getElementById('modal-flip-btn').textContent = 'Flip card ↩');
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
@@ -1309,9 +1300,8 @@ function closeModal() {
 
 function flipModalCard() {
   modalFlipped = !modalFlipped;
-  const inner = document.querySelector('.modal-card-wrap .card-inner');
+  const inner = document.querySelector('#modal-card-content .card-inner');
   if (inner) inner.classList.toggle('flipped', modalFlipped);
-  document.getElementById('modal-flip-btn').textContent = modalFlipped ? 'Flip back ↩' : 'Flip card ↩';
 }
 
 function handleModalOverlayClick(e) {
