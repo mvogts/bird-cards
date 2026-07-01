@@ -596,6 +596,106 @@
     text-transform: uppercase;
   }
 
+  /* ── LIGHTBOX MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 8, 6, 0.88);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .modal-card-wrap {
+    position: relative;
+    width: min(380px, 90vw);
+    aspect-ratio: 5 / 7.5;
+    animation: zoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes zoomIn {
+    from { transform: scale(0.75); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+
+  /* The modal card reuses all the same .card-face styles —
+     we just scale it up inside the modal wrap */
+  .modal-card-wrap .scene {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: unset;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: #6a5830;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    transition: color 0.15s;
+  }
+
+  .modal-close:hover { color: var(--cream); }
+
+  .modal-flip-btn {
+    position: absolute;
+    bottom: -44px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: transparent;
+    border: 1px solid #3a3020;
+    color: #6a5830;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .modal-flip-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
+
+  /* Larger text inside modal for readability */
+  .modal-card-wrap .card-name     { font-size: 22px; }
+  .modal-card-wrap .card-sci      { font-size: 12px; }
+  .modal-card-wrap .card-eyebrow  { font-size: 9px; }
+  .modal-card-wrap .card-loc,
+  .modal-card-wrap .card-date     { font-size: 8px; }
+  .modal-card-wrap .rarity-badge  { font-size: 8px; padding: 3px 8px; }
+  .modal-card-wrap .card-sighting-label { font-size: 8px; }
+  .modal-card-wrap .back-name     { font-size: 20px; }
+  .modal-card-wrap .back-sci      { font-size: 11px; }
+  .modal-card-wrap .stat-item-label { font-size: 8px; }
+  .modal-card-wrap .stat-item-value { font-size: 13px; }
+  .modal-card-wrap .back-desc     { font-size: 13px; line-height: 1.65; }
+  .modal-card-wrap .sighting-loc,
+  .modal-card-wrap .sighting-date { font-size: 10px; }
+  .modal-card-wrap .sighting-label { font-size: 8px; }
+  .modal-card-wrap .back-footer span { font-size: 8px; }
+  .modal-card-wrap .photo-credit  { font-size: 8px; }
+
   /* ── GHOST CARDS ── */
   .ghost-scene { aspect-ratio: 5 / 7.5; cursor: default; }
 
@@ -765,7 +865,15 @@
   <div class="header-rule"></div>
 </div>
 
-<div class="controls-bar" id="controls-bar" style="display:none">
+<div class="modal-overlay" id="modal-overlay" onclick="handleModalOverlayClick(event)">
+  <div class="modal-card-wrap" id="modal-card-wrap">
+    <button class="modal-close" onclick="closeModal()" title="Close">✕</button>
+    <div id="modal-card-content"></div>
+    <button class="modal-flip-btn" id="modal-flip-btn" onclick="flipModalCard()">Flip card</button>
+  </div>
+</div>
+
+
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
     <input class="search-input" id="search-input" type="text" placeholder="Search birds…" oninput="handleSearch()">
@@ -1123,16 +1231,146 @@ function ghostCardHTML(species) {
   </div>`;
 }
 
-async function handleFlip(el, sciName, commonName, index) {
-  el.classList.toggle('flipped');
-  if (el.classList.contains('flipped')) {
-    const descEl = document.getElementById(`desc-${index}`);
+// ── Modal lightbox ──
+let modalFlipped = false;
+let modalIndex = null;
+let modalSciName = null;
+let modalCommonName = null;
+
+function openModal(index, sciName, commonName) {
+  modalFlipped = false;
+  modalIndex = index;
+  modalSciName = sciName;
+  modalCommonName = commonName;
+
+  const bird = allBirds[index];
+  if (!bird) return;
+
+  // Clone the card HTML into the modal at full size
+  const content = document.getElementById('modal-card-content');
+  content.innerHTML = buildModalCardHTML(bird, index);
+
+  // Load the image immediately (not lazy) since it's in focus
+  const img = content.querySelector('img[data-src]');
+  if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+
+  document.getElementById('modal-flip-btn').textContent = 'Flip card ↩';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Pre-fetch description
+  fetchDescription(sciName, commonName).then(desc => {
+    const descEl = document.getElementById('modal-desc');
     if (descEl && descEl.classList.contains('loading')) {
-      const desc = await fetchDescription(sciName, commonName);
       descEl.textContent = desc;
       descEl.classList.remove('loading');
     }
-  }
+  });
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  modalIndex = null;
+  modalFlipped = false;
+}
+
+function flipModalCard() {
+  modalFlipped = !modalFlipped;
+  const inner = document.querySelector('.modal-card-wrap .card-inner');
+  if (inner) inner.classList.toggle('flipped', modalFlipped);
+  document.getElementById('modal-flip-btn').textContent = modalFlipped ? 'Flip back ↩' : 'Flip card ↩';
+}
+
+function handleModalOverlayClick(e) {
+  // Close if clicking the dark overlay (not the card itself)
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// Keyboard support
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'f' || e.key === 'F') flipModalCard();
+});
+
+// Build card HTML for modal (same as cardHTML but with modal-specific desc id)
+function buildModalCardHTML(bird, index) {
+  const { date, commonName, sciName, speciesCode, location, country, subCode,
+          family, order, rarity, photoUrl, photoLicense, exotic } = bird;
+
+  const badgeClass = rarityClass(rarity);
+  const badgeLabel = rarity || 'Common';
+  const fullCountry = countryName(country || (subCode || '').split('-')[0]);
+  const since = daysSince(date);
+  const status = exoticLabel(exotic);
+  const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
+
+  const photoBlock = photoUrl
+    ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
+    : `<div class="no-photo">No photo</div>`;
+
+  return `
+  <div class="scene" style="width:100%;height:100%;aspect-ratio:unset">
+    <div class="card-inner">
+      <div class="card-face card-front">
+        <div class="corner c-tl">${CORNER_SVG}</div>
+        <div class="corner c-tr">${CORNER_SVG}</div>
+        <div class="corner c-bl">${CORNER_SVG}</div>
+        <div class="corner c-br">${CORNER_SVG}</div>
+        <div class="card-eyebrow">Life List &nbsp;·&nbsp; No. ${String(index+1).padStart(3,'0')}</div>
+        <div class="card-rule"></div>
+        <div class="photo-frame">
+          ${photoBlock}
+          ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
+        </div>
+        <div class="card-rule"></div>
+        <div class="card-name">${commonName}</div>
+        <div class="card-sci">${sciName}</div>
+        <div class="card-sighting-label">First Sighting</div>
+        <div class="card-bottom">
+          <span class="card-loc">${[location, fullCountry].filter(Boolean).join(', ')}</span>
+          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+          <span class="card-date">${formatDate(date)}</span>
+        </div>
+      </div>
+      <div class="card-face card-back">
+        <div class="back-header">
+          <div>
+            <div class="back-name">${commonName}</div>
+            <div class="back-sci">${sciName}</div>
+          </div>
+          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+        <div class="back-rule"></div>
+        <div class="stat-grid">
+          <div><div class="stat-item-label">Order</div><div class="stat-item-value">${order||'—'}</div></div>
+          <div><div class="stat-item-label">Family</div><div class="stat-item-value">${family||'—'}</div></div>
+          <div><div class="stat-item-label">Country</div><div class="stat-item-value">${fullCountry}</div></div>
+          <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
+          <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
+          <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
+        </div>
+        <div class="back-rule"></div>
+        <p class="back-desc loading" id="modal-desc">Loading field notes…</p>
+        <div class="sighting-footer">
+          <div class="sighting-label">First Sighting</div>
+          <div class="sighting-row">
+            <span class="sighting-loc">${location||'—'}</span>
+            <span class="sighting-date">${formatDate(date)}</span>
+          </div>
+          <div class="back-footer">
+            <span>#${String(index+1).padStart(3,'0')} · Life List</span>
+            <span>mvogts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function handleFlip(el, sciName, commonName, index) {
+  // Open modal instead of flipping in place
+  openModal(index, sciName, commonName);
 }
 
 // ── State ──
