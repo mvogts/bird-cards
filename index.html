@@ -22,12 +22,7 @@
     --green-mid:  #3a5430;
     --green-text: #c8e0a8;
     --green-soft: #7a9a60;
-    --rare:       #8a3a20;
-    --uncommon:   #4a6a30;
-    --rarity-very-rare: #6a1a40;
   }
-
-  html { font-size: 16px; }
 
   body {
     background: var(--bg);
@@ -330,6 +325,7 @@
     display: flex;
     flex-direction: column;
     padding: 14px 12px;
+    gap: 0;
   }
 
   .back-header {
@@ -337,6 +333,7 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 8px;
+    margin-bottom: 9px;
   }
 
   .back-name {
@@ -359,62 +356,74 @@
     width: 100%;
     height: 1px;
     background: linear-gradient(to right, transparent, var(--green-mid), transparent);
-    margin: 9px 0;
+    margin-bottom: 9px;
   }
 
-  .stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+  /* Taxonomy pills row */
+  .tax-row {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 9px;
   }
 
-  .stat-item {}
-  .stat-item-label {
+  .tax-pill {
     font-size: 6px;
-    color: var(--green-soft);
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 1px;
-  }
-  .stat-item-value {
-    font-size: 9px;
-    color: var(--green-text);
-    font-weight: 700;
-    line-height: 1.2;
+    color: var(--green-soft);
+    border: 1px solid #3a5430;
+    padding: 2px 6px;
+    border-radius: 2px;
   }
 
+  /* Description */
   .back-desc {
     font-family: 'IM Fell English', serif;
-    font-size: 10px;
-    line-height: 1.55;
-    color: #a8c088;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #b8d098;
     flex: 1;
-    margin-top: 4px;
+    overflow: hidden;
   }
 
-  .sighting-block { margin-top: auto; }
+  .back-desc.loading {
+    color: var(--green-soft);
+    font-style: italic;
+    font-size: 10px;
+  }
+
+  /* Sighting footer */
+  .sighting-footer {
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px solid #2a4020;
+  }
+
   .sighting-label {
     font-size: 6px;
     color: var(--green-soft);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
   }
+
   .sighting-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2px;
   }
-  .sighting-loc { font-size: 8px; color: var(--green-text); }
+
+  .sighting-loc  { font-size: 8px; color: var(--green-text); }
   .sighting-date { font-size: 8px; color: var(--green-soft); }
 
   .back-footer {
     display: flex;
     justify-content: space-between;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #2a4020;
+    margin-top: 6px;
   }
+
   .back-footer span {
     font-size: 6px;
     color: #3a5030;
@@ -422,18 +431,21 @@
     text-transform: uppercase;
   }
 
-  /* ── LOADING / EMPTY ── */
-  .loading {
+  /* ── LOADING / ERROR ── */
+  .loading-state {
     text-align: center;
     padding: 80px 20px;
     color: var(--gold-soft);
+    grid-column: 1 / -1;
   }
+
   .loading-title {
     font-family: 'Playfair Display', serif;
     font-size: 20px;
     color: var(--cream);
     margin-bottom: 8px;
   }
+
   .loading-sub {
     font-size: 10px;
     letter-spacing: 0.1em;
@@ -448,7 +460,9 @@
     border: 1px solid #3a2010;
     border-radius: 4px;
     color: var(--gold-soft);
+    grid-column: 1 / -1;
   }
+
   .error-msg strong { display: block; color: var(--cream); font-size: 14px; margin-bottom: 8px; }
   .error-msg p { font-size: 10px; line-height: 1.8; }
 
@@ -508,18 +522,21 @@
 </div>
 
 <div id="gallery" class="gallery">
-  <div class="loading" style="grid-column:1/-1">
+  <div class="loading-state">
     <div class="loading-title">Loading your life list…</div>
     <div class="loading-sub">Fetching from the field journal</div>
   </div>
 </div>
 
-<footer>tap any card to flip &nbsp;·&nbsp; data via eBird &amp; Merlin &nbsp;·&nbsp; photos via iNaturalist &amp; Wikimedia Commons &nbsp;·&nbsp; mvogts</footer>
+<footer>tap any card to flip &nbsp;·&nbsp; descriptions via Wikipedia &nbsp;·&nbsp; photos via iNaturalist &amp; Wikimedia Commons &nbsp;·&nbsp; data via eBird · Merlin &nbsp;·&nbsp; mvogts</footer>
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT08K40NOkO2mHsil2ZaR_LKfRFvj_HUCT2D4KZ1NJdAC_BapkVa15lSTcgBeKKGXLn0giGTwP4fDX_/pub?gid=932256652&single=true&output=csv";
 
 const CORNER_SVG = `<svg viewBox="0 0 28 28" fill="none"><path d="M2 26 L2 2 L26 2" stroke="#8a7240" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#8a7240"/></svg>`;
+
+// Cache descriptions so we don't re-fetch on every flip
+const descCache = {};
 
 function parseCSV(text) {
   const rows = [];
@@ -555,23 +572,58 @@ function rarityClass(tier) {
   return 'rarity-' + tier.replace(/\s+/g, '-');
 }
 
+// Fetch a species description from Wikipedia
+async function fetchDescription(sciName, commonName) {
+  const key = sciName || commonName;
+  if (descCache[key]) return descCache[key];
+
+  // Try scientific name first, then common name
+  const tries = [
+    sciName.replace(/ /g, '_'),
+    commonName.replace(/ /g, '_')
+  ];
+
+  for (const term of tries) {
+    try {
+      const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(term)}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.extract && data.type !== 'disambiguation') {
+        // Take first 2 sentences max
+        const sentences = data.extract.match(/[^.!?]+[.!?]+/g) || [];
+        const desc = sentences.slice(0, 2).join(' ').trim();
+        if (desc.length > 20) {
+          descCache[key] = desc;
+          return desc;
+        }
+      }
+    } catch(e) {}
+  }
+
+  descCache[key] = 'A species recorded on your eBird life list.';
+  return descCache[key];
+}
+
 function cardHTML(bird, index) {
   const {
     date, commonName, sciName, speciesCode,
-    location, country, family, order,
-    rarity, photoUrl, photoLicense
+    location, country, family, order, rarity, photoUrl, photoLicense
   } = bird;
 
   const badgeClass = rarityClass(rarity);
   const badgeLabel = rarity || 'Common';
+
   const photoBlock = photoUrl
     ? `<img src="${photoUrl}" alt="${commonName}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
     : `<div class="no-photo">No photo</div>`;
 
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
 
+  // Build taxonomy pills
+  const pills = [order, family].filter(Boolean).map(t => `<span class="tax-pill">${t}</span>`).join('');
+
   return `
-  <div class="scene" id="card-${index}" onclick="this.classList.toggle('flipped')">
+  <div class="scene" id="card-${index}" onclick="handleFlip(this, '${sciName.replace(/'/g,"\\'")}', '${commonName.replace(/'/g,"\\'")}', ${index})">
     <div class="card-inner">
 
       <div class="card-face card-front">
@@ -610,41 +662,20 @@ function cardHTML(bird, index) {
 
         <div class="back-rule"></div>
 
-        <div class="stat-grid">
-          <div class="stat-item">
-            <div class="stat-item-label">Order</div>
-            <div class="stat-item-value">${order || '—'}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-item-label">Family</div>
-            <div class="stat-item-value">${family || '—'}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-item-label">Country</div>
-            <div class="stat-item-value">${country || '—'}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-item-label">Species Code</div>
-            <div class="stat-item-value">${speciesCode || '—'}</div>
-          </div>
-        </div>
+        <div class="tax-row">${pills}${country ? `<span class="tax-pill">${country}</span>` : ''}${speciesCode ? `<span class="tax-pill">${speciesCode}</span>` : ''}</div>
 
-        <div class="back-rule"></div>
+        <p class="back-desc loading" id="desc-${index}">Loading field notes…</p>
 
-        <p class="back-desc">First recorded via eBird · Merlin. Tap to return.</p>
-
-        <div class="sighting-block">
-          <div class="back-rule"></div>
+        <div class="sighting-footer">
           <div class="sighting-label">First Sighting</div>
           <div class="sighting-row">
             <span class="sighting-loc">${location || '—'}</span>
             <span class="sighting-date">${formatDate(date)}</span>
           </div>
-        </div>
-
-        <div class="back-footer">
-          <span>#${String(index + 1).padStart(3,'0')} · Life List</span>
-          <span>mvogts</span>
+          <div class="back-footer">
+            <span>#${String(index + 1).padStart(3,'0')} · Life List</span>
+            <span>mvogts</span>
+          </div>
         </div>
       </div>
 
@@ -652,18 +683,32 @@ function cardHTML(bird, index) {
   </div>`;
 }
 
+async function handleFlip(el, sciName, commonName, index) {
+  el.classList.toggle('flipped');
+
+  // Fetch description when flipping to back
+  if (el.classList.contains('flipped')) {
+    const descEl = document.getElementById(`desc-${index}`);
+    if (descEl && descEl.classList.contains('loading')) {
+      const desc = await fetchDescription(sciName, commonName);
+      descEl.textContent = desc;
+      descEl.classList.remove('loading');
+    }
+  }
+}
+
 let allBirds = [];
 
 function renderGallery(birds) {
   const gallery = document.getElementById('gallery');
   if (!birds.length) {
-    gallery.innerHTML = `<div class="error-msg" style="grid-column:1/-1"><strong>No cards found</strong><p>Try a different filter.</p></div>`;
+    gallery.innerHTML = `<div class="error-msg"><strong>No cards found</strong><p>Try a different filter.</p></div>`;
     return;
   }
   gallery.innerHTML = birds.map((b, i) => cardHTML(b, allBirds.indexOf(b))).join('');
 }
 
-function setupFilters(birds) {
+function setupFilters() {
   document.getElementById('filters').style.display = 'flex';
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -684,7 +729,6 @@ async function loadData() {
     const rows = parseCSV(text);
     if (rows.length < 2) throw new Error('Sheet appears empty');
 
-    // Header row: Date,Common Name,Scientific Name,Species Code,Location,Country,Loc ID,Taxon Order,Family,Order,Global Frequency %,Rarity Tier,Photo URL,Photo License,Exotic,Sub ID
     allBirds = rows.slice(1).map(r => ({
       date:         r[0]  || '',
       commonName:   r[1]  || '',
@@ -704,22 +748,22 @@ async function loadData() {
       subId:        r[15] || '',
     })).filter(b => b.commonName);
 
-    // Stats
     const countries = new Set(allBirds.map(b => b.country).filter(Boolean));
     const rareCount = allBirds.filter(b => b.rarity === 'Rare' || b.rarity === 'Very Rare').length;
+
     document.getElementById('stat-species').textContent = allBirds.length;
     document.getElementById('stat-countries').textContent = countries.size;
     document.getElementById('stat-rare').textContent = rareCount;
     document.getElementById('stats').style.display = 'flex';
 
-    setupFilters(allBirds);
+    setupFilters();
     renderGallery(allBirds);
 
   } catch(e) {
     gallery.innerHTML = `
-      <div class="error-msg" style="grid-column:1/-1">
+      <div class="error-msg">
         <strong>Couldn't load your life list</strong>
-        <p>Make sure the Google Sheet is published to the web as CSV and the URL is correct.<br><br>Error: ${e.message}</p>
+        <p>Make sure the Google Sheet is published to the web as CSV.<br><br>Error: ${e.message}</p>
       </div>`;
   }
 }
