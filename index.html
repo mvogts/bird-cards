@@ -1481,7 +1481,8 @@ function setupCardObserver() {
 
 function renderGallery(birds) {
   const gallery = document.getElementById('gallery');
-  if (!birds.length) {
+  if (!gallery) return;
+  if (!birds || !birds.length) {
     gallery.innerHTML = `<div class="error-msg"><strong>No cards found</strong><p>Try a different search or filter.</p></div>`;
     return;
   }
@@ -1491,7 +1492,8 @@ function renderGallery(birds) {
 
 // ── Filters ──
 function setupFilters() {
-  document.getElementById('controls-bar').style.display = 'flex';
+  const bar = document.getElementById('controls-bar');
+  if (bar) bar.style.display = 'flex';
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1641,7 +1643,7 @@ function parseCSV(text) {
 }
 
 // ── Load data ──
-const SHEET_CACHE_KEY = 'birdlist_csv';
+const SHEET_CACHE_KEY = 'birdlist_csv_v2'; // bump version to invalidate old cache
 const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 async function loadData() {
