@@ -622,8 +622,8 @@
 
   .modal-card-wrap {
     position: relative;
-    width: min(380px, 90vw);
-    aspect-ratio: 5 / 7.5;
+    width: min(380px, 88vw);
+    height: min(570px, 88vh);
     animation: zoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
@@ -632,12 +632,21 @@
     to   { transform: scale(1);    opacity: 1; }
   }
 
-  /* The modal card reuses all the same .card-face styles —
-     we just scale it up inside the modal wrap */
-  .modal-card-wrap .scene {
+  .modal-card-wrap #modal-card-content {
     width: 100%;
     height: 100%;
-    aspect-ratio: unset;
+  }
+
+  .modal-card-wrap .scene {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: unset !important;
+    perspective: 1000px;
+  }
+
+  .modal-card-wrap .card-inner {
+    width: 100%;
+    height: 100%;
   }
 
   .modal-close {
@@ -874,6 +883,7 @@
 </div>
 
 
+<div class="controls-bar" id="controls-bar" style="display:none">
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
     <input class="search-input" id="search-input" type="text" placeholder="Search birds…" oninput="handleSearch()">
