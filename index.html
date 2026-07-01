@@ -1269,19 +1269,21 @@ function openModal(index, sciName, commonName) {
   const bird = allBirds[index];
   if (!bird) return;
 
-  // Clone the card HTML into the modal at full size
   const content = document.getElementById('modal-card-content');
   content.innerHTML = buildModalCardHTML(bird, index);
 
-  // Load the image immediately (not lazy) since it's in focus
+  // Ensure card starts on front face
+  const inner = document.getElementById('modal-card-inner');
+  if (inner) inner.classList.remove('flipped');
+
+  // Load image immediately
   const img = content.querySelector('img[data-src]');
   if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
 
-  document.getElementById('modal-flip-btn') && (document.getElementById('modal-flip-btn').textContent = 'Flip card ↩');
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Pre-fetch description
+  // Pre-fetch description so it's ready when flipped
   fetchDescription(sciName, commonName).then(desc => {
     const descEl = document.getElementById('modal-desc');
     if (descEl && descEl.classList.contains('loading')) {
@@ -1300,7 +1302,7 @@ function closeModal() {
 
 function flipModalCard() {
   modalFlipped = !modalFlipped;
-  const inner = document.querySelector('#modal-card-content .card-inner');
+  const inner = document.getElementById('modal-card-inner');
   if (inner) inner.classList.toggle('flipped', modalFlipped);
 }
 
@@ -1332,8 +1334,8 @@ function buildModalCardHTML(bird, index) {
     : `<div class="no-photo">No photo</div>`;
 
   return `
-  <div class="scene" style="width:100%;height:100%;aspect-ratio:unset">
-    <div class="card-inner">
+  <div class="scene" style="width:100%;height:100%;aspect-ratio:unset;cursor:pointer">
+    <div class="card-inner" id="modal-card-inner">
       <div class="card-face card-front">
         <div class="corner c-tl">${CORNER_SVG}</div>
         <div class="corner c-tr">${CORNER_SVG}</div>
