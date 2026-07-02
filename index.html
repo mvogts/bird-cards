@@ -1388,11 +1388,36 @@ const SEASONAL_PRESENCE = {
   "musdu2_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
 };
 
-function getSeasonalPresence(speciesCode, country) {
+function getSeasonalPresence(speciesCode, country, date) {
   if (!speciesCode || !country) return null;
-  // Try exact country match first, then 2-letter prefix
   const c2 = country.split('-')[0];
-  return SEASONAL_PRESENCE[`${speciesCode}_${c2}`] || null;
+
+  // Try hardcoded lookup first
+  const hardcoded = SEASONAL_PRESENCE[`${speciesCode}_${c2}`] || null;
+  if (hardcoded) return hardcoded;
+
+  // Fallback for unknown species: derive from sighting date
+  // Mark the sighting season as present, others as unknown (◐)
+  if (!date) return null;
+  const month = parseInt(date.split('-')[1], 10);
+  const sightingSeason =
+    [3,4,5].includes(month) ? 'spring' :
+    [6,7,8].includes(month) ? 'summer' :
+    [9,10,11].includes(month) ? 'fall' : 'winter';
+
+  // For tropical/year-round regions, mark all as present
+  const yearRound = ['BL','BR','MX','CL'].includes(c2);
+  if (yearRound) {
+    return { spring:'present', summer:'present', fall:'present', winter:'present' };
+  }
+
+  // For temperate regions, mark sighting season as present, others unknown
+  return {
+    spring: sightingSeason === 'spring' ? 'present' : 'rare',
+    summer: sightingSeason === 'summer' ? 'present' : 'rare',
+    fall:   sightingSeason === 'fall'   ? 'present' : 'rare',
+    winter: sightingSeason === 'winter' ? 'present' : 'rare',
+  };
 }
 
 function seasonalPresenceHTML(presence) {
@@ -1666,7 +1691,7 @@ function openModalGroup(indices, pos) {
     }
   });
 
-  const presence = getSeasonalPresence(bird.speciesCode, bird.country);
+  const presence = getSeasonalPresence(bird.speciesCode, bird.country, bird.date);
   const modalSeasonal = document.getElementById('modal-seasonal');
   if (modalSeasonal && presence) modalSeasonal.innerHTML = seasonalPresenceHTML(presence);
 }
@@ -1714,7 +1739,7 @@ function openModal(index, sciName, commonName) {
   });
 
   // Get seasonal presence synchronously from lookup table
-  const presence = getSeasonalPresence(bird.speciesCode, bird.country);
+  const presence = getSeasonalPresence(bird.speciesCode, bird.country, bird.date);
   const modalSeasonal = document.getElementById('modal-seasonal');
   if (modalSeasonal && presence) {
     modalSeasonal.innerHTML = seasonalPresenceHTML(presence);
@@ -2098,7 +2123,7 @@ function parseCSV(text) {
 }
 
 // ── Load data ──
-const SHEET_CACHE_KEY = 'birdlist_csv_v5'; // bumped to clear stale cache
+const SHEET_CACHE_KEY = 'birdlist_csv_v6'; // bumped to clear stale cache
 const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 async function loadData() {
