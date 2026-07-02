@@ -1552,11 +1552,34 @@ function groupBySpecies(birds) {
   const groups = {};
   const order = [];
   birds.forEach(b => {
-    const key = b.speciesCode || b.commonName;
-    if (!groups[key]) { groups[key] = []; order.push(key); }
+    // Group by speciesCode + locId so same species at different locations stack
+    // but same species at SAME location on different dates don't stack
+    const specKey = b.speciesCode || b.commonName;
+    const locKey = b.locId || b.location;
+    const key = specKey + '_' + locKey;
+    if (!groups[key]) { groups[key] = []; }
+    // Track first occurrence for ordering
+    const speciesOrder = specKey;
+    if (!groups['__order__']) groups['__order__'] = [];
+    if (!groups['__seen__']) groups['__seen__'] = new Set();
+    if (!groups['__seen__'].has(specKey)) {
+      groups['__seen__'].add(specKey);
+      groups['__order__'].push(specKey);
+    }
     groups[key].push(b);
   });
-  return order.map(k => groups[k]);
+
+  // Now regroup by species only, collecting all location groups
+  const speciesGroups = {};
+  Object.keys(groups).forEach(k => {
+    if (k.startsWith('__')) return;
+    const specKey = k.split('_')[0];
+    if (!speciesGroups[specKey]) speciesGroups[specKey] = [];
+    // Add first bird from each location group as representative
+    speciesGroups[specKey].push(groups[k][0]);
+  });
+
+  return (groups['__order__'] || []).map(k => speciesGroups[k] || []).filter(g => g.length > 0);
 }
 
 // ── Stack card HTML (multiple sightings of same species) ──
@@ -2070,7 +2093,7 @@ function parseCSV(text) {
 }
 
 // ── Load data ──
-const SHEET_CACHE_KEY = 'birdlist_csv_v3'; // bumped to clear stale cache
+const SHEET_CACHE_KEY = 'birdlist_csv_v4'; // bumped to clear stale cache
 const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 async function loadData() {
