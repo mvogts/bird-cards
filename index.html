@@ -1093,36 +1093,37 @@ function cacheGet(key, ttl = CACHE_TTL) {
 // Auto-expands as new loc IDs are encountered (via eBird API fallback).
 const LOC_TO_REGION = {
   // St. Barths
-  "L71880744": "BL", "L71886946": "BL", "L71819252": "BL",
-  "L71778790": "BL", "L71693109": "BL",
-  // New York — Brooklyn (US-NY-047)
-  "L66584382": "US-NY-047", "L66578148": "US-NY-047",
-  "L66572290": "US-NY-047", "L66563730": "US-NY-047",
-  "L66121421": "US-NY-047", "L62700968": "US-NY-047",
-  "L51659146": "US-NY-047", "L51657930": "US-NY-047",
-  "L51614987": "US-NY-047",
-  // New York — Manhattan (US-NY-061)
-  "L52785029": "US-NY-061", "L53053791": "US-NY-061",
-  // New York — other NY (Rockaway = Queens US-NY-081)
+  "L71693109": "BL",  "L71778790": "BL",  "L71880744": "BL",
+  "L71819252": "BL",  "L71886946": "BL",
+  // Brooklyn (US-NY-047)
+  "L51659146": "US-NY-047",  "L51657930": "US-NY-047",
+  "L51614987": "US-NY-047",  "L62700968": "US-NY-047",
+  "L66121421": "US-NY-047",  "L66563730": "US-NY-047",
+  "L66572290": "US-NY-047",  "L66578148": "US-NY-047",
+  "L66584382": "US-NY-047",
+  // Manhattan (US-NY-061)
+  "L52785029": "US-NY-061",  "L53053791": "US-NY-061",
+  // Queens (US-NY-081)
   "L70660746": "US-NY-081",
-  // California
-  "L52916457": "US-CA",
   // Illinois
-  "L51346711": "US-IL", "L50893216": "US-IL", "L50951781": "US-IL",
+  "L50951781": "US-IL",  "L50893216": "US-IL",  "L51346711": "US-IL",
   // Texas
-  "L56404253": "US-TX", "L56328641": "US-TX",
+  "L56328641": "US-TX",  "L56404253": "US-TX",
   // Mexico
   "L58723651": "MX-ROO",
   // Chile
-  "L52330270": "CL-RM", "L52323079": "CL-RM",
-  "L52321398": "CL-RM", "L52280736": "CL-RM", "L52174836": "CL-RM",
-  // Brazil — Rio de Janeiro (BR-RJ)
-  "L55618723": "BR-RJ", "L55534009": "BR-RJ",
-  "L55451607": "BR-RJ", "L55455434": "BR-RJ", "L55346290": "BR-RJ",
+  "L52174836": "CL-RM",  "L52280736": "CL-RM",  "L52321398": "CL-RM",
+  "L52323079": "CL-RM",  "L52330270": "CL-RM",
+  // Brazil
+  "L55346290": "BR-RJ",  "L55451607": "BR-RJ",  "L55455434": "BR-RJ",
+  "L55534009": "BR-RJ",  "L55618723": "BR-RJ",
+  // California
+  "L52916457": "US-CA",
 };
 
 // Get region code for a bird — use loc ID map first, fall back to country field
 function getRegionCode(bird) {
+  // LOC_TO_REGION gives most specific region; fall back to full state code stored in country field
   return LOC_TO_REGION[bird.locId] || bird.country || '';
 }
 
@@ -1254,7 +1255,12 @@ const COUNTRY_NAMES = {
   NL:"Netherlands",SE:"Sweden",NO:"Norway",DK:"Denmark",
 };
 
-function countryName(code) { return COUNTRY_NAMES[code] || code || '—'; }
+function countryName(code) {
+  if (!code) return '—';
+  // Handle full state codes like US-NY -> look up country prefix
+  var c2 = code.split('-')[0];
+  return COUNTRY_NAMES[c2] || COUNTRY_NAMES[code] || code;
+}
 
 function daysSince(dateStr) {
   if (!dateStr) return null;
