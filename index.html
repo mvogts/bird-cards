@@ -1127,6 +1127,35 @@ const LOC_TO_REGION = {
 };
 
 // Get region code for a bird — use loc ID map first, fall back to country field
+// Maps region codes to human-readable city names for card eyebrow
+const REGION_TO_CITY = {
+  "US-NY-047": "Brooklyn",
+  "US-NY-061": "Manhattan",
+  "US-NY-081": "Queens",
+  "US-NY-005": "The Bronx",
+  "US-NY-085": "Staten Island",
+  "US-NY":     "New York",
+  "US-IL-043": "Hinsdale",
+  "US-IL-031": "Chicago",
+  "US-IL":     "Illinois",
+  "US-TX":     "Texas",
+  "US-CA":     "California",
+  "MX-ROO":    "Tulum",
+  "CL-RM":     "Santiago",
+  "BR-RJ":     "Rio de Janeiro",
+  "BL":        "St. Barths",
+  "US":        "United States",
+  "BR":        "Brazil",
+  "MX":        "Mexico",
+  "CL":        "Chile",
+};
+
+function cityFromBird(bird) {
+  // Get most specific region from loc ID first
+  const region = LOC_TO_REGION[bird.locId] || bird.country || '';
+  return REGION_TO_CITY[region] || REGION_TO_CITY[region.split('-').slice(0,2).join('-')] || REGION_TO_CITY[region.split('-')[0]] || bird.location || '';
+}
+
 function getRegionCode(bird) {
   // LOC_TO_REGION gives most specific region; fall back to full state code stored in country field
   return LOC_TO_REGION[bird.locId] || bird.country || '';
@@ -1472,7 +1501,8 @@ function cardFrontHTML(bird, index) {
   const season = seasonFromDate(date);
   const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
-  const locationEyebrow = [location, fullCountry].filter(Boolean).join(', ').toUpperCase();
+  const city = cityFromBird(bird);
+  const locationEyebrow = [city, fullCountry].filter(Boolean).join(', ').toUpperCase();
   const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
   const photoBlock = photoUrl
     ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
@@ -1791,7 +1821,8 @@ function buildModalCardHTML(bird, index) {
     ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
     : `<div class="no-photo">No photo</div>`;
 
-  const locationEyebrow = [location, fullCountry].filter(Boolean).join(', ').toUpperCase();
+  const city = cityFromBird(bird);
+  const locationEyebrow = [city, fullCountry].filter(Boolean).join(', ').toUpperCase();
   const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
 
   return `
