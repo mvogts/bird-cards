@@ -2137,9 +2137,11 @@ async function loadData() {
     })).filter(b => b.commonName);
 
     // Stats
-    const countries = new Set(allBirds.map(b => b.country).filter(Boolean));
+    const countries = new Set(allBirds.map(b => b.country.split('-')[0]).filter(Boolean));
     const rareCount = allBirds.filter(b => b.rarity === 'Rare' || b.rarity === 'Very Rare').length;
-    document.getElementById('stat-species').textContent = allBirds.length;
+    // Count unique species not total sightings
+    const uniqueSpecies = new Set(allBirds.map(b => b.speciesCode || b.commonName)).size;
+    document.getElementById('stat-species').textContent = uniqueSpecies;
     document.getElementById('stat-countries').textContent = countries.size;
     document.getElementById('stat-rare').textContent = rareCount;
     document.getElementById('stats').style.display = 'flex';
@@ -2148,7 +2150,7 @@ async function loadData() {
     getRegionSpeciesCodes('world').then(codes => {
       if (codes.length) {
         document.getElementById('stat-species').textContent =
-          `${allBirds.length} / ${codes.length.toLocaleString()}`;
+          `${uniqueSpecies} / ${codes.length.toLocaleString()}`;
       }
     });
 
