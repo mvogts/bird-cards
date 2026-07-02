@@ -751,6 +751,98 @@
   .seasonal-item.rare    .seasonal-dot { color: #7a9a60; }
   .seasonal-item.absent  .seasonal-dot { color: #2a4020; }
 
+  /* ── STACKED CARDS ── */
+  .stack-scene {
+    aspect-ratio: 5 / 7.5;
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* Ghost cards peeking behind */
+  .stack-scene .stack-ghost {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: var(--cream-dark);
+    border: 1px solid #c4a86a;
+    transform-origin: bottom center;
+  }
+
+  .stack-scene .stack-ghost:nth-child(1) {
+    transform: rotate(2.5deg) translateY(-4px) translateX(4px);
+    opacity: 0.7;
+    z-index: 1;
+  }
+
+  .stack-scene .stack-ghost:nth-child(2) {
+    transform: rotate(-1.5deg) translateY(-2px) translateX(-3px);
+    opacity: 0.5;
+    z-index: 0;
+  }
+
+  /* Count badge on stacked cards */
+  .stack-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: var(--gold);
+    color: var(--ink);
+    border-radius: 50%;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+
+  /* Top card in stack sits above ghosts */
+  .stack-scene > .scene {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    aspect-ratio: unset;
+  }
+
+  /* ── MULTI-CARD MODAL NAVIGATOR ── */
+  .modal-nav {
+    position: absolute;
+    bottom: -52px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+  }
+
+  .modal-nav-btn {
+    background: transparent;
+    border: 1px solid #3a3020;
+    color: #6a5830;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 6px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+
+  .modal-nav-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
+  .modal-nav-btn:disabled { opacity: 0.25; cursor: default; }
+
+  .modal-nav-indicator {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: #6a5830;
+    letter-spacing: 0.1em;
+  }
+
   /* ── GHOST CARDS ── */
   .ghost-scene { aspect-ratio: 5 / 7.5; cursor: default; }
 
@@ -1336,95 +1428,104 @@ async function fetchDescription(sciName, commonName) {
   return descCache[key];
 }
 
-// ── Card HTML ──
-function cardHTML(bird, index) {
-  const { date, commonName, sciName, speciesCode, location, country,
-          family, order, rarity, photoUrl, photoLicense, exotic } = bird;
+// ── Card front/back as separate functions for reuse in stacks ──
+function cardFrontHTML(bird, index) {
+  const { date, commonName, sciName, location, country,
+          rarity, photoUrl, photoLicense, exotic } = bird;
+  const badgeClass = rarityClass(rarity);
+  const badgeLabel = rarity || 'Common';
+  const fullCountry = countryName(country);
+  const season = seasonFromDate(date);
+  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
+  const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
+  const locationEyebrow = [location, fullCountry].filter(Boolean).join(', ').toUpperCase();
+  const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
+  const photoBlock = photoUrl
+    ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
+    : `<div class="no-photo">No photo</div>`;
 
+  return `
+  <div class="card-face card-front">
+    <div class="corner c-tl">${CORNER_SVG}</div>
+    <div class="corner c-tr">${CORNER_SVG}</div>
+    <div class="corner c-bl">${CORNER_SVG}</div>
+    <div class="corner c-br">${CORNER_SVG}</div>
+    <div class="card-eyebrow">${locationEyebrow}${dateEyebrow ? ' &nbsp;·&nbsp; ' + dateEyebrow : ''}</div>
+    <div class="card-rule"></div>
+    <div class="photo-frame">
+      ${photoBlock}
+      ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
+    </div>
+    <div class="card-rule"></div>
+    <div class="card-name">${commonName}</div>
+    <div class="card-sci">${sciName}</div>
+    <div class="card-bottom">
+      <span class="card-num">No. ${String(index+1).padStart(3,'0')}</span>
+      ${seasonBadge}
+      <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+    </div>
+  </div>`;
+}
+
+function cardBackHTML(bird, index) {
+  const { date, commonName, sciName, speciesCode, location, country,
+          family, order, rarity, exotic } = bird;
   const badgeClass = rarityClass(rarity);
   const badgeLabel = rarity || 'Common';
   const fullCountry = countryName(country);
   const since = daysSince(date);
   const status = exoticLabel(exotic);
-  const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
-
-  const photoBlock = photoUrl
-    ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
-    : `<div class="no-photo">No photo</div>`;
-
-  const safeScí = sciName.replace(/'/g,"\\'");
-  const safeName = commonName.replace(/'/g,"\\'");
-
-  const season = seasonFromDate(date);
-  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
-
-  const locationEyebrow = [location, fullCountry].filter(Boolean).join(', ').toUpperCase();
-  const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
 
   return `
-  <div class="scene" id="card-${index}" onclick="handleFlip(this,'${safeScí}','${safeName}',${index})">
+  <div class="card-face card-back">
+    <div class="back-header">
+      <div>
+        <div class="back-name">${commonName}</div>
+        <div class="back-sci">${sciName}</div>
+      </div>
+      <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+    </div>
+    <div class="back-rule"></div>
+    <div class="stat-grid">
+      <div><div class="stat-item-label">Order</div><div class="stat-item-value">${order||'—'}</div></div>
+      <div><div class="stat-item-label">Family</div><div class="stat-item-value">${family||'—'}</div></div>
+      <div><div class="stat-item-label">Country</div><div class="stat-item-value">${fullCountry}</div></div>
+      <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
+      <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
+      <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
+    </div>
+    <div class="back-rule"></div>
+    <div class="seasonal-row" id="seasonal-${index}">
+      <div class="seasonal-label">Seasonal Presence</div>
+      <div class="seasonal-dots">
+        <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+      </div>
+    </div>
+    <div class="back-rule"></div>
+    <p class="back-desc loading" id="desc-${index}">Loading field notes…</p>
+    <div class="sighting-footer">
+      <div class="sighting-label">First Sighting</div>
+      <div class="sighting-row">
+        <span class="sighting-loc">${location||'—'}</span>
+        <span class="sighting-date">${formatDate(date)}</span>
+      </div>
+      <div class="back-footer">
+        <span>#${String(index+1).padStart(3,'0')} · Life List</span>
+        <span>mvogts</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function cardHTML(bird, index) {
+  return `
+  <div class="scene" id="card-${index}" onclick="openModalGroup([${index}], 0)">
     <div class="card-inner">
-      <div class="card-face card-front">
-        <div class="corner c-tl">${CORNER_SVG}</div>
-        <div class="corner c-tr">${CORNER_SVG}</div>
-        <div class="corner c-bl">${CORNER_SVG}</div>
-        <div class="corner c-br">${CORNER_SVG}</div>
-        <div class="card-eyebrow">${locationEyebrow}${dateEyebrow ? ' &nbsp;·&nbsp; ' + dateEyebrow : ''}</div>
-        <div class="card-rule"></div>
-        <div class="photo-frame">
-          ${photoBlock}
-          ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
-        </div>
-        <div class="card-rule"></div>
-        <div class="card-name">${commonName}</div>
-        <div class="card-sci">${sciName}</div>
-        <div class="card-bottom">
-          <span class="card-num">No. ${String(index+1).padStart(3,'0')}</span>
-          ${seasonBadge}
-          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
-        </div>
-      </div>
-      <div class="card-face card-back">
-        <div class="back-header">
-          <div>
-            <div class="back-name">${commonName}</div>
-            <div class="back-sci">${sciName}</div>
-          </div>
-          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
-        </div>
-        <div class="back-rule"></div>
-        <div class="stat-grid">
-          <div><div class="stat-item-label">Order</div><div class="stat-item-value">${order||'—'}</div></div>
-          <div><div class="stat-item-label">Family</div><div class="stat-item-value">${family||'—'}</div></div>
-          <div><div class="stat-item-label">Country</div><div class="stat-item-value">${fullCountry}</div></div>
-          <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
-          <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
-          <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
-        </div>
-        <div class="back-rule"></div>
-        <div class="seasonal-row" id="seasonal-${index}">
-          <div class="seasonal-label">Seasonal Presence</div>
-          <div class="seasonal-dots">
-            <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
-          </div>
-        </div>
-        <div class="back-rule"></div>
-        <p class="back-desc loading" id="desc-${index}">Loading field notes…</p>
-        <div class="sighting-footer">
-          <div class="sighting-label">First Sighting</div>
-          <div class="sighting-row">
-            <span class="sighting-loc">${location||'—'}</span>
-            <span class="sighting-date">${formatDate(date)}</span>
-          </div>
-          <div class="back-footer">
-            <span>#${String(index+1).padStart(3,'0')} · Life List</span>
-            <span>mvogts</span>
-          </div>
-        </div>
-      </div>
+      ${cardFrontHTML(bird, index)}
+      ${cardBackHTML(bird, index)}
     </div>
   </div>`;
 }
@@ -1442,7 +1543,107 @@ function ghostCardHTML(species) {
   </div>`;
 }
 
-// ── Modal lightbox ──
+// ── Group birds by species for stacking ──
+function groupBySpecies(birds) {
+  const groups = {};
+  const order = [];
+  birds.forEach(b => {
+    const key = b.speciesCode || b.commonName;
+    if (!groups[key]) { groups[key] = []; order.push(key); }
+    groups[key].push(b);
+  });
+  return order.map(k => groups[k]);
+}
+
+// ── Stack card HTML (multiple sightings of same species) ──
+function stackHTML(group) {
+  const primary = group[0];
+  const primaryIndex = allBirds.indexOf(primary);
+  const count = group.length;
+
+  // Ghost layers (max 2 visible behind)
+  const ghosts = count > 1
+    ? Array(Math.min(count - 1, 2)).fill(0).map(() => `<div class="stack-ghost"></div>`).join('')
+    : '';
+
+  const safeScí = primary.sciName.replace(/'/g,"\\'");
+  const safeName = primary.commonName.replace(/'/g,"\\'");
+  const groupIndices = group.map(b => allBirds.indexOf(b));
+
+  return `
+  <div class="stack-scene" onclick="openModalGroup(${JSON.stringify(groupIndices)}, 0)">
+    ${ghosts}
+    ${count > 1 ? `<div class="stack-count">${count}</div>` : ''}
+    <div class="scene" style="position:absolute;inset:0;aspect-ratio:unset">
+      <div class="card-inner">
+        ${cardFrontHTML(primary, primaryIndex)}
+        ${cardBackHTML(primary, primaryIndex)}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Modal navigator state ──
+let modalGroupIndices = [];
+let modalGroupPos = 0;
+
+function openModalGroup(indices, pos) {
+  modalGroupIndices = indices;
+  modalGroupPos = pos;
+  const bird = allBirds[indices[pos]];
+  if (!bird) return;
+
+  modalFlipped = false;
+  const content = document.getElementById('modal-card-content');
+  content.innerHTML = buildModalCardHTML(bird, indices[pos]);
+
+  const inner = document.getElementById('modal-card-inner');
+  if (inner) inner.classList.remove('flipped');
+
+  const img = content.querySelector('img[data-src]');
+  if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+
+  // Update or create navigator
+  let nav = document.getElementById('modal-nav');
+  if (!nav) {
+    nav = document.createElement('div');
+    nav.id = 'modal-nav';
+    nav.className = 'modal-nav';
+    document.getElementById('modal-card-wrap').appendChild(nav);
+  }
+
+  if (indices.length > 1) {
+    nav.style.display = 'flex';
+    nav.innerHTML = `
+      <button class="modal-nav-btn" onclick="navigateModal(-1)" ${pos === 0 ? 'disabled' : ''}>←</button>
+      <span class="modal-nav-indicator">${pos + 1} / ${indices.length} sightings</span>
+      <button class="modal-nav-btn" onclick="navigateModal(1)" ${pos === indices.length - 1 ? 'disabled' : ''}>→</button>
+    `;
+  } else {
+    nav.style.display = 'none';
+  }
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  fetchDescription(bird.sciName, bird.commonName).then(desc => {
+    const descEl = document.getElementById('modal-desc');
+    if (descEl && descEl.classList.contains('loading')) {
+      descEl.textContent = desc;
+      descEl.classList.remove('loading');
+    }
+  });
+
+  const presence = getSeasonalPresence(bird.speciesCode, bird.country);
+  const modalSeasonal = document.getElementById('modal-seasonal');
+  if (modalSeasonal && presence) modalSeasonal.innerHTML = seasonalPresenceHTML(presence);
+}
+
+function navigateModal(dir) {
+  const newPos = modalGroupPos + dir;
+  if (newPos < 0 || newPos >= modalGroupIndices.length) return;
+  openModalGroup(modalGroupIndices, newPos);
+}
 let modalFlipped = false;
 let modalIndex = null;
 let modalSciName = null;
@@ -1700,7 +1901,15 @@ function renderGallery(birds) {
     gallery.innerHTML = `<div class="error-msg"><strong>No cards found</strong><p>Try a different search or filter.</p></div>`;
     return;
   }
-  gallery.innerHTML = birds.map((b, i) => cardHTML(b, allBirds.indexOf(b))).join('');
+  // Group by species to show stacks for multi-location sightings
+  const groups = groupBySpecies(birds);
+  gallery.innerHTML = groups.map(group => {
+    if (group.length === 1) {
+      return cardHTML(group[0], allBirds.indexOf(group[0]));
+    } else {
+      return stackHTML(group);
+    }
+  }).join('');
   setupCardObserver();
 }
 
