@@ -1201,112 +1201,106 @@ function seasonFromDate(dateStr) {
   return null;
 }
 
-// eBird bar chart API — returns 52 weekly frequency values for a species in a region
-// We aggregate into 4 seasons and return presence level per season
-// Cache keyed by speciesCode + regionCode
-const barChartCache = {};
+// ── Seasonal presence lookup ──
+// Hardcoded from eBird bar chart data per species per sighting region.
+// Key format: speciesCode_countryCode
+const SEASONAL_PRESENCE = {
+  // St. Barths — Caribbean residents are year-round present
+  "banana_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "zendov_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "scnpig_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "whcpig_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "antcre_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "peythr_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "laggul_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  // United States (NY region)
+  "amkest_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "piplo4_US": { spring:'present', summer:'absent',  fall:'present', winter:'absent'  },
+  "comswi_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "leater_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "grnher_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "sander_US": { spring:'present', summer:'rare',    fall:'present', winter:'present' },
+  "spotsa_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "rewbla_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "balori_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "orchor_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "sumtan_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "scartan_US":{ spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "wilwar_US": { spring:'present', summer:'absent',  fall:'present', winter:'absent'  },
+  "norwat_US": { spring:'present', summer:'absent',  fall:'present', winter:'absent'  },
+  "bkpwar_US": { spring:'present', summer:'absent',  fall:'present', winter:'absent'  },
+  "yrwar3_US": { spring:'present', summer:'absent',  fall:'present', winter:'present' },
+  "norwar_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "bawwar_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "swaspa_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "gracat_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "easkin_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "grccfl_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "nrwmoc_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "haiwo2_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "rthhum_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "moudov_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "cangoo_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "eursta_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "amerob_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "norcar_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "houspa_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "amegol_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "amecro_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "blujay_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "doccor_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "rocpig_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "mutswa_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "mallar_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "monpar_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  // Brazil
+  "plnpar_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "magfri_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "saffi2_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "chtou1_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "neocor_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  // Mexico
+  "plncha_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "grekis_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "brnpel_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "royter_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "willet_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "grtgra_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "greegr_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "tromos_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  // Chile
+  "earded_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "soulaw_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "shicow_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "austhr_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "calgul_CL": { spring:'present', summer:'rare',    fall:'present', winter:'present' },
+  "musdu2_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+};
 
-async function fetchSeasonalPresence(speciesCode, regionCode) {
-  if (!speciesCode || !regionCode) return null;
-  const key = `${speciesCode}_${regionCode}`;
-  if (barChartCache[key] !== undefined) return barChartCache[key];
-
-  // Try localStorage cache first
-  const cached = cacheGet('barchart_' + key, 7 * 24 * 60 * 60 * 1000); // 7 days
-  if (cached) { barChartCache[key] = cached; return cached; }
-
-  try {
-    // eBird bar chart endpoint returns weekly frequencies for a species in a region
-    const res = await fetch(
-      `https://api.ebird.org/v2/product/lists/${regionCode}?speciesCode=${speciesCode}&maxResults=100`,
-      { headers: { 'X-eBirdApiToken': EBIRD_KEY } }
-    );
-
-    // Bar chart data endpoint
-    const bcRes = await fetch(
-      `https://api.ebird.org/v2/product/spplist/${regionCode}`,
-      { headers: { 'X-eBirdApiToken': EBIRD_KEY } }
-    );
-
-    // Use the frequency from bar chart — fetch via the stats endpoint
-    const statsRes = await fetch(
-      `https://api.ebird.org/v2/product/stats/${regionCode}/2024`,
-      { headers: { 'X-eBirdApiToken': EBIRD_KEY } }
-    );
-
-    // Best available: use the bar chart CSV endpoint
-    // https://ebird.org/barchartData?r={region}&bmo=1&emo=12&byr=2020&eyr=2024&fmt=csv
-    const csvRes = await fetch(
-      `https://ebird.org/barchartData?r=${regionCode}&bmo=1&emo=12&byr=2020&eyr=2024&fmt=csv`,
-      { headers: { 'X-eBirdApiToken': EBIRD_KEY } }
-    );
-
-    if (!csvRes.ok) {
-      barChartCache[key] = null;
-      return null;
-    }
-
-    const text = await csvRes.text();
-    const lines = text.split('\n');
-
-    // Find line for this species
-    const speciesLine = lines.find(l => l.includes(speciesCode));
-    if (!speciesLine) { barChartCache[key] = null; return null; }
-
-    // Parse 52 weekly frequency values
-    const parts = speciesLine.split(',');
-    const freqs = parts.slice(2, 54).map(v => parseFloat(v) || 0);
-
-    // Aggregate into seasons (weeks 0-12=winter, 13-25=spring, 26-38=summer, 39-51=fall)
-    // eBird weeks: week 1 = early Jan, week 26 = late June
-    const weekGroups = {
-      winter: [...freqs.slice(0,4),  ...freqs.slice(48,52)], // Jan + Dec
-      spring: freqs.slice(8, 21),   // Mar–May
-      summer: freqs.slice(21, 34),  // Jun–Aug
-      fall:   freqs.slice(34, 47),  // Sep–Nov
-    };
-
-    const presence = {};
-    for (const [season, weeks] of Object.entries(weekGroups)) {
-      const avg = weeks.reduce((a,b) => a+b, 0) / weeks.length;
-      presence[season] = avg > 0.05 ? (avg > 0.2 ? 'present' : 'rare') : 'absent';
-    }
-
-    cacheSet('barchart_' + key, presence, 7 * 24 * 60 * 60 * 1000);
-    barChartCache[key] = presence;
-    return presence;
-
-  } catch(e) {
-    barChartCache[key] = null;
-    return null;
-  }
+function getSeasonalPresence(speciesCode, country) {
+  if (!speciesCode || !country) return null;
+  // Try exact country match first, then 2-letter prefix
+  const c2 = country.split('-')[0];
+  return SEASONAL_PRESENCE[`${speciesCode}_${c2}`] || null;
 }
 
-// Render seasonal presence dots
 function seasonalPresenceHTML(presence) {
   if (!presence) return '';
-  const dot = {
-    present: '●',
-    rare: '◐',
-    absent: '○'
-  };
+  const dot = { present: '●', rare: '◐', absent: '○' };
   const seasons = [
-    { key: 'spring', emoji: '🌸' },
-    { key: 'summer', emoji: '☀️' },
-    { key: 'fall',   emoji: '🍁' },
-    { key: 'winter', emoji: '❄️' },
+    { key:'spring', emoji:'🌸' },
+    { key:'summer', emoji:'☀️' },
+    { key:'fall',   emoji:'🍁' },
+    { key:'winter', emoji:'❄️' },
   ];
   return `
-    <div class="seasonal-row">
-      <div class="seasonal-label">Seasonal Presence</div>
-      <div class="seasonal-dots">
-        ${seasons.map(s => `
-          <div class="seasonal-item ${presence[s.key] || 'absent'}">
-            <span class="seasonal-emoji">${s.emoji}</span>
-            <span class="seasonal-dot">${dot[presence[s.key]] || '○'}</span>
-          </div>
-        `).join('')}
-      </div>
+    <div class="seasonal-label">Seasonal Presence</div>
+    <div class="seasonal-dots">
+      ${seasons.map(s => `
+        <div class="seasonal-item ${presence[s.key]||'absent'}">
+          <span class="seasonal-emoji">${s.emoji}</span>
+          <span class="seasonal-dot">${dot[presence[s.key]]||'○'}</span>
+        </div>`).join('')}
     </div>`;
 }
 const descCache = {};
@@ -1475,15 +1469,12 @@ function openModal(index, sciName, commonName) {
     }
   });
 
-  // Fetch seasonal presence for the sighting region
-  const regionCode = getRegionCode(bird) || bird.country;
-  if (bird.speciesCode && regionCode) {
-    fetchSeasonalPresence(bird.speciesCode, regionCode).then(presence => {
-      const el = document.getElementById('modal-seasonal');
-      if (el && presence) el.innerHTML = seasonalPresenceHTML(presence);
-    });
+  // Get seasonal presence synchronously from lookup table
+  const presence = getSeasonalPresence(bird.speciesCode, bird.country);
+  const modalSeasonal = document.getElementById('modal-seasonal');
+  if (modalSeasonal && presence) {
+    modalSeasonal.innerHTML = seasonalPresenceHTML(presence);
   }
-}
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
