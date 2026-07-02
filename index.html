@@ -698,6 +698,49 @@
   .modal-card-wrap .back-footer span { font-size: 8px; }
   .modal-card-wrap .photo-credit  { font-size: 8px; }
 
+  /* ── SEASONAL ── */
+  .season-badge {
+    font-size: 13px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .seasonal-row {
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+
+  .seasonal-label {
+    font-size: 6px;
+    color: var(--green-soft);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .seasonal-dots {
+    display: flex;
+    gap: 10px;
+  }
+
+  .seasonal-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .seasonal-emoji { font-size: 13px; line-height: 1; }
+
+  .seasonal-dot {
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .seasonal-item.present .seasonal-dot { color: var(--green-text); }
+  .seasonal-item.rare    .seasonal-dot { color: #7a9a60; }
+  .seasonal-item.absent  .seasonal-dot { color: #2a4020; }
+
   /* ── GHOST CARDS ── */
   .ghost-scene { aspect-ratio: 5 / 7.5; cursor: default; }
 
@@ -1141,7 +1184,131 @@ function formatDate(d) {
   return `${m[parseInt(p[1])-1]} ${parseInt(p[2])}, ${p[0]}`;
 }
 
-// ── Description cache ──
+// ── Seasonal helpers ──
+const SEASONS = {
+  spring: { emoji: '🌸', label: 'Spring', months: [3,4,5] },
+  summer: { emoji: '☀️',  label: 'Summer', months: [6,7,8] },
+  fall:   { emoji: '🍁', label: 'Fall',   months: [9,10,11] },
+  winter: { emoji: '❄️', label: 'Winter', months: [12,1,2] },
+};
+
+function seasonFromDate(dateStr) {
+  if (!dateStr) return null;
+  const month = parseInt(dateStr.split('-')[1], 10);
+  for (const [key, s] of Object.entries(SEASONS)) {
+    if (s.months.includes(month)) return { key, ...s };
+  }
+  return null;
+}
+
+// eBird bar chart API — returns 52 weekly frequency values for a species in a region
+// We aggregate into 4 seasons and return presence level per season
+// Cache keyed by speciesCode + regionCode
+const barChartCache = {};
+
+async function fetchSeasonalPresence(speciesCode, regionCode) {
+  if (!speciesCode || !regionCode) return null;
+  const key = `${speciesCode}_${regionCode}`;
+  if (barChartCache[key] !== undefined) return barChartCache[key];
+
+  // Try localStorage cache first
+  const cached = cacheGet('barchart_' + key, 7 * 24 * 60 * 60 * 1000); // 7 days
+  if (cached) { barChartCache[key] = cached; return cached; }
+
+  try {
+    // eBird bar chart endpoint returns weekly frequencies for a species in a region
+    const res = await fetch(
+      `https://api.ebird.org/v2/product/lists/${regionCode}?speciesCode=${speciesCode}&maxResults=100`,
+      { headers: { 'X-eBirdApiToken': EBIRD_KEY } }
+    );
+
+    // Bar chart data endpoint
+    const bcRes = await fetch(
+      `https://api.ebird.org/v2/product/spplist/${regionCode}`,
+      { headers: { 'X-eBirdApiToken': EBIRD_KEY } }
+    );
+
+    // Use the frequency from bar chart — fetch via the stats endpoint
+    const statsRes = await fetch(
+      `https://api.ebird.org/v2/product/stats/${regionCode}/2024`,
+      { headers: { 'X-eBirdApiToken': EBIRD_KEY } }
+    );
+
+    // Best available: use the bar chart CSV endpoint
+    // https://ebird.org/barchartData?r={region}&bmo=1&emo=12&byr=2020&eyr=2024&fmt=csv
+    const csvRes = await fetch(
+      `https://ebird.org/barchartData?r=${regionCode}&bmo=1&emo=12&byr=2020&eyr=2024&fmt=csv`,
+      { headers: { 'X-eBirdApiToken': EBIRD_KEY } }
+    );
+
+    if (!csvRes.ok) {
+      barChartCache[key] = null;
+      return null;
+    }
+
+    const text = await csvRes.text();
+    const lines = text.split('\n');
+
+    // Find line for this species
+    const speciesLine = lines.find(l => l.includes(speciesCode));
+    if (!speciesLine) { barChartCache[key] = null; return null; }
+
+    // Parse 52 weekly frequency values
+    const parts = speciesLine.split(',');
+    const freqs = parts.slice(2, 54).map(v => parseFloat(v) || 0);
+
+    // Aggregate into seasons (weeks 0-12=winter, 13-25=spring, 26-38=summer, 39-51=fall)
+    // eBird weeks: week 1 = early Jan, week 26 = late June
+    const weekGroups = {
+      winter: [...freqs.slice(0,4),  ...freqs.slice(48,52)], // Jan + Dec
+      spring: freqs.slice(8, 21),   // Mar–May
+      summer: freqs.slice(21, 34),  // Jun–Aug
+      fall:   freqs.slice(34, 47),  // Sep–Nov
+    };
+
+    const presence = {};
+    for (const [season, weeks] of Object.entries(weekGroups)) {
+      const avg = weeks.reduce((a,b) => a+b, 0) / weeks.length;
+      presence[season] = avg > 0.05 ? (avg > 0.2 ? 'present' : 'rare') : 'absent';
+    }
+
+    cacheSet('barchart_' + key, presence, 7 * 24 * 60 * 60 * 1000);
+    barChartCache[key] = presence;
+    return presence;
+
+  } catch(e) {
+    barChartCache[key] = null;
+    return null;
+  }
+}
+
+// Render seasonal presence dots
+function seasonalPresenceHTML(presence) {
+  if (!presence) return '';
+  const dot = {
+    present: '●',
+    rare: '◐',
+    absent: '○'
+  };
+  const seasons = [
+    { key: 'spring', emoji: '🌸' },
+    { key: 'summer', emoji: '☀️' },
+    { key: 'fall',   emoji: '🍁' },
+    { key: 'winter', emoji: '❄️' },
+  ];
+  return `
+    <div class="seasonal-row">
+      <div class="seasonal-label">Seasonal Presence</div>
+      <div class="seasonal-dots">
+        ${seasons.map(s => `
+          <div class="seasonal-item ${presence[s.key] || 'absent'}">
+            <span class="seasonal-emoji">${s.emoji}</span>
+            <span class="seasonal-dot">${dot[presence[s.key]] || '○'}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
 const descCache = {};
 
 async function fetchDescription(sciName, commonName) {
@@ -1184,6 +1351,9 @@ function cardHTML(bird, index) {
   const safeScí = sciName.replace(/'/g,"\\'");
   const safeName = commonName.replace(/'/g,"\\'");
 
+  const season = seasonFromDate(date);
+  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
+
   return `
   <div class="scene" id="card-${index}" onclick="handleFlip(this,'${safeScí}','${safeName}',${index})">
     <div class="card-inner">
@@ -1204,6 +1374,7 @@ function cardHTML(bird, index) {
         <div class="card-sighting-label">First Sighting</div>
         <div class="card-bottom">
           <span class="card-loc">${[location, fullCountry].filter(Boolean).join(', ')}</span>
+          ${seasonBadge}
           <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
           <span class="card-date">${formatDate(date)}</span>
         </div>
@@ -1224,6 +1395,16 @@ function cardHTML(bird, index) {
           <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
           <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
           <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
+        </div>
+        <div class="back-rule"></div>
+        <div class="seasonal-row" id="seasonal-${index}">
+          <div class="seasonal-label">Seasonal Presence</div>
+          <div class="seasonal-dots">
+            <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+          </div>
         </div>
         <div class="back-rule"></div>
         <p class="back-desc loading" id="desc-${index}">Loading field notes…</p>
@@ -1293,6 +1474,15 @@ function openModal(index, sciName, commonName) {
       descEl.classList.remove('loading');
     }
   });
+
+  // Fetch seasonal presence for the sighting region
+  const regionCode = getRegionCode(bird) || bird.country;
+  if (bird.speciesCode && regionCode) {
+    fetchSeasonalPresence(bird.speciesCode, regionCode).then(presence => {
+      const el = document.getElementById('modal-seasonal');
+      if (el && presence) el.innerHTML = seasonalPresenceHTML(presence);
+    });
+  }
 }
 
 function closeModal() {
@@ -1333,6 +1523,8 @@ function buildModalCardHTML(bird, index) {
   const since = daysSince(date);
   const status = exoticLabel(exotic);
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
+  const season = seasonFromDate(date);
+  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
 
   const photoBlock = photoUrl
     ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
@@ -1358,6 +1550,7 @@ function buildModalCardHTML(bird, index) {
         <div class="card-sighting-label">First Sighting</div>
         <div class="card-bottom">
           <span class="card-loc">${[location, fullCountry].filter(Boolean).join(', ')}</span>
+          ${seasonBadge}
           <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
           <span class="card-date">${formatDate(date)}</span>
         </div>
@@ -1378,6 +1571,16 @@ function buildModalCardHTML(bird, index) {
           <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
           <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
           <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
+        </div>
+        <div class="back-rule"></div>
+        <div id="modal-seasonal">
+          <div class="seasonal-label">Seasonal Presence</div>
+          <div class="seasonal-dots">
+            <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+          </div>
         </div>
         <div class="back-rule"></div>
         <p class="back-desc loading" id="modal-desc">Loading field notes…</p>
