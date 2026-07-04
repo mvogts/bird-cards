@@ -1023,58 +1023,6 @@
     border-top: 1px solid var(--border);
   }
 
-  /* ── REFRESH BUTTON ── */
-  .refresh-btn {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--green);
-    border: 1px solid var(--green-mid);
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-    transition: all 0.2s;
-    z-index: 500;
-  }
-
-  .refresh-btn:hover { background: var(--green-mid); transform: scale(1.08); }
-  .refresh-btn.spinning { animation: spin 1s linear infinite; }
-  .refresh-btn.done { background: #2a5e2a; color: #90d060; }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-
-  .refresh-toast {
-    position: fixed;
-    bottom: 88px;
-    right: 28px;
-    background: var(--bg2);
-    border: 1px solid var(--green-mid);
-    color: var(--green-text);
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    padding: 8px 14px;
-    border-radius: 4px;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.3s;
-    pointer-events: none;
-    z-index: 500;
-    white-space: nowrap;
-  }
-
-  .refresh-toast.show { opacity: 1; transform: translateY(0); }
-
   /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
     .header { padding: 24px 16px 16px; }
@@ -1161,9 +1109,6 @@
     <div class="loading-sub">Fetching from the field journal</div>
   </div>
 </div>
-
-<button class="refresh-btn" id="refresh-btn" onclick="handleRefresh()" title="Sync & refresh">↻</button>
-<div class="refresh-toast" id="refresh-toast"></div>
 
 <footer>tap any card to flip &nbsp;·&nbsp; descriptions via Wikipedia &nbsp;·&nbsp; photos via iNaturalist &amp; Wikimedia Commons &nbsp;·&nbsp; data via eBird · Merlin &nbsp;·&nbsp; mvogts</footer>
 
@@ -2356,48 +2301,6 @@ async function loadData() {
         <p>Make sure the Google Sheet is published to the web as CSV.<br><br>Error: ${e.message}</p>
       </div>`;
   }
-}
-
-// ── Refresh handler ──
-// Replace APPS_SCRIPT_URL with your deployed web app URL after deploying
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwKHoODM2YqDzGqpTS544sNK4GsdftKevR5fW9hkw1VQTTM0lAM1J3UEbDv1WcGQWe/exec';
-
-function showToast(msg, duration = 3000) {
-  const toast = document.getElementById('refresh-toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), duration);
-}
-
-async function handleRefresh() {
-  const btn = document.getElementById('refresh-btn');
-  if (btn.classList.contains('spinning')) return;
-
-  try { localStorage.removeItem(SHEET_CACHE_KEY); } catch(e) {}
-  btn.classList.add('spinning');
-  showToast('Fetching latest data…', 60000);
-
-  await loadData();
-  showToast('Cards updated!');
-
-  if (APPS_SCRIPT_URL) {
-    showToast('Syncing with eBird…', 60000);
-    try {
-      const res = await fetch(APPS_SCRIPT_URL);
-      const data = await res.json();
-      if (data.status === 'ok') {
-        try { localStorage.removeItem(SHEET_CACHE_KEY); } catch(e) {}
-        await loadData();
-        showToast('✓ eBird sync complete!');
-      }
-    } catch(e) {
-      showToast('Sheet updated (eBird sync unavailable)');
-    }
-  }
-
-  btn.classList.remove('spinning');
-  btn.classList.add('done');
-  setTimeout(() => btn.classList.remove('done'), 2000);
 }
 
 // ── Physical card tilt on mouse move ──
