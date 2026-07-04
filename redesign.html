@@ -2370,111 +2370,23 @@ function showToast(msg, duration = 3000) {
 
 async function handleRefresh() {
   const btn = document.getElementById('refresh-btn');
-  if (btn.classList.contains('spinning')) return; // already running
+  if (btn.classList.contains('spinning')) return;
 
-  // Step 1: immediately clear cache and reload sheet data
   try { localStorage.removeItem(SHEET_CACHE_KEY); } catch(e) {}
   btn.classList.add('spinning');
   showToast('Fetching latest data…', 60000);
 
-  // Step 2: reload sheet data immediately (shows current sheet state)
-  await // ── Physical card tilt on mouse move ──
-function addTiltEffect(el) {
-  el.addEventListener('mousemove', function(e) {
-    const rect = el.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = (e.clientX - cx) / (rect.width / 2);
-    const dy = (e.clientY - cy) / (rect.height / 2);
-    const tiltX = dy * -8;   // max 8deg vertical tilt
-    const tiltY = dx * 8;    // max 8deg horizontal tilt
-    const lift = 'translateY(-6px) scale(1.02)';
-    el.style.transform = `${lift} rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-  });
-
-  el.addEventListener('mouseleave', function() {
-    el.style.transform = '';
-    el.style.transition = 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), filter 0.4s ease';
-    setTimeout(() => { el.style.transition = ''; }, 400);
-  });
-
-  el.addEventListener('mouseenter', function() {
-    el.style.transition = 'transform 0.1s ease, filter 0.15s ease';
-  });
-}
-
-// Apply tilt to all cards whenever gallery re-renders
-const _origRenderGallery = renderGallery;
-function renderGallery(birds) {
-  _origRenderGallery(birds);
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.scene, .stack-scene').forEach(addTiltEffect);
-  });
-}
-
-const _origRenderPackGallery = renderPackGallery;
-function renderPackGallery(myBirds, unseenSpecies, showAll) {
-  _origRenderPackGallery(myBirds, unseenSpecies, showAll);
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.scene, .stack-scene').forEach(addTiltEffect);
-  });
-}
-
-loadData();
+  await loadData();
   showToast('Cards updated!');
 
-  // Step 3: if web app URL is set, trigger background eBird sync
   if (APPS_SCRIPT_URL) {
     showToast('Syncing with eBird…', 60000);
     try {
       const res = await fetch(APPS_SCRIPT_URL);
       const data = await res.json();
       if (data.status === 'ok') {
-        // Sync done — clear cache again and reload to show new birds
         try { localStorage.removeItem(SHEET_CACHE_KEY); } catch(e) {}
-        await // ── Physical card tilt on mouse move ──
-function addTiltEffect(el) {
-  el.addEventListener('mousemove', function(e) {
-    const rect = el.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = (e.clientX - cx) / (rect.width / 2);
-    const dy = (e.clientY - cy) / (rect.height / 2);
-    const tiltX = dy * -8;   // max 8deg vertical tilt
-    const tiltY = dx * 8;    // max 8deg horizontal tilt
-    const lift = 'translateY(-6px) scale(1.02)';
-    el.style.transform = `${lift} rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-  });
-
-  el.addEventListener('mouseleave', function() {
-    el.style.transform = '';
-    el.style.transition = 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), filter 0.4s ease';
-    setTimeout(() => { el.style.transition = ''; }, 400);
-  });
-
-  el.addEventListener('mouseenter', function() {
-    el.style.transition = 'transform 0.1s ease, filter 0.15s ease';
-  });
-}
-
-// Apply tilt to all cards whenever gallery re-renders
-const _origRenderGallery = renderGallery;
-function renderGallery(birds) {
-  _origRenderGallery(birds);
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.scene, .stack-scene').forEach(addTiltEffect);
-  });
-}
-
-const _origRenderPackGallery = renderPackGallery;
-function renderPackGallery(myBirds, unseenSpecies, showAll) {
-  _origRenderPackGallery(myBirds, unseenSpecies, showAll);
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.scene, .stack-scene').forEach(addTiltEffect);
-  });
-}
-
-loadData();
+        await loadData();
         showToast('✓ eBird sync complete!');
       }
     } catch(e) {
@@ -2495,10 +2407,9 @@ function addTiltEffect(el) {
     const cy = rect.top + rect.height / 2;
     const dx = (e.clientX - cx) / (rect.width / 2);
     const dy = (e.clientY - cy) / (rect.height / 2);
-    const tiltX = dy * -8;   // max 8deg vertical tilt
-    const tiltY = dx * 8;    // max 8deg horizontal tilt
-    const lift = 'translateY(-6px) scale(1.02)';
-    el.style.transform = `${lift} rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+    const tiltX = dy * -8;
+    const tiltY = dx * 8;
+    el.style.transform = `translateY(-6px) scale(1.02) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
   });
 
   el.addEventListener('mouseleave', function() {
@@ -2512,24 +2423,20 @@ function addTiltEffect(el) {
   });
 }
 
-// Apply tilt to all cards whenever gallery re-renders
-const _origRenderGallery = renderGallery;
-function renderGallery(birds) {
-  _origRenderGallery(birds);
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.scene, .stack-scene').forEach(addTiltEffect);
+// Apply tilt to cards whenever the gallery DOM changes (avoids recursion)
+const _galleryEl = document.getElementById('gallery');
+if (_galleryEl) {
+  const _tiltObserver = new MutationObserver(() => {
+    document.querySelectorAll('.scene:not([data-tilt]), .stack-scene:not([data-tilt])').forEach(el => {
+      el.setAttribute('data-tilt', '1');
+      addTiltEffect(el);
+    });
   });
-}
-
-const _origRenderPackGallery = renderPackGallery;
-function renderPackGallery(myBirds, unseenSpecies, showAll) {
-  _origRenderPackGallery(myBirds, unseenSpecies, showAll);
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.scene, .stack-scene').forEach(addTiltEffect);
-  });
+  _tiltObserver.observe(_galleryEl, { childList: true, subtree: true });
 }
 
 loadData();
+
 </script>
 </body>
 </html>
