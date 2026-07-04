@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life List — mvogts | v4</title>
+<!-- Preconnect to all external domains so DNS + TLS handshakes happen immediately -->
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Life List">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://docs.google.com">
+<link rel="preconnect" href="https://api.ebird.org">
+<link rel="preconnect" href="https://en.wikipedia.org">
+<link rel="preconnect" href="https://api.inaturalist.org">
+<link rel="preconnect" href="https://inaturalist-open-data.s3.amazonaws.com">
+<link rel="preconnect" href="https://cdn.download.ams.birds.cornell.edu">
+<link rel="dns-prefetch" href="https://upload.wikimedia.org">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #f5f0e8;
+    --bg2:        #ede8dc;
+    --cream:      #f4edd8;
+    --cream-dark: #e8dfc4;
+    --gold:       #8a6a20;
+    --gold-soft:  #a08040;
+    --ink:        #1e160a;
+    --ink-soft:   #6a5830;
+    --green:      #2a5a1a;
+    --green-mid:  #3a7228;
+    --green-text: #1a3a0a;
+    --green-soft: #4a7a30;
+    --border:     #d8ceb8;
+    --text:       #1a1208;
+    --text-soft:  #6a5a38;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    padding: 48px 32px 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    margin-bottom: 8px;
+  }
+
+  .title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .stats {
+    display: flex;
+    gap: 32px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .stat-block { text-align: right; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    margin-top: 3px;
+  }
+
+  .header-rule {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CONTROLS BAR ── */
+  .controls-bar {
+    max-width: 1200px;
+    margin: 0 auto 8px;
+    padding: 0 32px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* Search */
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 160px;
+    max-width: 280px;
+  }
+
+  .search-input {
+    width: 100%;
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 7px 10px 7px 28px;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input:focus { border-color: var(--green); }
+  .search-input::placeholder { color: #b0a080; }
+
+  .search-icon {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4a4030;
+    font-size: 10px;
+    pointer-events: none;
+  }
+
+  /* Sort */
+  .sort-select {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-soft);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    padding: 4px 20px 4px 0;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .sort-select:focus { border-bottom-color: var(--green); }
+
+  /* Filter buttons */
+  .filter-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+  }
+
+  .filter-btn {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { border-color: var(--green); color: var(--green); }
+  .filter-btn.active { background: var(--green); border-color: var(--green); color: white; }
+
+  /* Rarity-specific active tints */
+  .filter-btn[data-filter="Common"].active     { background: #daf0c8; border-color: #90c860; color: #1a4a08; }
+  .filter-btn[data-filter="Uncommon"].active   { background: #d0e8f8; border-color: #70aad8; color: #0a3068; }
+  .filter-btn[data-filter="Rare"].active       { background: #fae8c8; border-color: #d8a050; color: #6a3808; }
+  .filter-btn[data-filter="Very Rare"].active  { background: #f8dce8; border-color: #d080a8; color: #681838; }
+
+  /* ── PACKS ── */
+  .packs-section {
+    max-width: 1200px;
+    margin: 0 auto 8px;
+    padding: 0 32px;
+  }
+
+  .packs-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0 0 12px;
+  }
+
+  .packs-toggle-label {
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+  }
+
+  .packs-toggle-arrow {
+    font-size: 8px;
+    color: var(--gold-soft);
+    transition: transform 0.2s;
+  }
+
+  .packs-toggle.open .packs-toggle-arrow { transform: rotate(180deg); }
+
+  .packs-grid {
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .packs-grid.open { display: grid; }
+
+  .pack-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .pack-card:hover { border-color: var(--green); }
+  .pack-card.active { border-color: var(--green); background: #eaf5e0; }
+
+  .pack-type {
+    font-size: 6px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    margin-bottom: 4px;
+  }
+
+  .pack-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .pack-progress-bar {
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    margin-bottom: 5px;
+    overflow: hidden;
+  }
+
+  .pack-progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 1px;
+    transition: width 0.6s ease;
+  }
+
+  .pack-count { font-size: 8px; color: var(--text-soft); letter-spacing: 0.06em; }
+  .pack-count strong { color: var(--green); }
+  .pack-loading { font-size: 8px; color: #b0a080; font-style: italic; }
+
+  .packs-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+    margin-bottom: 16px;
+  }
+
+  /* ── GALLERY ── */
+  .gallery {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+  }
+
+  /* ── CARD ── */
+  .scene {
+    aspect-ratio: 5 / 7.5;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+  }
+
+  .scene.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* FRONT */
+  .card-front {
+    background: var(--cream);
+    border: 1px solid #c4a86a;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .card-eyebrow {
+    font-size: 7.5px;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-weight: 700;
+    opacity: 0.7;
+  }
+
+  .card-num {
+    font-size: 6px;
+    color: var(--gold-soft);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .card-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c4a86a, transparent);
+    margin-bottom: 10px;
+  }
+
+  .photo-frame {
+    flex: 1;
+    position: relative;
+    border-radius: 3px;
+    overflow: hidden;
+    background: var(--cream-dark);
+    margin-bottom: 10px;
+  }
+
+  .photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .photo-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(120,100,50,0.2) 100%);
+    pointer-events: none;
+  }
+
+  .photo-credit {
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    font-size: 6px;
+    color: rgba(255,255,255,0.55);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+    z-index: 2;
+  }
+
+  .no-photo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-soft);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .card-sci {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 9px;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .card-sighting-label {
+    font-size: 6px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-top: 6px;
+    margin-bottom: 3px;
+  }
+
+  .card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-loc {
+    font-size: 6px;
+    color: var(--gold-soft);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-date {
+    font-size: 6px;
+    color: var(--gold-soft);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .rarity-badge {
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .rarity-Common    { background: var(--green); color: var(--green-text); }
+  .rarity-Uncommon  { background: #3a5020; color: #a8d080; }
+  .rarity-Rare      { background: #5a2a10; color: #e09060; }
+  .rarity-Very-Rare { background: #4a1030; color: #e080c0; }
+
+  .corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .corner svg { width: 100%; height: 100%; }
+  .c-tl { top: 8px; left: 8px; }
+  .c-tr { top: 8px; right: 8px; transform: scaleX(-1); }
+  .c-bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+  .c-br { bottom: 8px; right: 8px; transform: scale(-1); }
+
+  /* BACK */
+  .card-back {
+    background: var(--green);
+    border: 1px solid var(--green-mid);
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    padding: 14px 12px;
+  }
+
+  .back-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 9px;
+  }
+
+  .back-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #e8dcc0;
+    line-height: 1.1;
+  }
+
+  .back-sci {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 8px;
+    color: var(--green-soft);
+    margin-top: 2px;
+  }
+
+  .back-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--green-mid), transparent);
+    margin-bottom: 9px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+    margin-bottom: 2px;
+  }
+
+  .stat-item-label {
+    font-size: 6px;
+    color: var(--green-soft);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .stat-item-value {
+    font-size: 9px;
+    color: var(--green-text);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .back-desc {
+    font-family: 'IM Fell English', serif;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #b8d098;
+    flex: 1;
+    margin-top: 4px;
+  }
+
+  .back-desc.loading { color: var(--green-soft); font-style: italic; font-size: 10px; }
+
+  .sighting-footer {
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px solid #2a4020;
+  }
+
+  .sighting-label {
+    font-size: 6px;
+    color: var(--green-soft);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .sighting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .sighting-loc  { font-size: 8px; color: var(--green-text); }
+  .sighting-date { font-size: 8px; color: var(--green-soft); }
+
+  .back-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+
+  .back-footer span {
+    font-size: 6px;
+    color: #3a5030;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── LIGHTBOX MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 8, 6, 0.88);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .modal-card-wrap {
+    position: relative;
+    width: min(380px, 88vw);
+    height: min(570px, 88vh);
+    animation: zoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes zoomIn {
+    from { transform: scale(0.75); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+
+  .modal-card-wrap #modal-card-content {
+    width: 100%;
+    height: 100%;
+  }
+
+  .modal-card-wrap .scene {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: unset !important;
+    perspective: 1000px;
+  }
+
+  .modal-card-wrap .card-inner {
+    width: 100%;
+    height: 100%;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: #6a5830;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    transition: color 0.15s;
+  }
+
+  .modal-close:hover { color: var(--cream); }
+
+  .modal-hint {
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: #4a4030;
+    white-space: nowrap;
+  }
+
+  #modal-card-inner.flipped { transform: rotateY(180deg); }
+
+  /* Larger text inside modal for readability */
+  .modal-card-wrap .card-name     { font-size: 22px; }
+  .modal-card-wrap .card-sci      { font-size: 12px; }
+  .modal-card-wrap .card-eyebrow  { font-size: 9px; }
+  .modal-card-wrap .card-loc,
+  .modal-card-wrap .card-date     { font-size: 8px; }
+  .modal-card-wrap .rarity-badge  { font-size: 8px; padding: 3px 8px; }
+  .modal-card-wrap .card-sighting-label { font-size: 8px; }
+  .modal-card-wrap .back-name     { font-size: 20px; }
+  .modal-card-wrap .back-sci      { font-size: 11px; }
+  .modal-card-wrap .stat-item-label { font-size: 8px; }
+  .modal-card-wrap .stat-item-value { font-size: 13px; }
+  .modal-card-wrap .back-desc     { font-size: 13px; line-height: 1.65; }
+  .modal-card-wrap .sighting-loc,
+  .modal-card-wrap .sighting-date { font-size: 10px; }
+  .modal-card-wrap .sighting-label { font-size: 8px; }
+  .modal-card-wrap .back-footer span { font-size: 8px; }
+  .modal-card-wrap .photo-credit  { font-size: 8px; }
+
+  /* ── SEASONAL ── */
+  .season-badge {
+    font-size: 13px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .seasonal-row {
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+
+  .seasonal-label {
+    font-size: 6px;
+    color: var(--green-soft);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .seasonal-dots {
+    display: flex;
+    gap: 10px;
+  }
+
+  .seasonal-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .seasonal-emoji { font-size: 13px; line-height: 1; }
+
+  .seasonal-dot {
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .seasonal-item.present .seasonal-dot { color: var(--green-text); }
+  .seasonal-item.rare    .seasonal-dot { color: #7a9a60; }
+  .seasonal-item.absent  .seasonal-dot { color: #2a4020; }
+
+  /* ── STACKED CARDS ── */
+  .stack-scene {
+    aspect-ratio: 5 / 7.5;
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* Ghost cards peeking behind */
+  .stack-scene .stack-ghost {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: var(--cream-dark);
+    border: 1px solid #c4a86a;
+    transform-origin: bottom center;
+  }
+
+  .stack-scene .stack-ghost:nth-child(1) {
+    transform: rotate(2.5deg) translateY(-4px) translateX(4px);
+    opacity: 0.7;
+    z-index: 1;
+  }
+
+  .stack-scene .stack-ghost:nth-child(2) {
+    transform: rotate(-1.5deg) translateY(-2px) translateX(-3px);
+    opacity: 0.5;
+    z-index: 0;
+  }
+
+  /* Count badge on stacked cards */
+  .stack-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: var(--gold);
+    color: var(--ink);
+    border-radius: 50%;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+
+  /* Top card in stack sits above ghosts */
+  .stack-scene > .scene {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    aspect-ratio: unset;
+  }
+
+  /* ── MULTI-CARD MODAL NAVIGATOR ── */
+  .modal-nav {
+    position: absolute;
+    bottom: -52px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+  }
+
+  .modal-nav-btn {
+    background: transparent;
+    border: 1px solid #3a3020;
+    color: #6a5830;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 6px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+
+  .modal-nav-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
+  .modal-nav-btn:disabled { opacity: 0.25; cursor: default; }
+
+  .modal-nav-indicator {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: #6a5830;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── GHOST CARDS ── */
+  .ghost-scene { aspect-ratio: 5 / 7.5; cursor: default; }
+
+  .ghost-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    border: 1px dashed #d8ceb8;
+    background: #ece8de;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
+  }
+
+  .ghost-silhouette {
+    width: 56px;
+    height: 56px;
+    opacity: 0.07;
+    margin-bottom: 14px;
+  }
+
+  .ghost-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #b0a080;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .ghost-family {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 8px;
+    color: #c0b898;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .ghost-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c0b898;
+    border: 1px solid #d0c8b0;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  .ghost-unseen {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 6px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c0b898;
+  }
+
+  /* Show more */
+  .show-more-wrap {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    padding: 16px 0 8px;
+  }
+
+  .show-more-btn {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 24px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .show-more-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* ── LOADING / ERROR ── */
+  .loading-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-soft);
+    grid-column: 1 / -1;
+  }
+
+  .loading-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .loading-sub { font-size: 10px; letter-spacing: 0.1em; line-height: 1.8; }
+
+  .error-msg {
+    max-width: 480px;
+    margin: 60px auto;
+    text-align: center;
+    padding: 32px;
+    border: 1px solid #3a2010;
+    border-radius: 4px;
+    color: var(--gold-soft);
+    grid-column: 1 / -1;
+  }
+
+  .error-msg strong { display: block; color: var(--cream); font-size: 14px; margin-bottom: 8px; }
+  .error-msg p { font-size: 10px; line-height: 1.8; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 8px;
+    color: #b0a080;
+    letter-spacing: 0.08em;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── REFRESH BUTTON ── */
+  .refresh-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 1px solid var(--green-mid);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    transition: all 0.2s;
+    z-index: 500;
+  }
+
+  .refresh-btn:hover { background: var(--green-mid); transform: scale(1.08); }
+  .refresh-btn.spinning { animation: spin 1s linear infinite; }
+  .refresh-btn.done { background: #2a5e2a; color: #90d060; }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .refresh-toast {
+    position: fixed;
+    bottom: 88px;
+    right: 28px;
+    background: var(--bg2);
+    border: 1px solid var(--green-mid);
+    color: var(--green-text);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 8px 14px;
+    border-radius: 4px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 500;
+    white-space: nowrap;
+  }
+
+  .refresh-toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .header { padding: 24px 16px 16px; }
+    .gallery { padding: 0 12px 60px; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .controls-bar { padding: 0 16px; }
+    .packs-section { padding: 0 16px; }
+    .stats { gap: 16px; }
+    .stat-num { font-size: 22px; }
+    .search-wrap { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="eyebrow">Field Guide Collection</div>
+      <div class="title">Life List</div>
+    </div>
+    <div class="stats" id="stats" style="display:none">
+      <div class="stat-block">
+        <div class="stat-num" id="stat-species">—</div>
+        <div class="stat-label">Species / World</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" id="stat-countries">—</div>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" id="stat-rare">—</div>
+        <div class="stat-label">Rare or better</div>
+      </div>
+    </div>
+  </div>
+  <div class="header-rule"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="handleModalOverlayClick(event)">
+  <div class="modal-card-wrap" id="modal-card-wrap">
+    <button class="modal-close" onclick="closeModal()" title="Close">✕</button>
+    <div id="modal-card-content"></div>
+    <span class="modal-hint">tap to flip · esc to close</span>
+  </div>
+</div>
+
+
+<div class="controls-bar" id="controls-bar" style="display:none">
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search-input" id="search-input" type="text" placeholder="Search birds…" oninput="handleSearch()">
+  </div>
+
+  <select class="sort-select" id="sort-select" onchange="handleSort()">
+    <option value="default">Sort: Date added</option>
+    <option value="name">Sort: A → Z</option>
+    <option value="date-asc">Sort: Oldest first</option>
+    <option value="date-desc">Sort: Newest first</option>
+    <option value="rarity">Sort: Rarity</option>
+    <option value="taxon">Sort: Taxonomic order</option>
+  </select>
+
+  <div class="filter-group">
+    <span class="filter-label">Rarity</span>
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="Common">Common</button>
+    <button class="filter-btn" data-filter="Uncommon">Uncommon</button>
+    <button class="filter-btn" data-filter="Rare">Rare</button>
+    <button class="filter-btn" data-filter="Very Rare">Very Rare</button>
+  </div>
+</div>
+
+<div class="packs-section" id="packs-section" style="display:none">
+  <button class="packs-toggle" id="packs-toggle" onclick="togglePacks()">
+    <span class="packs-toggle-label">Packs</span>
+    <span class="packs-toggle-arrow">▾</span>
+  </button>
+  <div class="packs-grid" id="packs-grid"></div>
+  <div class="packs-divider"></div>
+</div>
+
+<div id="gallery" class="gallery">
+  <div class="loading-state">
+    <div class="loading-title">Loading your life list…</div>
+    <div class="loading-sub">Fetching from the field journal</div>
+  </div>
+</div>
+
+<button class="refresh-btn" id="refresh-btn" onclick="handleRefresh()" title="Sync & refresh">↻</button>
+<div class="refresh-toast" id="refresh-toast"></div>
+
+<footer>tap any card to flip &nbsp;·&nbsp; descriptions via Wikipedia &nbsp;·&nbsp; photos via iNaturalist &amp; Wikimedia Commons &nbsp;·&nbsp; data via eBird · Merlin &nbsp;·&nbsp; mvogts</footer>
+
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT08K40NOkO2mHsil2ZaR_LKfRFvj_HUCT2D4KZ1NJdAC_BapkVa15lSTcgBeKKGXLn0giGTwP4fDX_/pub?gid=932256652&single=true&output=csv";
+const EBIRD_KEY = "vk0egudpdsm";
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in ms
+
+// ── LocalStorage cache helpers ──
+function cacheSet(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  } catch(e) {}
+}
+
+function cacheGet(key, ttl = CACHE_TTL) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > ttl) { localStorage.removeItem(key); return null; }
+    return data;
+  } catch(e) { return null; }
+}
+
+// ── Loc ID → Region lookup ──
+// Maps known loc IDs directly to their region codes.
+// This is more reliable than the eBird hotspot API since it uses
+// the actual loc IDs from your sighting data.
+// Auto-expands as new loc IDs are encountered (via eBird API fallback).
+const LOC_TO_REGION = {
+  // St. Barths
+  "L71693109": "BL",  "L71778790": "BL",  "L71880744": "BL",
+  "L71819252": "BL",  "L71886946": "BL",
+  // Brooklyn (US-NY-047)
+  "L51659146": "US-NY-047",  "L51657930": "US-NY-047",
+  "L51614987": "US-NY-047",  "L62700968": "US-NY-047",
+  "L66121421": "US-NY-047",  "L66563730": "US-NY-047",
+  "L66572290": "US-NY-047",  "L66578148": "US-NY-047",
+  "L66584382": "US-NY-047",
+  // Manhattan (US-NY-061)
+  "L52785029": "US-NY-061",  "L53053791": "US-NY-061",
+  // Queens (US-NY-081)
+  "L70660746": "US-NY-081",
+  // Illinois — DuPage County (US-IL-043) for Hinsdale, Cook County (US-IL-031) for Shedd
+  "L50893216": "US-IL-043",  "L51346711": "US-IL-043",  "L50951781": "US-IL-031",
+  // Texas
+  "L56328641": "US-TX",  "L56404253": "US-TX",
+  // Mexico
+  "L58723651": "MX-ROO",
+  // Chile
+  "L52174836": "CL-RM",  "L52280736": "CL-RM",  "L52321398": "CL-RM",
+  "L52323079": "CL-RM",  "L52330270": "CL-RM",
+  // Brazil
+  "L55346290": "BR-RJ",  "L55451607": "BR-RJ",  "L55455434": "BR-RJ",
+  "L55534009": "BR-RJ",  "L55618723": "BR-RJ",
+  // California
+  "L52916457": "US-CA",
+};
+
+// Get region code for a bird — use loc ID map first, fall back to country field
+// Maps region codes to human-readable city names for card eyebrow
+const REGION_TO_CITY = {
+  "US-NY-047": "Brooklyn",
+  "US-NY-061": "Manhattan",
+  "US-NY-081": "Queens",
+  "US-NY-005": "The Bronx",
+  "US-NY-085": "Staten Island",
+  "US-NY":     "New York",
+  "US-IL-043": "Hinsdale",
+  "US-IL-031": "Chicago",
+  "US-IL":     "Illinois",
+  "US-TX":     "Texas",
+  "US-CA":     "California",
+  "MX-ROO":    "Tulum",
+  "CL-RM":     "Santiago",
+  "BR-RJ":     "Rio de Janeiro",
+  "BL":        "St. Barths",
+  "US":        "United States",
+  "BR":        "Brazil",
+  "MX":        "Mexico",
+  "CL":        "Chile",
+};
+
+function cityFromBird(bird) {
+  // Get most specific region from loc ID first
+  const region = LOC_TO_REGION[bird.locId] || bird.country || '';
+  return REGION_TO_CITY[region] || REGION_TO_CITY[region.split('-').slice(0,2).join('-')] || REGION_TO_CITY[region.split('-')[0]] || bird.location || '';
+}
+
+function getRegionCode(bird) {
+  // LOC_TO_REGION gives most specific region; fall back to full state code stored in country field
+  return LOC_TO_REGION[bird.locId] || bird.country || '';
+}
+
+// Helper: does a region code belong to a parent region?
+function regionMatches(code, packId) {
+  if (!code) return false;
+  // Exact match
+  if (code === packId) return true;
+  // Country match: code starts with packId (e.g. "US-NY-047" starts with "US")
+  if (packId.length === 2 && code.startsWith(packId)) return true;
+  // State match: code starts with packId (e.g. "US-NY-047" starts with "US-NY")
+  if (packId.length === 5 && code.startsWith(packId)) return true;
+  // County match: code starts with packId (e.g. "US-IL-031")
+  if (packId.length === 9 && code.startsWith(packId)) return true;
+  return false;
+}
+
+// ── Pack definitions ──
+const PACKS = [
+  // Countries
+  { id: "US",        name: "United States",       type: "Country", emoji: "🇺🇸" },
+  { id: "BR",        name: "Brazil",              type: "Country", emoji: "🇧🇷" },
+  { id: "MX",        name: "Mexico",              type: "Country", emoji: "🇲🇽" },
+  { id: "CL",        name: "Chile",               type: "Country", emoji: "🇨🇱" },
+  { id: "BL",        name: "St. Barths",          type: "Country", emoji: "🇧🇱" },
+  // States
+  { id: "US-NY",     name: "New York State",      type: "State",   emoji: "🗽" },
+  { id: "BR-RJ",     name: "Rio de Janeiro",      type: "State",   emoji: "🌴" },
+  // Boroughs
+  { id: "US-NY-047", name: "Brooklyn",            type: "Borough", emoji: "🌉" },
+  { id: "US-NY-061", name: "Manhattan",           type: "Borough", emoji: "🏙️" },
+  // Counties
+  { id: "US-IL-043", name: "Hinsdale",            type: "County",  emoji: "🏡" },
+];
+
+// ── eBird API with caching ──
+async function ebirdFetch(path) {
+  const cacheKey = 'ebird_' + path;
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached;
+
+  const res = await fetch(`https://api.ebird.org/v2${path}`, {
+    headers: { 'X-eBirdApiToken': EBIRD_KEY }
+  });
+  if (!res.ok) return null;
+
+  const isJson = res.headers.get('content-type')?.includes('json');
+  const data = isJson ? await res.json() : await res.text();
+  cacheSet(cacheKey, data);
+  return data;
+}
+
+// Get species codes for a region (returns ordered array)
+async function getRegionSpeciesCodes(regionCode) {
+  const data = await ebirdFetch(`/product/spplist/${regionCode}`);
+  return Array.isArray(data) ? data : [];
+}
+
+// Get full taxonomy (cached aggressively — changes rarely)
+async function getTaxonomy() {
+  const cacheKey = 'ebird_taxonomy';
+  const cached = cacheGet(cacheKey, 7 * 24 * 60 * 60 * 1000); // 7 days
+  if (cached) return cached;
+
+  const data = await ebirdFetch(`/ref/taxonomy/ebird?fmt=json&locale=en`);
+  if (!Array.isArray(data)) return [];
+  const map = {};
+  data.forEach(t => { map[t.speciesCode] = t; });
+  cacheSet(cacheKey, map);
+  return map;
+}
+
+// ── Determine which birds belong to a pack ──
+async function getBirdsForPack(packId) {
+  // Hotspot packs — exact locId match
+  if (packId.startsWith('L')) {
+    return allBirds.filter(b => b.locId === packId);
+  }
+
+  // All other packs — use loc ID region lookup with regionMatches helper
+  return allBirds.filter(b => regionMatches(getRegionCode(b), packId));
+}
+
+// ── Build ghost cards for unseen species ──
+async function getUnseenForPack(packId, myBirds) {
+  const [codes, taxMap] = await Promise.all([
+    getRegionSpeciesCodes(packId),
+    getTaxonomy()
+  ]);
+
+  const mySpeciesCodes = new Set(myBirds.map(b => b.speciesCode).filter(Boolean));
+  const myNames = new Set(myBirds.map(b => b.commonName.toLowerCase()));
+
+  return codes
+    .filter(code => {
+      const t = taxMap[code];
+      return t && t.category === 'species' &&
+        !mySpeciesCodes.has(code) &&
+        !myNames.has((t.comName || '').toLowerCase());
+    })
+    .map(code => taxMap[code]);
+}
+
+// ── SVG helpers ──
+const CORNER_SVG = `<svg viewBox="0 0 28 28" fill="none"><path d="M2 26 L2 2 L26 2" stroke="#8a7240" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#8a7240"/></svg>`;
+
+const BIRD_SVG = `<svg viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="55" cy="55" rx="22" ry="14"/>
+  <circle cx="76" cy="42" r="12"/>
+  <path d="M83 39 Q96 33 99 36 Q95 42 84 43Z"/>
+  <path d="M35 57 Q18 60 13 68 Q24 64 37 63Z"/>
+  <path d="M49 67 Q50 76 46 82 Q53 75 55 67Z"/>
+  <path d="M60 67 Q61 76 57 82 Q64 75 66 67Z"/>
+</svg>`;
+
+// ── Country names ──
+const COUNTRY_NAMES = {
+  US:"United States",BR:"Brazil",MX:"Mexico",CL:"Chile",BL:"St. Barths",
+  FR:"France",GB:"United Kingdom",AR:"Argentina",CO:"Colombia",PE:"Peru",
+  EC:"Ecuador",VE:"Venezuela",CR:"Costa Rica",PA:"Panama",CU:"Cuba",
+  JM:"Jamaica",HT:"Haiti",DO:"Dominican Republic",PR:"Puerto Rico",
+  TT:"Trinidad & Tobago",BB:"Barbados",LC:"St. Lucia",VC:"St. Vincent",
+  GD:"Grenada",AG:"Antigua",DM:"Dominica",KN:"St. Kitts",BS:"Bahamas",
+  TC:"Turks & Caicos",CA:"Canada",AU:"Australia",NZ:"New Zealand",
+  ZA:"South Africa",KE:"Kenya",TZ:"Tanzania",IN:"India",CN:"China",
+  JP:"Japan",DE:"Germany",ES:"Spain",IT:"Italy",PT:"Portugal",
+  NL:"Netherlands",SE:"Sweden",NO:"Norway",DK:"Denmark",
+};
+
+function countryName(code) {
+  if (!code) return '—';
+  // Handle full state codes like US-NY -> look up country prefix
+  var c2 = code.split('-')[0];
+  return COUNTRY_NAMES[c2] || COUNTRY_NAMES[code] || code;
+}
+
+function daysSince(dateStr) {
+  if (!dateStr) return null;
+  const diff = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return '1 day ago';
+  if (diff < 30) return `${diff} days ago`;
+  if (diff < 365) return `${Math.floor(diff/30)}mo ago`;
+  const y = Math.floor(diff/365);
+  return `${y}yr${y > 1 ? 's' : ''} ago`;
+}
+
+function exoticLabel(code) {
+  if (!code) return 'Native';
+  if (code === 'N') return 'Naturalized';
+  if (code === 'X') return 'Exotic';
+  return 'Native';
+}
+
+function rarityClass(tier) {
+  return 'rarity-' + (tier || 'Common').replace(/\s+/g, '-');
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const p = d.split('-');
+  if (p.length !== 3) return d;
+  const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${m[parseInt(p[1])-1]} ${parseInt(p[2])}, ${p[0]}`;
+}
+
+// ── Seasonal helpers ──
+const SEASONS = {
+  spring: { emoji: '🌸', label: 'Spring', months: [3,4,5] },
+  summer: { emoji: '☀️',  label: 'Summer', months: [6,7,8] },
+  fall:   { emoji: '🍁', label: 'Fall',   months: [9,10,11] },
+  winter: { emoji: '❄️', label: 'Winter', months: [12,1,2] },
+};
+
+function seasonFromDate(dateStr) {
+  if (!dateStr) return null;
+  const month = parseInt(dateStr.split('-')[1], 10);
+  for (const [key, s] of Object.entries(SEASONS)) {
+    if (s.months.includes(month)) return { key, ...s };
+  }
+  return null;
+}
+
+// ── Seasonal presence lookup ──
+// Hardcoded from eBird bar chart data per species per sighting region.
+// Key format: speciesCode_countryCode
+const SEASONAL_PRESENCE = {
+  // St. Barths — Caribbean residents are year-round present
+  "banana_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "zendov_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "scnpig_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "whcpig_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "antcre_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "peythr_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "laggul_BL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  // United States (NY region)
+  "amkest_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "piplo4_US": { spring:'present', summer:'absent',  fall:'present', winter:'absent'  },
+  "comswi_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "leater_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "grnher_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "sander_US": { spring:'present', summer:'rare',    fall:'present', winter:'present' },
+  "spotsa_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "rewbla_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "balori_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "orchor_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "sumtan_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "scartan_US":{ spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "wilwar_US": { spring:'present', summer:'absent',  fall:'present', winter:'absent'  },
+  "norwat_US": { spring:'present', summer:'absent',  fall:'present', winter:'absent'  },
+  "bkpwar_US": { spring:'present', summer:'absent',  fall:'present', winter:'absent'  },
+  "yrwar3_US": { spring:'present', summer:'absent',  fall:'present', winter:'present' },
+  "norwar_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "bawwar_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "swaspa_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "gracat_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "easkin_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "grccfl_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "nrwmoc_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "haiwo2_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "rthhum_US": { spring:'present', summer:'present', fall:'present', winter:'absent'  },
+  "moudov_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "cangoo_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "eursta_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "amerob_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "norcar_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "houspa_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "amegol_US": { spring:'present', summer:'present', fall:'present', winter:'rare'    },
+  "amecro_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "blujay_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "doccor_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "rocpig_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "mutswa_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "mallar_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "monpar_US": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  // Brazil
+  "plnpar_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "magfri_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "saffi2_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "chtou1_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "neocor_BR": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  // Mexico
+  "plncha_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "grekis_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "brnpel_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "royter_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "willet_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "grtgra_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "greegr_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "tromos_MX": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  // Chile
+  "earded_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "soulaw_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "shicow_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "austhr_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+  "calgul_CL": { spring:'present', summer:'rare',    fall:'present', winter:'present' },
+  "musdu2_CL": { spring:'present', summer:'present', fall:'present', winter:'present' },
+};
+
+function getSeasonalPresence(speciesCode, country, date) {
+  if (!speciesCode || !country) return null;
+  const c2 = country.split('-')[0];
+
+  // Try hardcoded lookup first
+  const hardcoded = SEASONAL_PRESENCE[`${speciesCode}_${c2}`] || null;
+  if (hardcoded) return hardcoded;
+
+  // Fallback for unknown species: derive from sighting date
+  // Mark the sighting season as present, others as unknown (◐)
+  if (!date) return null;
+  const month = parseInt(date.split('-')[1], 10);
+  const sightingSeason =
+    [3,4,5].includes(month) ? 'spring' :
+    [6,7,8].includes(month) ? 'summer' :
+    [9,10,11].includes(month) ? 'fall' : 'winter';
+
+  // For tropical/year-round regions, mark all as present
+  const yearRound = ['BL','BR','MX','CL'].includes(c2);
+  if (yearRound) {
+    return { spring:'present', summer:'present', fall:'present', winter:'present' };
+  }
+
+  // For temperate regions, mark sighting season as present, others unknown
+  return {
+    spring: sightingSeason === 'spring' ? 'present' : 'rare',
+    summer: sightingSeason === 'summer' ? 'present' : 'rare',
+    fall:   sightingSeason === 'fall'   ? 'present' : 'rare',
+    winter: sightingSeason === 'winter' ? 'present' : 'rare',
+  };
+}
+
+function seasonalPresenceHTML(presence) {
+  if (!presence) return '';
+  const dot = { present: '●', rare: '◐', absent: '○' };
+  const seasons = [
+    { key:'spring', emoji:'🌸' },
+    { key:'summer', emoji:'☀️' },
+    { key:'fall',   emoji:'🍁' },
+    { key:'winter', emoji:'❄️' },
+  ];
+  return `
+    <div class="seasonal-label">Seasonal Presence</div>
+    <div class="seasonal-dots">
+      ${seasons.map(s => `
+        <div class="seasonal-item ${presence[s.key]||'absent'}">
+          <span class="seasonal-emoji">${s.emoji}</span>
+          <span class="seasonal-dot">${dot[presence[s.key]]||'○'}</span>
+        </div>`).join('')}
+    </div>`;
+}
+const descCache = {};
+
+async function fetchDescription(sciName, commonName) {
+  const key = sciName || commonName;
+  if (descCache[key]) return descCache[key];
+
+  for (const term of [sciName.replace(/ /g,'_'), commonName.replace(/ /g,'_')]) {
+    try {
+      const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(term)}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.extract && data.type !== 'disambiguation') {
+        const sentences = data.extract.match(/[^.!?]+[.!?]+/g) || [];
+        const desc = sentences.slice(0, 2).join(' ').trim();
+        if (desc.length > 20) { descCache[key] = desc; return desc; }
+      }
+    } catch(e) {}
+  }
+
+  descCache[key] = 'A species recorded on your eBird life list.';
+  return descCache[key];
+}
+
+// ── Card front/back as separate functions for reuse in stacks ──
+function cardFrontHTML(bird, index) {
+  const { date, commonName, sciName, location, country,
+          rarity, photoUrl, photoLicense, exotic } = bird;
+  const badgeClass = rarityClass(rarity);
+  const badgeLabel = rarity || 'Common';
+  const fullCountry = countryName(country);
+  const season = seasonFromDate(date);
+  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
+  const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
+  const city = cityFromBird(bird);
+  const locationEyebrow = [city, fullCountry].filter(Boolean).join(', ').toUpperCase();
+  const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
+  const photoBlock = photoUrl
+    ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
+    : `<div class="no-photo">No photo</div>`;
+
+  return `
+  <div class="card-face card-front">
+    <div class="corner c-tl">${CORNER_SVG}</div>
+    <div class="corner c-tr">${CORNER_SVG}</div>
+    <div class="corner c-bl">${CORNER_SVG}</div>
+    <div class="corner c-br">${CORNER_SVG}</div>
+    <div class="card-eyebrow">${locationEyebrow}${dateEyebrow ? ' &nbsp;·&nbsp; ' + dateEyebrow : ''}</div>
+    <div class="card-rule"></div>
+    <div class="photo-frame">
+      ${photoBlock}
+      ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
+    </div>
+    <div class="card-rule"></div>
+    <div class="card-name">${commonName}</div>
+    <div class="card-sci">${sciName}</div>
+    <div class="card-bottom">
+      <span class="card-num">No. ${String(index+1).padStart(3,'0')}</span>
+      ${seasonBadge}
+      <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+    </div>
+  </div>`;
+}
+
+function cardBackHTML(bird, index) {
+  const { date, commonName, sciName, speciesCode, location, country,
+          family, order, rarity, exotic } = bird;
+  const badgeClass = rarityClass(rarity);
+  const badgeLabel = rarity || 'Common';
+  const fullCountry = countryName(country);
+  const since = daysSince(date);
+  const status = exoticLabel(exotic);
+
+  return `
+  <div class="card-face card-back">
+    <div class="back-header">
+      <div>
+        <div class="back-name">${commonName}</div>
+        <div class="back-sci">${sciName}</div>
+      </div>
+      <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+    </div>
+    <div class="back-rule"></div>
+    <div class="stat-grid">
+      <div><div class="stat-item-label">Order</div><div class="stat-item-value">${order||'—'}</div></div>
+      <div><div class="stat-item-label">Family</div><div class="stat-item-value">${family||'—'}</div></div>
+      <div><div class="stat-item-label">Country</div><div class="stat-item-value">${fullCountry}</div></div>
+      <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
+      <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
+      <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
+    </div>
+    <div class="back-rule"></div>
+    <div class="seasonal-row" id="seasonal-${index}">
+      <div class="seasonal-label">Seasonal Presence</div>
+      <div class="seasonal-dots">
+        <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+      </div>
+    </div>
+    <div class="back-rule"></div>
+    <p class="back-desc loading" id="desc-${index}">Loading field notes…</p>
+    <div class="sighting-footer">
+      <div class="sighting-label">First Sighting</div>
+      <div class="sighting-row">
+        <span class="sighting-loc">${location||'—'}</span>
+        <span class="sighting-date">${formatDate(date)}</span>
+      </div>
+      <div class="back-footer">
+        <span>#${String(index+1).padStart(3,'0')} · Life List</span>
+        <span>mvogts</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function cardHTML(bird, index) {
+  return `
+  <div class="scene" id="card-${index}" onclick="openModalGroup([${index}], 0)">
+    <div class="card-inner">
+      ${cardFrontHTML(bird, index)}
+      ${cardBackHTML(bird, index)}
+    </div>
+  </div>`;
+}
+
+function ghostCardHTML(species) {
+  return `
+  <div class="ghost-scene">
+    <div class="ghost-card">
+      <span class="ghost-unseen">Unseen</span>
+      <span class="ghost-badge">? Not Yet</span>
+      <div class="ghost-silhouette">${BIRD_SVG}</div>
+      <div class="ghost-name">${species.comName}</div>
+      <div class="ghost-family">${species.familyComName||''}</div>
+    </div>
+  </div>`;
+}
+
+// ── Group birds by species for stacking ──
+function groupBySpecies(birds) {
+  const groups = {};
+  const order = [];
+  birds.forEach(b => {
+    // Group by speciesCode + locId so same species at different locations stack
+    // but same species at SAME location on different dates don't stack
+    const specKey = b.speciesCode || b.commonName;
+    const locKey = b.locId || b.location;
+    const key = specKey + '_' + locKey;
+    if (!groups[key]) { groups[key] = []; }
+    // Track first occurrence for ordering
+    const speciesOrder = specKey;
+    if (!groups['__order__']) groups['__order__'] = [];
+    if (!groups['__seen__']) groups['__seen__'] = new Set();
+    if (!groups['__seen__'].has(specKey)) {
+      groups['__seen__'].add(specKey);
+      groups['__order__'].push(specKey);
+    }
+    groups[key].push(b);
+  });
+
+  // Now regroup by species only, collecting all location groups
+  const speciesGroups = {};
+  Object.keys(groups).forEach(k => {
+    if (k.startsWith('__')) return;
+    const specKey = k.split('_')[0];
+    if (!speciesGroups[specKey]) speciesGroups[specKey] = [];
+    // Add first bird from each location group as representative
+    speciesGroups[specKey].push(groups[k][0]);
+  });
+
+  return (groups['__order__'] || []).map(k => speciesGroups[k] || []).filter(g => g.length > 0);
+}
+
+// ── Stack card HTML (multiple sightings of same species) ──
+function stackHTML(group) {
+  const primary = group[0];
+  const primaryIndex = allBirds.indexOf(primary);
+  const count = group.length;
+
+  // Ghost layers (max 2 visible behind)
+  const ghosts = count > 1
+    ? Array(Math.min(count - 1, 2)).fill(0).map(() => `<div class="stack-ghost"></div>`).join('')
+    : '';
+
+  const safeScí = primary.sciName.replace(/'/g,"\\'");
+  const safeName = primary.commonName.replace(/'/g,"\\'");
+  const groupIndices = group.map(b => allBirds.indexOf(b));
+
+  return `
+  <div class="stack-scene" onclick="openModalGroup(${JSON.stringify(groupIndices)}, 0)">
+    ${ghosts}
+    ${count > 1 ? `<div class="stack-count">${count}</div>` : ''}
+    <div class="scene" style="position:absolute;inset:0;aspect-ratio:unset">
+      <div class="card-inner">
+        ${cardFrontHTML(primary, primaryIndex)}
+        ${cardBackHTML(primary, primaryIndex)}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Modal navigator state ──
+let modalGroupIndices = [];
+let modalGroupPos = 0;
+
+function openModalGroup(indices, pos) {
+  modalGroupIndices = indices;
+  modalGroupPos = pos;
+  const bird = allBirds[indices[pos]];
+  if (!bird) return;
+
+  modalFlipped = false;
+  const content = document.getElementById('modal-card-content');
+  content.innerHTML = buildModalCardHTML(bird, indices[pos]);
+
+  const inner = document.getElementById('modal-card-inner');
+  if (inner) inner.classList.remove('flipped');
+
+  const img = content.querySelector('img[data-src]');
+  if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+
+  // Update or create navigator
+  let nav = document.getElementById('modal-nav');
+  if (!nav) {
+    nav = document.createElement('div');
+    nav.id = 'modal-nav';
+    nav.className = 'modal-nav';
+    document.getElementById('modal-card-wrap').appendChild(nav);
+  }
+
+  if (indices.length > 1) {
+    nav.style.display = 'flex';
+    nav.innerHTML = `
+      <button class="modal-nav-btn" onclick="navigateModal(-1)" ${pos === 0 ? 'disabled' : ''}>←</button>
+      <span class="modal-nav-indicator">${pos + 1} / ${indices.length} sightings</span>
+      <button class="modal-nav-btn" onclick="navigateModal(1)" ${pos === indices.length - 1 ? 'disabled' : ''}>→</button>
+    `;
+  } else {
+    nav.style.display = 'none';
+  }
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  fetchDescription(bird.sciName, bird.commonName).then(desc => {
+    const descEl = document.getElementById('modal-desc');
+    if (descEl && descEl.classList.contains('loading')) {
+      descEl.textContent = desc;
+      descEl.classList.remove('loading');
+    }
+  });
+
+  const presence = getSeasonalPresence(bird.speciesCode, bird.country, bird.date);
+  const modalSeasonal = document.getElementById('modal-seasonal');
+  if (modalSeasonal && presence) modalSeasonal.innerHTML = seasonalPresenceHTML(presence);
+}
+
+function navigateModal(dir) {
+  const newPos = modalGroupPos + dir;
+  if (newPos < 0 || newPos >= modalGroupIndices.length) return;
+  openModalGroup(modalGroupIndices, newPos);
+}
+let modalFlipped = false;
+let modalIndex = null;
+let modalSciName = null;
+let modalCommonName = null;
+
+function openModal(index, sciName, commonName) {
+  modalFlipped = false;
+  modalIndex = index;
+  modalSciName = sciName;
+  modalCommonName = commonName;
+
+  const bird = allBirds[index];
+  if (!bird) return;
+
+  const content = document.getElementById('modal-card-content');
+  content.innerHTML = buildModalCardHTML(bird, index);
+
+  // Ensure card starts on front face
+  const inner = document.getElementById('modal-card-inner');
+  if (inner) inner.classList.remove('flipped');
+
+  // Load image immediately
+  const img = content.querySelector('img[data-src]');
+  if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Pre-fetch description so it's ready when flipped
+  fetchDescription(sciName, commonName).then(desc => {
+    const descEl = document.getElementById('modal-desc');
+    if (descEl && descEl.classList.contains('loading')) {
+      descEl.textContent = desc;
+      descEl.classList.remove('loading');
+    }
+  });
+
+  // Get seasonal presence synchronously from lookup table
+  const presence = getSeasonalPresence(bird.speciesCode, bird.country, bird.date);
+  const modalSeasonal = document.getElementById('modal-seasonal');
+  if (modalSeasonal && presence) {
+    modalSeasonal.innerHTML = seasonalPresenceHTML(presence);
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  modalIndex = null;
+  modalFlipped = false;
+}
+
+function flipModalCard() {
+  const inner = document.getElementById('modal-card-inner');
+  console.log('flipModalCard called, inner:', inner);
+  if (!inner) { console.error('modal-card-inner not found'); return; }
+  const isFlipped = inner.classList.contains('flipped');
+  inner.classList.toggle('flipped', !isFlipped);
+  console.log('now flipped:', !isFlipped);
+}
+
+function handleModalOverlayClick(e) {
+  // Close if clicking the dark overlay (not the card itself)
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// Keyboard support
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'f' || e.key === 'F') flipModalCard();
+});
+
+// Build card HTML for modal (same as cardHTML but with modal-specific desc id)
+function buildModalCardHTML(bird, index) {
+  const { date, commonName, sciName, speciesCode, location, country, subCode,
+          family, order, rarity, photoUrl, photoLicense, exotic } = bird;
+
+  const badgeClass = rarityClass(rarity);
+  const badgeLabel = rarity || 'Common';
+  const fullCountry = countryName(country || (subCode || '').split('-')[0]);
+  const since = daysSince(date);
+  const status = exoticLabel(exotic);
+  const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
+  const season = seasonFromDate(date);
+  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
+
+  const photoBlock = photoUrl
+    ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
+    : `<div class="no-photo">No photo</div>`;
+
+  const city = cityFromBird(bird);
+  const locationEyebrow = [city, fullCountry].filter(Boolean).join(', ').toUpperCase();
+  const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
+
+  return `
+  <div class="scene" style="width:100%;height:100%;aspect-ratio:unset;cursor:pointer;perspective:1000px" onclick="flipModalCard()">
+    <div class="card-inner" id="modal-card-inner" style="width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0.2,0.2,1)">
+      <div class="card-face card-front">
+        <div class="corner c-tl">${CORNER_SVG}</div>
+        <div class="corner c-tr">${CORNER_SVG}</div>
+        <div class="corner c-bl">${CORNER_SVG}</div>
+        <div class="corner c-br">${CORNER_SVG}</div>
+        <div class="card-eyebrow">${locationEyebrow}${dateEyebrow ? ' &nbsp;·&nbsp; ' + dateEyebrow : ''}</div>
+        <div class="card-rule"></div>
+        <div class="photo-frame">
+          ${photoBlock}
+          ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
+        </div>
+        <div class="card-rule"></div>
+        <div class="card-name">${commonName}</div>
+        <div class="card-sci">${sciName}</div>
+        <div class="card-bottom">
+          <span class="card-num">No. ${String(index+1).padStart(3,'0')}</span>
+          ${seasonBadge}
+          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+      </div>
+      <div class="card-face card-back">
+        <div class="back-header">
+          <div>
+            <div class="back-name">${commonName}</div>
+            <div class="back-sci">${sciName}</div>
+          </div>
+          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+        <div class="back-rule"></div>
+        <div class="stat-grid">
+          <div><div class="stat-item-label">Order</div><div class="stat-item-value">${order||'—'}</div></div>
+          <div><div class="stat-item-label">Family</div><div class="stat-item-value">${family||'—'}</div></div>
+          <div><div class="stat-item-label">Country</div><div class="stat-item-value">${fullCountry}</div></div>
+          <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
+          <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
+          <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
+        </div>
+        <div class="back-rule"></div>
+        <div id="modal-seasonal">
+          <div class="seasonal-label">Seasonal Presence</div>
+          <div class="seasonal-dots">
+            <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+          </div>
+        </div>
+        <div class="back-rule"></div>
+        <p class="back-desc loading" id="modal-desc">Loading field notes…</p>
+        <div class="sighting-footer">
+          <div class="sighting-label">First Sighting</div>
+          <div class="sighting-row">
+            <span class="sighting-loc">${location||'—'}</span>
+            <span class="sighting-date">${formatDate(date)}</span>
+          </div>
+          <div class="back-footer">
+            <span>#${String(index+1).padStart(3,'0')} · Life List</span>
+            <span>mvogts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function handleFlip(el, sciName, commonName, index) {
+  // Open modal instead of flipping in place
+  openModal(index, sciName, commonName);
+}
+
+// ── State ──
+let allBirds = [];
+let activeFilter = 'all';
+let activeSearch = '';
+let activeSort = 'default';
+let currentPackId = null;
+let packState = null;
+
+// ── Filtering + sorting ──
+const RARITY_ORDER = { 'Very Rare': 0, 'Rare': 1, 'Uncommon': 2, 'Common': 3, 'Unknown': 4 };
+
+function applyFiltersAndSort(birds) {
+  let result = [...birds];
+
+  // Search
+  if (activeSearch) {
+    const q = activeSearch.toLowerCase();
+    result = result.filter(b =>
+      b.commonName.toLowerCase().includes(q) ||
+      b.sciName.toLowerCase().includes(q) ||
+      (b.family || '').toLowerCase().includes(q) ||
+      (b.order || '').toLowerCase().includes(q)
+    );
+  }
+
+  // Rarity filter
+  if (activeFilter !== 'all') {
+    result = result.filter(b => b.rarity === activeFilter);
+  }
+
+  // Sort
+  switch(activeSort) {
+    case 'name':
+      result.sort((a,b) => a.commonName.localeCompare(b.commonName)); break;
+    case 'date-asc':
+      result.sort((a,b) => (a.date||'').localeCompare(b.date||'')); break;
+    case 'date-desc':
+      result.sort((a,b) => (b.date||'').localeCompare(a.date||'')); break;
+    case 'rarity':
+      result.sort((a,b) => (RARITY_ORDER[a.rarity]??3) - (RARITY_ORDER[b.rarity]??3)); break;
+    case 'taxon':
+      result.sort((a,b) => parseFloat(a.taxonOrder||9999) - parseFloat(b.taxonOrder||9999)); break;
+  }
+
+  return result;
+}
+
+function handleSearch() {
+  activeSearch = document.getElementById('search-input').value.trim();
+  currentPackId = null;
+  document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+  renderGallery(applyFiltersAndSort(allBirds));
+}
+
+function handleSort() {
+  activeSort = document.getElementById('sort-select').value;
+  if (currentPackId && packState) {
+    renderPackGallery(packState.myBirds, packState.unseenSpecies, false);
+  } else {
+    renderGallery(applyFiltersAndSort(allBirds));
+  }
+}
+
+// ── Intersection Observer for lazy card photo loading ──
+// Images only load when a card scrolls into the viewport
+let cardObserver = null;
+
+function setupCardObserver() {
+  if (cardObserver) cardObserver.disconnect();
+  cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const img = entry.target.querySelector('img[data-src]');
+      if (img) {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+      }
+      cardObserver.unobserve(entry.target);
+    });
+  }, { rootMargin: '200px' }); // start loading 200px before entering viewport
+
+  document.querySelectorAll('.scene').forEach(el => cardObserver.observe(el));
+}
+
+function renderGallery(birds) {
+  const gallery = document.getElementById('gallery');
+  if (!gallery) return;
+  if (!birds || !birds.length) {
+    gallery.innerHTML = `<div class="error-msg"><strong>No cards found</strong><p>Try a different search or filter.</p></div>`;
+    return;
+  }
+  // Group by species to show stacks for multi-location sightings
+  const groups = groupBySpecies(birds);
+  gallery.innerHTML = groups.map(group => {
+    if (group.length === 1) {
+      return cardHTML(group[0], allBirds.indexOf(group[0]));
+    } else {
+      return stackHTML(group);
+    }
+  }).join('');
+  setupCardObserver();
+}
+
+// ── Filters ──
+function setupFilters() {
+  const bar = document.getElementById('controls-bar');
+  if (bar) bar.style.display = 'flex';
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      currentPackId = null;
+      document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+      renderGallery(applyFiltersAndSort(allBirds));
+    });
+  });
+}
+
+// ── Packs ──
+let packsOpen = false;
+let packsLoaded = false;
+
+function togglePacks() {
+  packsOpen = !packsOpen;
+  document.getElementById('packs-toggle').classList.toggle('open', packsOpen);
+  document.getElementById('packs-grid').classList.toggle('open', packsOpen);
+
+  // Lazy-load pack counts only when packs panel is first opened
+  if (packsOpen && !packsLoaded) {
+    packsLoaded = true;
+    loadPackCounts();
+  }
+}
+
+// Render pack shells immediately (no API calls) so layout is instant
+function renderPackShells() {
+  const grid = document.getElementById('packs-grid');
+  grid.innerHTML = PACKS.map(pack => `
+    <div class="pack-card" id="pack-${pack.id}" onclick="filterByPack('${pack.id}')">
+      <div class="pack-type">${pack.emoji} ${pack.type}</div>
+      <div class="pack-name">${pack.name}</div>
+      <div class="pack-progress-bar"><div class="pack-progress-fill" id="fill-${pack.id}" style="width:0%"></div></div>
+      <div class="pack-count" id="count-${pack.id}"><span class="pack-loading">Open to load…</span></div>
+    </div>
+  `).join('');
+}
+
+// Load pack counts — only called when user opens the packs panel
+async function loadPackCounts() {
+  for (const pack of PACKS) {
+    (async () => {
+      const myBirds = await getBirdsForPack(pack.id);
+      const userCount = new Set(myBirds.map(b => b.speciesCode || b.commonName)).size;
+      const codes = await getRegionSpeciesCodes(pack.id);
+      const total = codes.length;
+      const pct = total ? Math.round((userCount / total) * 100) : 0;
+
+      const countEl = document.getElementById(`count-${pack.id}`);
+      const fillEl = document.getElementById(`fill-${pack.id}`);
+      if (countEl) countEl.innerHTML = total
+        ? `<strong>${userCount}</strong> / ${total.toLocaleString()} species &nbsp;·&nbsp; ${pct}%`
+        : `<strong>${userCount}</strong> species`;
+      if (fillEl) fillEl.style.width = `${pct}%`;
+    })();
+  }
+}
+
+async function renderPacks() {
+  // Legacy — now handled by renderPackShells + loadPackCounts
+  renderPackShells();
+}
+
+async function filterByPack(packId) {
+  const packEl = document.getElementById(`pack-${packId}`);
+
+  if (currentPackId === packId) {
+    currentPackId = null;
+    packState = null;
+    document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+    document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+    activeFilter = 'all';
+    renderGallery(applyFiltersAndSort(allBirds));
+    return;
+  }
+
+  currentPackId = packId;
+  document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+  packEl.classList.add('active');
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+
+  const pack = PACKS.find(p => p.id === packId);
+  if (!pack) return;
+
+  document.getElementById('gallery').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-title">Loading ${pack.name} pack…</div>
+      <div class="loading-sub">Fetching species list from eBird</div>
+    </div>`;
+
+  const [myBirds, unseenSpecies] = await Promise.all([
+    getBirdsForPack(packId),
+    (async () => {
+      const myB = await getBirdsForPack(packId);
+      return getUnseenForPack(packId, myB);
+    })()
+  ]);
+
+  packState = { myBirds, unseenSpecies };
+  renderPackGallery(myBirds, unseenSpecies, false);
+}
+
+function renderPackGallery(myBirds, unseenSpecies, showAll) {
+  const GHOST_CAP = 50;
+  const gallery = document.getElementById('gallery');
+
+  const sorted = applyFiltersAndSort(myBirds);
+  const seenCards = sorted.map(b => cardHTML(b, allBirds.indexOf(b))).join('');
+  const ghosts = showAll ? unseenSpecies : unseenSpecies.slice(0, GHOST_CAP);
+  const ghostCards = ghosts.map(s => ghostCardHTML(s)).join('');
+
+  const showMore = !showAll && unseenSpecies.length > GHOST_CAP
+    ? `<div class="show-more-wrap">
+        <button class="show-more-btn" onclick="showAllGhosts()">
+          Show ${(unseenSpecies.length - GHOST_CAP).toLocaleString()} more unseen species ▾
+        </button>
+       </div>`
+    : '';
+
+  gallery.innerHTML = seenCards + ghostCards + showMore;
+  setupCardObserver();
+}
+
+function showAllGhosts() {
+  if (packState) renderPackGallery(packState.myBirds, packState.unseenSpecies, true);
+}
+
+// ── Parse CSV ──
+function parseCSV(text) {
+  const rows = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const row = [];
+    let inQ = false, cur = '';
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    row.push(cur.trim());
+    rows.push(row);
+  }
+  return rows;
+}
+
+// ── Load data ──
+const SHEET_CACHE_KEY = 'birdlist_csv_v7'; // bumped to clear stale cache
+const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+async function loadData() {
+  const gallery = document.getElementById('gallery');
+  try {
+    let csvText = null;
+
+    // Try localStorage cache first
+    const cached = cacheGet(SHEET_CACHE_KEY, SHEET_CACHE_TTL);
+    if (cached) {
+      csvText = cached;
+    } else {
+      // Fetch fresh from Google Sheets
+      const res = await fetch(SHEET_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      csvText = await res.text();
+      cacheSet(SHEET_CACHE_KEY, csvText);
+    }
+
+    const rows = parseCSV(csvText);
+    if (rows.length < 2) throw new Error('Sheet appears empty');
+
+    allBirds = rows.slice(1).map(r => ({
+      date:        r[0]  || '',
+      commonName:  r[1]  || '',
+      sciName:     r[2]  || '',
+      speciesCode: r[3]  || '',
+      location:    r[4]  || '',
+      country:     r[5]  ? r[5].split('-')[0] : '',  // 2-letter country code
+      subCode:     r[5]  || '',                        // full subnational code e.g. US-NY
+      locId:       r[6]  || '',
+      taxonOrder:  r[7]  || '',
+      family:      r[8]  || '',
+      order:       r[9]  || '',
+      globalFreq:  r[10] || '',
+      rarity:      r[11] || 'Common',
+      photoUrl:    r[12] || '',
+      photoLicense:r[13] || '',
+      exotic:      r[14] || '',
+      subId:       r[15] || '',
+    })).filter(b => b.commonName);
+
+    // Stats
+    const countries = new Set(allBirds.map(b => b.country.split('-')[0]).filter(Boolean));
+    const rareCount = allBirds.filter(b => b.rarity === 'Rare' || b.rarity === 'Very Rare').length;
+    // Count unique species not total sightings
+    const uniqueSpecies = new Set(allBirds.map(b => b.speciesCode || b.commonName)).size;
+    document.getElementById('stat-species').textContent = uniqueSpecies;
+    document.getElementById('stat-countries').textContent = countries.size;
+    document.getElementById('stat-rare').textContent = rareCount;
+    document.getElementById('stats').style.display = 'flex';
+
+    // World total async — non-blocking
+    getRegionSpeciesCodes('world').then(codes => {
+      if (codes.length) {
+        document.getElementById('stat-species').textContent =
+          `${uniqueSpecies} / ${codes.length.toLocaleString()}`;
+      }
+    });
+
+    setupFilters();
+    renderGallery(allBirds);
+
+    // Show packs section but DON'T load pack counts yet —
+    // defer until user actually opens the packs panel
+    document.getElementById('packs-section').style.display = 'block';
+    renderPackShells(); // render empty pack cards immediately
+
+  } catch(e) {
+    gallery.innerHTML = `
+      <div class="error-msg">
+        <strong>Couldn't load your life list</strong>
+        <p>Make sure the Google Sheet is published to the web as CSV.<br><br>Error: ${e.message}</p>
+      </div>`;
+  }
+}
+
+// ── Refresh handler ──
+// Replace APPS_SCRIPT_URL with your deployed web app URL after deploying
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwKHoODM2YqDzGqpTS544sNK4GsdftKevR5fW9hkw1VQTTM0lAM1J3UEbDv1WcGQWe/exec';
+
+function showToast(msg, duration = 3000) {
+  const toast = document.getElementById('refresh-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+async function handleRefresh() {
+  const btn = document.getElementById('refresh-btn');
+  if (btn.classList.contains('spinning')) return; // already running
+
+  // Step 1: immediately clear cache and reload sheet data
+  try { localStorage.removeItem(SHEET_CACHE_KEY); } catch(e) {}
+  btn.classList.add('spinning');
+  showToast('Fetching latest data…', 60000);
+
+  // Step 2: reload sheet data immediately (shows current sheet state)
+  await loadData();
+  showToast('Cards updated!');
+
+  // Step 3: if web app URL is set, trigger background eBird sync
+  if (APPS_SCRIPT_URL) {
+    showToast('Syncing with eBird…', 60000);
+    try {
+      const res = await fetch(APPS_SCRIPT_URL);
+      const data = await res.json();
+      if (data.status === 'ok') {
+        // Sync done — clear cache again and reload to show new birds
+        try { localStorage.removeItem(SHEET_CACHE_KEY); } catch(e) {}
+        await loadData();
+        showToast('✓ eBird sync complete!');
+      }
+    } catch(e) {
+      showToast('Sheet updated (eBird sync unavailable)');
+    }
+  }
+
+  btn.classList.remove('spinning');
+  btn.classList.add('done');
+  setTimeout(() => btn.classList.remove('done'), 2000);
+}
+
+loadData();
+</script>
+</body>
+</html>
