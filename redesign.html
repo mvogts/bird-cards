@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life List — mvogts | v4</title>
+<title>Peck Deck — mvogts</title>
 <!-- Preconnect to all external domains so DNS + TLS handshakes happen immediately -->
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -265,6 +265,12 @@
 
   .pack-card:hover { border-color: var(--green); }
   .pack-card.active { border-color: var(--green); background: #eaf5e0; }
+
+  .life-list-pill {
+    border-width: 2px;
+    border-color: var(--green);
+  }
+  .life-list-pill .pack-name { color: var(--green); }
 
   .pack-type {
     font-size: 6px;
@@ -1085,8 +1091,7 @@
 <div class="header">
   <div class="header-top">
     <div>
-      <div class="eyebrow">Field Guide Collection</div>
-      <div class="title">Life List</div>
+      <div class="title">Peck Deck</div>
     </div>
     <div class="stats" id="stats" style="display:none">
       <div class="stat-block">
@@ -1141,11 +1146,11 @@
 </div>
 
 <div class="packs-section" id="packs-section" style="display:none">
-  <button class="packs-toggle" id="packs-toggle" onclick="togglePacks()">
+  <button class="packs-toggle open" id="packs-toggle" onclick="togglePacks()">
     <span class="packs-toggle-label">Packs</span>
     <span class="packs-toggle-arrow">▾</span>
   </button>
-  <div class="packs-grid" id="packs-grid"></div>
+  <div class="packs-grid open" id="packs-grid"></div>
   <div class="packs-divider"></div>
 </div>
 
@@ -1995,7 +2000,7 @@ let allBirds = [];
 let activeFilter = 'all';
 let activeSearch = '';
 let activeSort = 'default';
-let currentPackId = null;
+let currentPackId = 'lifelist';
 let packState = null;
 
 // ── Filtering + sorting ──
@@ -2110,7 +2115,7 @@ function setupFilters() {
 }
 
 // ── Packs ──
-let packsOpen = false;
+let packsOpen = true;
 let packsLoaded = false;
 
 function togglePacks() {
@@ -2128,7 +2133,17 @@ function togglePacks() {
 // Render pack shells immediately (no API calls) so layout is instant
 function renderPackShells() {
   const grid = document.getElementById('packs-grid');
-  grid.innerHTML = PACKS.map(pack => `
+
+  // Life List pill — always first, acts as "show everything" filter
+  const lifeListPill = `
+    <div class="pack-card life-list-pill active" id="pack-lifelist" onclick="filterByPack('lifelist')">
+      <div class="pack-type">📖 Full Collection</div>
+      <div class="pack-name">Life List</div>
+      <div class="pack-progress-bar"><div class="pack-progress-fill" style="width:100%"></div></div>
+      <div class="pack-count"><strong>${allBirds.length}</strong> species total</div>
+    </div>`;
+
+  const packPills = PACKS.map(pack => `
     <div class="pack-card" id="pack-${pack.id}" onclick="filterByPack('${pack.id}')">
       <div class="pack-type">${pack.emoji} ${pack.type}</div>
       <div class="pack-name">${pack.name}</div>
@@ -2136,6 +2151,8 @@ function renderPackShells() {
       <div class="pack-count" id="count-${pack.id}"><span class="pack-loading">Open to load…</span></div>
     </div>
   `).join('');
+
+  grid.innerHTML = lifeListPill + packPills;
 }
 
 // Load pack counts — only called when user opens the packs panel
@@ -2166,10 +2183,24 @@ async function renderPacks() {
 async function filterByPack(packId) {
   const packEl = document.getElementById(`pack-${packId}`);
 
-  if (currentPackId === packId) {
-    currentPackId = null;
+  // Life List — always resets to full collection
+  if (packId === 'lifelist') {
+    currentPackId = 'lifelist';
     packState = null;
     document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+    packEl.classList.add('active');
+    document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+    activeFilter = 'all';
+    renderGallery(applyFiltersAndSort(allBirds));
+    return;
+  }
+
+  if (currentPackId === packId) {
+    // Clicking active pack again returns to Life List
+    currentPackId = 'lifelist';
+    packState = null;
+    document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('pack-lifelist').classList.add('active');
     document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
     activeFilter = 'all';
     renderGallery(applyFiltersAndSort(allBirds));
@@ -2314,6 +2345,8 @@ async function loadData() {
     // defer until user actually opens the packs panel
     document.getElementById('packs-section').style.display = 'block';
     renderPackShells(); // render empty pack cards immediately
+    packsLoaded = true;
+    loadPackCounts(); // packs start open, so load counts immediately
 
   } catch(e) {
     gallery.innerHTML = `
