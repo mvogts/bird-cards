@@ -931,6 +931,95 @@
     mix-blend-mode: soft-light;
   }
 
+  /* ============ FLAT PREMIUM BROOKLYN — GRID ============ */
+  /* Same visual layers as the modal premium card, but static (no tilt/sheen).
+     Applied to grid cards so they look identical, just non-interactive. */
+  .premium-flat {
+    border: none !important;
+    background: transparent !important;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 0 !important;
+  }
+  .premium-flat .pk-metal {
+    position: absolute; inset: 0; border-radius: 10px; padding: 7px; z-index: 0;
+    background: linear-gradient(135deg,
+      #7a9264 0%, #3f5a34 14%, #6a8556 28%, #34492b 42%,
+      #5e7a4c 56%, #2e4126 72%, #6f8b5a 88%, #3a5230 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -2px 3px rgba(0,0,0,0.45);
+  }
+  .premium-flat .pk-metal::before {
+    content: ""; position: absolute; inset: 0; border-radius: 10px;
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0px, transparent 3px),
+      radial-gradient(circle at 65% 55%, rgba(255,255,255,0.08) 0px, transparent 2px);
+    background-size: 14px 14px; pointer-events: none;
+  }
+  .premium-flat .pk-face {
+    position: absolute; inset: 7px; border-radius: 4px;
+    background: #f1ecd8;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(90deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 4px rgba(0,0,0,0.1);
+    z-index: 1; display: flex; flex-direction: column; padding: 12px 11px 9px; overflow: hidden;
+  }
+  .premium-flat .pk-face::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0.5;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.5) 0px, transparent 22px),
+      radial-gradient(circle at 70% 12%, rgba(255,255,255,0.35) 0px, transparent 17px),
+      radial-gradient(circle at 40% 55%, rgba(120,140,90,0.12) 0px, transparent 26px),
+      radial-gradient(circle at 85% 70%, rgba(255,255,255,0.3) 0px, transparent 20px);
+  }
+  /* Corner caps — scaled for grid size */
+  .premium-flat .pk-cap {
+    position: absolute; width: 40px; height: 40px; z-index: 6;
+    background: linear-gradient(135deg, #7a8c5e 0%, #4a5a34 30%, #647a48 55%, #3a4828 80%, #6a7d4e 100%);
+    filter: drop-shadow(1.5px 2px 2px rgba(24,30,16,0.4));
+  }
+  .premium-flat .pk-cap::before {
+    content: ""; position: absolute; inset: 2px; border-radius: inherit;
+    background: linear-gradient(135deg, #b8c090 0%, #7a8c5e 28%, #9aab74 50%, #5a6c3e 74%, #94a56c 100%);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -1px 1.5px rgba(0,0,0,0.4);
+  }
+  .premium-flat .pk-cap::after {
+    content: ""; position: absolute; width: 4px; height: 4px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d4dcae, #52642f 70%);
+    box-shadow: inset 0 -1px 1px rgba(0,0,0,0.5); z-index: 2;
+  }
+  .premium-flat .pk-tl { top: -3px; left: -3px; border-top-left-radius: 13px;
+    clip-path: polygon(0 0, 100% 0, 100% 32%, 32% 32%, 32% 100%, 0 100%); }
+  .premium-flat .pk-tr { top: -3px; right: -3px; border-top-right-radius: 13px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 68% 100%, 68% 32%, 0 32%); }
+  .premium-flat .pk-bl { bottom: -3px; left: -3px; border-bottom-left-radius: 13px;
+    clip-path: polygon(0 0, 32% 0, 32% 68%, 100% 68%, 100% 100%, 0 100%); }
+  .premium-flat .pk-br { bottom: -3px; right: -3px; border-bottom-right-radius: 13px;
+    clip-path: polygon(68% 0, 100% 0, 100% 32%, 100% 100%, 0 100%, 0 68%, 68% 68%); }
+  .premium-flat .pk-tl::before { clip-path: polygon(0 0, 100% 0, 100% 27%, 27% 27%, 27% 100%, 0 100%); }
+  .premium-flat .pk-tr::before { clip-path: polygon(0 0, 100% 0, 100% 100%, 73% 100%, 73% 27%, 0 27%); }
+  .premium-flat .pk-bl::before { clip-path: polygon(0 0, 27% 0, 27% 73%, 100% 73%, 100% 100%, 0 100%); }
+  .premium-flat .pk-br::before { clip-path: polygon(73% 0, 100% 0, 100% 27%, 100% 100%, 0 100%, 0 73%, 73% 73%); }
+  .premium-flat .pk-tl::after { top: 7px; left: 7px; }
+  .premium-flat .pk-tr::after { top: 7px; right: 7px; }
+  .premium-flat .pk-bl::after { bottom: 7px; left: 7px; }
+  .premium-flat .pk-br::after { bottom: 7px; right: 7px; }
+
+  /* Content sits above the dappled layer */
+  .premium-flat .card-eyebrow,
+  .premium-flat .card-rule,
+  .premium-flat .photo-frame,
+  .premium-flat .card-name,
+  .premium-flat .card-sci,
+  .premium-flat .card-bottom { position: relative; z-index: 2; }
+  .premium-flat .card-eyebrow { color: #3f5a2e; }
+  .premium-flat .photo-frame { background: linear-gradient(135deg,#5a7042,#37451f); padding: 3px; }
+  .premium-flat .card-name { color: #33421f; text-shadow: 0 -1px 0 rgba(0,0,0,0.16), 0 1px 0 rgba(255,255,255,0.65); }
+  .premium-flat .card-sci { color: #5c7040; }
+  .premium-flat .season-pill { background: linear-gradient(#5a7042,#47592f); color: #e4ecd0; }
+  .premium-flat .rarity-badge { background: linear-gradient(#3a4a24,#2c3a1a); color: #d4dcae; }
+  .premium-flat .corner, .premium-flat .card-texture, .premium-flat .card-motif { display: none; }
+
   /* Push existing content above the face's dappled layer */
   .modal-card-wrap .premium-brooklyn .card-eyebrow,
   .modal-card-wrap .premium-brooklyn .card-rule,
@@ -1808,6 +1897,34 @@ function cardFrontHTML(bird, index) {
   const skinClass = skin ? `skin-${skin.id}` : '';
   const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
   const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
+
+  // Flat premium treatment — Brooklyn grid cards mirror the modal's look (static)
+  const isFlatPremium = skin && skin.id === 'brooklyn';
+  if (isFlatPremium) {
+    return `
+    <div class="card-face card-front premium-flat">
+      <div class="pk-metal"></div>
+      <div class="pk-cap pk-tl"></div>
+      <div class="pk-cap pk-tr"></div>
+      <div class="pk-cap pk-bl"></div>
+      <div class="pk-cap pk-br"></div>
+      <div class="pk-face">
+        <div class="card-eyebrow">${locationEyebrow}${dateEyebrow ? ' &nbsp;·&nbsp; ' + dateEyebrow : ''}</div>
+        <div class="card-rule"></div>
+        <div class="photo-frame">
+          ${photoBlock}
+          ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
+        </div>
+        <div class="card-rule"></div>
+        <div class="card-name">${commonName}</div>
+        <div class="card-sci">${sciName}</div>
+        <div class="card-bottom">
+          ${sName ? `<span class="season-pill">${sName}</span>` : '<span></span>'}
+          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+      </div>
+    </div>`;
+  }
 
   return `
   <div class="card-face card-front ${skinClass}">
