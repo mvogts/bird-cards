@@ -1597,7 +1597,7 @@ function seasonName(dateStr) {
 // Each card gets skinned by the most specific region it belongs to.
 const PACK_SKINS = {
   'US-NY-047': {  // Brooklyn
-    name: 'brooklyn',
+    id: 'brooklyn',
     bg: '#eceeec', frame: '#3d4f52', rule: '#7a8c82',
     photoBg: '#d6ddda', name: '#26332c', sci: '#4a5c52',
     label: '#4a5c52', seasonPill: '#3d4f52', seasonText: '#dbe4e0',
@@ -1605,7 +1605,7 @@ const PACK_SKINS = {
     texture: 'grid', motif: 'watertower'
   },
   'US-IL-043': {  // Hinsdale
-    name: 'hinsdale',
+    id: 'hinsdale',
     bg: '#f7f0dc', frame: '#8a7538', rule: '#b09a52',
     photoBg: '#ece0c4', name: '#3a2e12', sci: '#7a6530',
     label: '#9a8550', seasonPill: '#8a7538', seasonText: '#f4ead0',
@@ -1795,7 +1795,7 @@ function cardFrontHTML(bird, index) {
 
   // Pack skin
   const skin = packSkinForBird(bird);
-  const skinClass = skin ? `skin-${skin.name}` : '';
+  const skinClass = skin ? `skin-${skin.id}` : '';
   const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
   const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
 
@@ -2142,12 +2142,12 @@ function buildModalCardHTML(bird, index) {
   const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
 
   const skin = packSkinForBird(bird);
-  const skinClass = skin ? `skin-${skin.name}` : '';
+  const skinClass = skin ? `skin-${skin.id}` : '';
   const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
   const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
 
   // Premium dimensional treatment — Brooklyn only, modal only
-  const isPremium = skin && skin.name === 'brooklyn';
+  const isPremium = skin && skin.id === 'brooklyn';
   const premiumClass = isPremium ? 'premium-brooklyn' : '';
   const premiumMetal = isPremium ? '<div class="pk-metal"></div>' : '';
   const premiumCaps = isPremium ? `
