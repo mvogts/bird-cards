@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://inaturalist-open-data.s3.amazonaws.com">
 <link rel="preconnect" href="https://cdn.download.ams.birds.cornell.edu">
 <link rel="dns-prefetch" href="https://upload.wikimedia.org">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&family=Spectral:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -385,6 +385,8 @@
     margin-bottom: 5px;
     font-weight: 700;
     opacity: 0.7;
+    position: relative;
+    z-index: 2;
   }
 
   .card-num {
@@ -396,6 +398,8 @@
   }
 
   .card-rule {
+    position: relative;
+    z-index: 2;
     width: 100%;
     height: 1px;
     background: linear-gradient(to right, transparent, #c4a86a, transparent);
@@ -409,6 +413,8 @@
     overflow: hidden;
     background: var(--cream-dark);
     margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
   }
 
   .photo-frame img {
@@ -450,21 +456,26 @@
   }
 
   .card-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    font-weight: 700;
+    font-family: 'Spectral', serif;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--ink);
     text-align: center;
     line-height: 1.15;
+    position: relative;
+    z-index: 2;
   }
 
   .card-sci {
-    font-family: 'IM Fell English', serif;
+    font-family: 'Spectral', serif;
     font-style: italic;
-    font-size: 9px;
+    font-weight: 500;
+    font-size: 10px;
     color: var(--ink-soft);
     text-align: center;
     margin-top: 2px;
+    position: relative;
+    z-index: 2;
   }
 
   .card-sighting-label {
@@ -481,6 +492,8 @@
     justify-content: space-between;
     align-items: center;
     gap: 4px;
+    position: relative;
+    z-index: 2;
   }
 
   .card-loc {
@@ -745,12 +758,83 @@
   .modal-card-wrap .back-footer span { font-size: 8px; }
   .modal-card-wrap .photo-credit  { font-size: 8px; }
 
-  /* ── SEASONAL ── */
+  /* ── SEASON PILL ── */
+  .season-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: var(--green);
+    color: var(--green-text);
+    flex-shrink: 0;
+  }
+
   .season-badge {
     font-size: 13px;
     line-height: 1;
     flex-shrink: 0;
   }
+
+  /* ── PACK SKINS ── */
+  /* Texture layer sits behind content */
+  .card-texture {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .tex-grid {
+    opacity: 0.5;
+    background-image:
+      linear-gradient(#c2ccc8 1px, transparent 1px),
+      linear-gradient(90deg, #c2ccc8 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .tex-woodgrain {
+    opacity: 0.4;
+    background-image: repeating-linear-gradient(88deg,
+      #e4d7b4 0px, #efe4c8 3px, #e4d7b4 6px, #e9ddbd 11px);
+  }
+
+  /* Motif — one ghosted place-object */
+  .card-motif {
+    position: absolute;
+    z-index: 0;
+    right: 14px;
+    top: 34px;
+    width: 64px;
+    height: 64px;
+    pointer-events: none;
+  }
+
+  /* Brooklyn skin */
+  .skin-brooklyn { background: #eceeec !important; }
+  .skin-brooklyn .card-motif { fill: #3d4f52; opacity: 0.08; }
+  .skin-brooklyn .card-eyebrow { color: #3d4f52; }
+  .skin-brooklyn .card-rule { background: linear-gradient(to right, transparent, #7a8c82, transparent); }
+  .skin-brooklyn .photo-frame { background: #d6ddda; }
+  .skin-brooklyn .card-name { color: #26332c; }
+  .skin-brooklyn .card-sci { color: #4a5c52; }
+  .skin-brooklyn .corner svg path { stroke: #3d4f52; }
+  .skin-brooklyn .corner svg circle { fill: #3d4f52; }
+  .skin-brooklyn .season-pill { background: #3d4f52; color: #dbe4e0; }
+  .skin-brooklyn .rarity-badge { background: #2b3a44; color: #cdd8dc; }
+
+  /* Hinsdale skin */
+  .skin-hinsdale { background: #f7f0dc !important; }
+  .skin-hinsdale .card-motif { fill: #8a7538; opacity: 0.1; }
+  .skin-hinsdale .card-eyebrow { color: #7a6530; }
+  .skin-hinsdale .card-rule { background: linear-gradient(to right, transparent, #b09a52, transparent); }
+  .skin-hinsdale .photo-frame { background: #ece0c4; }
+  .skin-hinsdale .card-name { color: #3a2e12; }
+  .skin-hinsdale .card-sci { color: #7a6530; }
+  .skin-hinsdale .corner svg path { stroke: #8a7538; }
+  .skin-hinsdale .corner svg circle { fill: #8a7538; }
+  .skin-hinsdale .season-pill { background: #8a7538; color: #f4ead0; }
+  .skin-hinsdale .rarity-badge { background: #6b5a2a; color: #f0e4c4; }
 
   .seasonal-row {
     margin-top: 2px;
@@ -1384,6 +1468,45 @@ function seasonFromDate(dateStr) {
   return null;
 }
 
+function seasonName(dateStr) {
+  const s = seasonFromDate(dateStr);
+  return s ? s.label : '';
+}
+
+// ── Pack skins: palette + texture + motif keyed to a region ──
+// Each card gets skinned by the most specific region it belongs to.
+const PACK_SKINS = {
+  'US-NY-047': {  // Brooklyn
+    name: 'brooklyn',
+    bg: '#eceeec', frame: '#3d4f52', rule: '#7a8c82',
+    photoBg: '#d6ddda', name: '#26332c', sci: '#4a5c52',
+    label: '#4a5c52', seasonPill: '#3d4f52', seasonText: '#dbe4e0',
+    rarityPill: '#2b3a44', rarityText: '#cdd8dc',
+    texture: 'grid', motif: 'watertower'
+  },
+  'US-IL-043': {  // Hinsdale
+    name: 'hinsdale',
+    bg: '#f7f0dc', frame: '#8a7538', rule: '#b09a52',
+    photoBg: '#ece0c4', name: '#3a2e12', sci: '#7a6530',
+    label: '#9a8550', seasonPill: '#8a7538', seasonText: '#f4ead0',
+    rarityPill: '#6b5a2a', rarityText: '#f0e4c4',
+    texture: 'woodgrain', motif: 'oakleaf'
+  }
+};
+
+function packSkinForBird(bird) {
+  const region = LOC_TO_REGION[bird.locId] || bird.country || '';
+  // Try exact, then progressively broader region prefixes
+  if (PACK_SKINS[region]) return PACK_SKINS[region];
+  return null; // default (unskinned) card
+}
+
+// SVG motifs for pack skins
+const MOTIF_SVG = {
+  watertower: '<svg class="card-motif" viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="34" rx="2"/><path d="M30 30 L50 14 L70 30 Z"/><rect x="34" y="64" width="4" height="24"/><rect x="62" y="64" width="4" height="24"/><rect x="46" y="64" width="4" height="24"/><rect x="54" y="64" width="4" height="24"/><rect x="28" y="44" width="44" height="3"/></svg>',
+  oakleaf: '<svg class="card-motif" viewBox="0 0 100 100"><path d="M50 6 C54 16 60 18 60 18 C56 20 58 26 58 26 C62 26 66 24 66 24 C63 30 66 34 66 34 C70 32 74 28 74 28 C71 36 74 40 74 40 C78 38 82 34 82 34 C78 44 80 48 80 48 C74 50 68 48 64 52 C60 56 56 62 52 64 L52 88 L48 88 L48 64 C44 62 40 56 36 52 C32 48 26 50 20 48 C20 48 22 44 18 34 C18 34 22 38 26 40 C26 40 29 36 26 28 C26 28 30 32 34 34 C34 34 37 30 34 24 C34 24 38 26 42 26 C42 26 44 20 40 18 C40 18 46 16 50 6 Z"/></svg>'
+};
+
 // ── Seasonal presence lookup ──
 // Hardcoded from eBird bar chart data per species per sighting region.
 // Key format: speciesCode_countryCode
@@ -1541,8 +1664,7 @@ function cardFrontHTML(bird, index) {
   const badgeClass = rarityClass(rarity);
   const badgeLabel = rarity || 'Common';
   const fullCountry = countryName(country);
-  const season = seasonFromDate(date);
-  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
+  const sName = seasonName(date);
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
   const city = cityFromBird(bird);
   const locationEyebrow = [city, fullCountry].filter(Boolean).join(', ').toUpperCase();
@@ -1551,8 +1673,16 @@ function cardFrontHTML(bird, index) {
     ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
     : `<div class="no-photo">No photo</div>`;
 
+  // Pack skin
+  const skin = packSkinForBird(bird);
+  const skinClass = skin ? `skin-${skin.name}` : '';
+  const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
+  const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
+
   return `
-  <div class="card-face card-front">
+  <div class="card-face card-front ${skinClass}">
+    ${textureEl}
+    ${motifEl}
     <div class="corner c-tl">${CORNER_SVG}</div>
     <div class="corner c-tr">${CORNER_SVG}</div>
     <div class="corner c-bl">${CORNER_SVG}</div>
@@ -1567,8 +1697,7 @@ function cardFrontHTML(bird, index) {
     <div class="card-name">${commonName}</div>
     <div class="card-sci">${sciName}</div>
     <div class="card-bottom">
-      <span class="card-num">No. ${String(index+1).padStart(3,'0')}</span>
-      ${seasonBadge}
+      ${sName ? `<span class="season-pill">${sName}</span>` : '<span></span>'}
       <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
     </div>
   </div>`;
@@ -1857,8 +1986,7 @@ function buildModalCardHTML(bird, index) {
   const since = daysSince(date);
   const status = exoticLabel(exotic);
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
-  const season = seasonFromDate(date);
-  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
+  const sName = seasonName(date);
 
   const photoBlock = photoUrl
     ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
@@ -1868,10 +1996,17 @@ function buildModalCardHTML(bird, index) {
   const locationEyebrow = [city, fullCountry].filter(Boolean).join(', ').toUpperCase();
   const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
 
+  const skin = packSkinForBird(bird);
+  const skinClass = skin ? `skin-${skin.name}` : '';
+  const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
+  const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
+
   return `
   <div class="scene" style="width:100%;height:100%;aspect-ratio:unset;cursor:pointer;perspective:1000px" onclick="flipModalCard()">
     <div class="card-inner" id="modal-card-inner" style="width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0.2,0.2,1)">
-      <div class="card-face card-front">
+      <div class="card-face card-front ${skinClass}">
+        ${textureEl}
+        ${motifEl}
         <div class="corner c-tl">${CORNER_SVG}</div>
         <div class="corner c-tr">${CORNER_SVG}</div>
         <div class="corner c-bl">${CORNER_SVG}</div>
@@ -1886,8 +2021,7 @@ function buildModalCardHTML(bird, index) {
         <div class="card-name">${commonName}</div>
         <div class="card-sci">${sciName}</div>
         <div class="card-bottom">
-          <span class="card-num">No. ${String(index+1).padStart(3,'0')}</span>
-          ${seasonBadge}
+          ${sName ? `<span class="season-pill">${sName}</span>` : '<span></span>'}
           <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
         </div>
       </div>
