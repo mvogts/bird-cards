@@ -824,6 +824,124 @@
   .skin-brooklyn .rarity-badge { background: #2b3a44; color: #cdd8dc; }
   .skin-brooklyn .tex-grid { opacity: 0.6; }
 
+  /* ============ PREMIUM BROOKLYN — MODAL ONLY ============ */
+  /* Applied only inside the modal so the grid stays flat & fast. */
+  .modal-card-wrap .premium-brooklyn {
+    border: none !important;
+    background: transparent !important;
+    border-radius: 18px;
+    overflow: hidden;
+    padding: 0 !important;
+  }
+  /* Forest-green metal rim */
+  .modal-card-wrap .premium-brooklyn .pk-metal {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    padding: 11px;
+    z-index: 0;
+    background: linear-gradient(135deg,
+      #7a9264 0%, #3f5a34 14%, #6a8556 28%, #34492b 42%,
+      #5e7a4c 56%, #2e4126 72%, #6f8b5a 88%, #3a5230 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -2px 3px rgba(0,0,0,0.45);
+  }
+  .modal-card-wrap .premium-brooklyn .pk-metal::before {
+    content: ""; position: absolute; inset: 0; border-radius: 18px;
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0px, transparent 3px),
+      radial-gradient(circle at 65% 55%, rgba(255,255,255,0.08) 0px, transparent 2px),
+      radial-gradient(circle at 45% 80%, rgba(0,0,0,0.06) 0px, transparent 3px);
+    background-size: 14px 14px; pointer-events: none;
+  }
+  /* Inner cream face carrying the existing content */
+  .modal-card-wrap .premium-brooklyn .pk-face {
+    position: absolute;
+    inset: 11px;
+    border-radius: 6px;
+    background: #f1ecd8;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(90deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 4px rgba(0,0,0,0.1);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 18px 14px;
+    overflow: hidden;
+  }
+  /* Dappled canopy light */
+  .modal-card-wrap .premium-brooklyn .pk-face::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0.5;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.5) 0px, transparent 34px),
+      radial-gradient(circle at 70% 12%, rgba(255,255,255,0.35) 0px, transparent 26px),
+      radial-gradient(circle at 40% 55%, rgba(120,140,90,0.12) 0px, transparent 40px),
+      radial-gradient(circle at 85% 70%, rgba(255,255,255,0.3) 0px, transparent 30px),
+      radial-gradient(circle at 10% 85%, rgba(120,140,90,0.1) 0px, transparent 36px);
+  }
+
+  /* Wrap-around bronze-green corner caps */
+  .modal-card-wrap .premium-brooklyn .pk-cap {
+    position: absolute;
+    width: 62px; height: 62px; z-index: 6;
+    background: linear-gradient(135deg, #7a8c5e 0%, #4a5a34 30%, #647a48 55%, #3a4828 80%, #6a7d4e 100%);
+    filter: drop-shadow(2px 3px 3px rgba(24,30,16,0.4));
+  }
+  .modal-card-wrap .premium-brooklyn .pk-cap::before {
+    content: ""; position: absolute; inset: 3px; border-radius: inherit;
+    background: linear-gradient(135deg, #b8c090 0%, #7a8c5e 28%, #9aab74 50%, #5a6c3e 74%, #94a56c 100%);
+    box-shadow: inset 0 1.5px 1.5px rgba(255,255,255,0.55), inset 0 -1.5px 2px rgba(0,0,0,0.4);
+  }
+  .modal-card-wrap .premium-brooklyn .pk-cap::after {
+    content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d4dcae, #52642f 70%);
+    box-shadow: inset 0 -1px 1px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.25); z-index: 2;
+  }
+  .modal-card-wrap .premium-brooklyn .pk-tl { top: -4px; left: -4px; border-top-left-radius: 20px;
+    clip-path: polygon(0 0, 100% 0, 100% 32%, 32% 32%, 32% 100%, 0 100%); }
+  .modal-card-wrap .premium-brooklyn .pk-tr { top: -4px; right: -4px; border-top-right-radius: 20px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 68% 100%, 68% 32%, 0 32%); }
+  .modal-card-wrap .premium-brooklyn .pk-bl { bottom: -4px; left: -4px; border-bottom-left-radius: 20px;
+    clip-path: polygon(0 0, 32% 0, 32% 68%, 100% 68%, 100% 100%, 0 100%); }
+  .modal-card-wrap .premium-brooklyn .pk-br { bottom: -4px; right: -4px; border-bottom-right-radius: 20px;
+    clip-path: polygon(68% 0, 100% 0, 100% 32%, 100% 100%, 0 100%, 0 68%, 68% 68%); }
+  .modal-card-wrap .premium-brooklyn .pk-tl::before { clip-path: polygon(0 0, 100% 0, 100% 27%, 27% 27%, 27% 100%, 0 100%); }
+  .modal-card-wrap .premium-brooklyn .pk-tr::before { clip-path: polygon(0 0, 100% 0, 100% 100%, 73% 100%, 73% 27%, 0 27%); }
+  .modal-card-wrap .premium-brooklyn .pk-bl::before { clip-path: polygon(0 0, 27% 0, 27% 73%, 100% 73%, 100% 100%, 0 100%); }
+  .modal-card-wrap .premium-brooklyn .pk-br::before { clip-path: polygon(73% 0, 100% 0, 100% 27%, 100% 100%, 0 100%, 0 73%, 73% 73%); }
+  .modal-card-wrap .premium-brooklyn .pk-tl::after { top: 11px; left: 11px; }
+  .modal-card-wrap .premium-brooklyn .pk-tr::after { top: 11px; right: 11px; }
+  .modal-card-wrap .premium-brooklyn .pk-bl::after { bottom: 11px; left: 11px; }
+  .modal-card-wrap .premium-brooklyn .pk-br::after { bottom: 11px; right: 11px; }
+
+  /* Specular sheen tracking the cursor */
+  .modal-card-wrap .premium-brooklyn .pk-sheen {
+    position: absolute; inset: 0; border-radius: 18px; z-index: 7; pointer-events: none;
+    background: radial-gradient(circle 220px at var(--mx,30%) var(--my,20%),
+      rgba(255,255,255,0.2), rgba(255,255,255,0) 60%);
+    mix-blend-mode: soft-light;
+  }
+
+  /* Push existing content above the face's dappled layer */
+  .modal-card-wrap .premium-brooklyn .card-eyebrow,
+  .modal-card-wrap .premium-brooklyn .card-rule,
+  .modal-card-wrap .premium-brooklyn .photo-frame,
+  .modal-card-wrap .premium-brooklyn .card-name,
+  .modal-card-wrap .premium-brooklyn .card-sci,
+  .modal-card-wrap .premium-brooklyn .card-bottom { position: relative; z-index: 2; }
+
+  /* Forest tints for premium content */
+  .modal-card-wrap .premium-brooklyn .card-eyebrow { color: #3f5a2e; }
+  .modal-card-wrap .premium-brooklyn .photo-frame { background: linear-gradient(135deg,#5a7042,#37451f); padding: 4px; }
+  .modal-card-wrap .premium-brooklyn .card-name { color: #33421f; text-shadow: 0 -1px 0 rgba(0,0,0,0.16), 0 1px 0 rgba(255,255,255,0.65); }
+  .modal-card-wrap .premium-brooklyn .card-sci { color: #5c7040; }
+  .modal-card-wrap .premium-brooklyn .season-pill { background: linear-gradient(#5a7042,#47592f); color: #e4ecd0; }
+  .modal-card-wrap .premium-brooklyn .rarity-badge { background: linear-gradient(#3a4a24,#2c3a1a); color: #d4dcae; }
+  /* Hide the flat skin's corner SVGs & texture in premium mode */
+  .modal-card-wrap .premium-brooklyn .corner,
+  .modal-card-wrap .premium-brooklyn .card-texture,
+  .modal-card-wrap .premium-brooklyn .card-motif { display: none; }
+
   /* Hinsdale skin */
   .card-front.skin-hinsdale { background: #f4ebd0; border-color: #8a7538; }
   .skin-hinsdale .card-motif { fill: #8a7538; opacity: 0.12; }
@@ -1848,6 +1966,29 @@ function stackHTML(group) {
 let modalGroupIndices = [];
 let modalGroupPos = 0;
 
+// Premium card: tilt toward cursor + move the specular sheen (modal only)
+function attachPremiumTilt() {
+  const inner = document.getElementById('modal-card-inner');
+  const sheen = document.getElementById('pk-sheen');
+  if (!inner || !sheen) return; // only present for premium cards
+
+  const scene = inner.parentElement;
+  scene.onmousemove = (e) => {
+    if (inner.classList.contains('flipped')) return; // don't tilt while flipped
+    const r = inner.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    const ry = (px - 0.5) * 18;
+    const rx = (0.5 - py) * 13;
+    inner.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
+    sheen.style.setProperty('--mx', (px*100) + '%');
+    sheen.style.setProperty('--my', (py*100) + '%');
+  };
+  scene.onmouseleave = () => {
+    if (!inner.classList.contains('flipped')) inner.style.transform = '';
+  };
+}
+
 function openModalGroup(indices, pos) {
   modalGroupIndices = indices;
   modalGroupPos = pos;
@@ -1857,6 +1998,7 @@ function openModalGroup(indices, pos) {
   modalFlipped = false;
   const content = document.getElementById('modal-card-content');
   content.innerHTML = buildModalCardHTML(bird, indices[pos]);
+  attachPremiumTilt();
 
   const inner = document.getElementById('modal-card-inner');
   if (inner) inner.classList.remove('flipped');
@@ -1921,6 +2063,7 @@ function openModal(index, sciName, commonName) {
 
   const content = document.getElementById('modal-card-content');
   content.innerHTML = buildModalCardHTML(bird, index);
+  attachPremiumTilt();
 
   // Ensure card starts on front face
   const inner = document.getElementById('modal-card-inner');
@@ -1959,11 +2102,11 @@ function closeModal() {
 
 function flipModalCard() {
   const inner = document.getElementById('modal-card-inner');
-  console.log('flipModalCard called, inner:', inner);
-  if (!inner) { console.error('modal-card-inner not found'); return; }
+  if (!inner) return;
   const isFlipped = inner.classList.contains('flipped');
+  // Clear any inline tilt transform so the CSS .flipped rotateY can take over
+  inner.style.transform = '';
   inner.classList.toggle('flipped', !isFlipped);
-  console.log('now flipped:', !isFlipped);
 }
 
 function handleModalOverlayClick(e) {
@@ -2003,10 +2146,26 @@ function buildModalCardHTML(bird, index) {
   const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
   const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
 
+  // Premium dimensional treatment — Brooklyn only, modal only
+  const isPremium = skin && skin.name === 'brooklyn';
+  const premiumClass = isPremium ? 'premium-brooklyn' : '';
+  const premiumMetal = isPremium ? '<div class="pk-metal"></div>' : '';
+  const premiumCaps = isPremium ? `
+        <div class="pk-cap pk-tl"></div>
+        <div class="pk-cap pk-tr"></div>
+        <div class="pk-cap pk-bl"></div>
+        <div class="pk-cap pk-br"></div>
+        <div class="pk-sheen" id="pk-sheen"></div>` : '';
+  const faceOpen = isPremium ? '<div class="pk-face">' : '';
+  const faceClose = isPremium ? '</div>' : '';
+
   return `
   <div class="scene" style="width:100%;height:100%;aspect-ratio:unset;cursor:pointer;perspective:1000px" onclick="flipModalCard()">
     <div class="card-inner" id="modal-card-inner" style="width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0.2,0.2,1)">
-      <div class="card-face card-front ${skinClass}">
+      <div class="card-face card-front ${skinClass} ${premiumClass}">
+        ${premiumMetal}
+        ${premiumCaps}
+        ${faceOpen}
         ${textureEl}
         ${motifEl}
         <div class="corner c-tl">${CORNER_SVG}</div>
@@ -2026,6 +2185,7 @@ function buildModalCardHTML(bird, index) {
           ${sName ? `<span class="season-pill">${sName}</span>` : '<span></span>'}
           <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
         </div>
+        ${faceClose}
       </div>
       <div class="card-face card-back">
         <div class="back-header">
