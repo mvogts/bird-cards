@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life List — mvogts | v4</title>
+<title>Peck Deck — mvogts</title>
 <!-- Preconnect to all external domains so DNS + TLS handshakes happen immediately -->
 <link rel="icon" type="image/png" href="icon.png?v=4">
 <link rel="apple-touch-icon" href="icon.png?v=4">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Life List">
+<meta name="apple-mobile-web-app-title" content="Peck Deck">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://docs.google.com">
@@ -19,28 +20,31 @@
 <link rel="preconnect" href="https://inaturalist-open-data.s3.amazonaws.com">
 <link rel="preconnect" href="https://cdn.download.ams.birds.cornell.edu">
 <link rel="dns-prefetch" href="https://upload.wikimedia.org">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&family=Spectral:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:         #111109;
-    --bg2:        #1a1a14;
+    --bg:         #f5f0e8;
+    --bg2:        #ede8dc;
     --cream:      #f4edd8;
     --cream-dark: #e8dfc4;
-    --gold:       #c8a84a;
-    --gold-soft:  #8a7240;
+    --gold:       #8a6a20;
+    --gold-soft:  #a08040;
     --ink:        #1e160a;
     --ink-soft:   #6a5830;
-    --green:      #253320;
-    --green-mid:  #3a5430;
-    --green-text: #c8e0a8;
-    --green-soft: #7a9a60;
+    --green:      #2a5a1a;
+    --green-mid:  #3a7228;
+    --green-text: #1a3a0a;
+    --green-soft: #4a7a30;
+    --border:     #d8ceb8;
+    --text:       #1a1208;
+    --text-soft:  #6a5a38;
   }
 
   body {
     background: var(--bg);
-    color: var(--cream);
+    color: var(--text);
     font-family: 'Space Mono', monospace;
     min-height: 100vh;
   }
@@ -67,7 +71,7 @@
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--gold-soft);
+    color: var(--text-soft);
     margin-bottom: 8px;
   }
 
@@ -75,7 +79,7 @@
     font-family: 'Playfair Display', serif;
     font-size: clamp(36px, 6vw, 64px);
     font-weight: 700;
-    color: var(--cream);
+    color: var(--text);
     line-height: 1;
     letter-spacing: -0.02em;
   }
@@ -92,22 +96,21 @@
     font-family: 'Playfair Display', serif;
     font-size: 32px;
     font-weight: 700;
-    color: var(--gold);
+    color: var(--green);
     line-height: 1;
   }
   .stat-label {
     font-size: 8px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--gold-soft);
+    color: var(--text-soft);
     margin-top: 3px;
   }
 
   .header-rule {
     width: 100%;
     height: 1px;
-    background: linear-gradient(to right, var(--gold-soft), transparent);
-    opacity: 0.4;
+    background: var(--border);
   }
 
   /* ── CONTROLS BAR ── */
@@ -131,9 +134,9 @@
 
   .search-input {
     width: 100%;
-    background: #1a1a14;
-    border: 1px solid #3a3020;
-    color: var(--cream);
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text);
     font-family: 'Space Mono', monospace;
     font-size: 10px;
     padding: 7px 10px 7px 28px;
@@ -142,8 +145,8 @@
     transition: border-color 0.15s;
   }
 
-  .search-input:focus { border-color: var(--gold-soft); }
-  .search-input::placeholder { color: #4a4030; }
+  .search-input:focus { border-color: var(--green); }
+  .search-input::placeholder { color: #b0a080; }
 
   .search-icon {
     position: absolute;
@@ -157,19 +160,21 @@
 
   /* Sort */
   .sort-select {
-    background: #1a1a14;
-    border: 1px solid #3a3020;
-    color: #6a5830;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-soft);
     font-family: 'Space Mono', monospace;
     font-size: 9px;
     letter-spacing: 0.06em;
-    padding: 7px 10px;
-    border-radius: 3px;
+    padding: 4px 20px 4px 0;
     outline: none;
     cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
-  .sort-select:focus { border-color: var(--gold-soft); }
+  .sort-select:focus { border-bottom-color: var(--green); }
 
   /* Filter buttons */
   .filter-group {
@@ -183,13 +188,13 @@
     font-size: 8px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--gold-soft);
+    color: var(--text-soft);
   }
 
   .filter-btn {
-    background: transparent;
-    border: 1px solid #3a3020;
-    color: #6a5830;
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
     font-family: 'Space Mono', monospace;
     font-size: 9px;
     letter-spacing: 0.1em;
@@ -200,8 +205,14 @@
     transition: all 0.15s;
   }
 
-  .filter-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
-  .filter-btn.active { background: var(--gold-soft); border-color: var(--gold-soft); color: var(--cream); }
+  .filter-btn:hover { border-color: var(--green); color: var(--green); }
+  .filter-btn.active { background: var(--green); border-color: var(--green); color: white; }
+
+  /* Rarity-specific active tints */
+  .filter-btn[data-filter="Common"].active     { background: #daf0c8; border-color: #90c860; color: #1a4a08; }
+  .filter-btn[data-filter="Uncommon"].active   { background: #d0e8f8; border-color: #70aad8; color: #0a3068; }
+  .filter-btn[data-filter="Rare"].active       { background: #fae8c8; border-color: #d8a050; color: #6a3808; }
+  .filter-btn[data-filter="Very Rare"].active  { background: #f8dce8; border-color: #d080a8; color: #681838; }
 
   /* ── PACKS ── */
   .packs-section {
@@ -245,22 +256,28 @@
   .packs-grid.open { display: grid; }
 
   .pack-card {
-    background: var(--bg2);
-    border: 1px solid #2a2a1a;
+    background: white;
+    border: 1px solid var(--border);
     border-radius: 6px;
     padding: 12px 14px;
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
   }
 
-  .pack-card:hover { border-color: var(--gold-soft); }
-  .pack-card.active { border-color: var(--gold); background: #1e1c10; }
+  .pack-card:hover { border-color: var(--green); }
+  .pack-card.active { border-color: var(--green); background: #eaf5e0; }
+
+  .life-list-pill {
+    border-width: 2px;
+    border-color: var(--green);
+  }
+  .life-list-pill .pack-name { color: var(--green); }
 
   .pack-type {
     font-size: 6px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: #4a4030;
+    color: var(--text-soft);
     margin-bottom: 4px;
   }
 
@@ -268,7 +285,7 @@
     font-family: 'Playfair Display', serif;
     font-size: 14px;
     font-weight: 700;
-    color: var(--cream);
+    color: var(--text);
     line-height: 1.1;
     margin-bottom: 8px;
   }
@@ -276,7 +293,7 @@
   .pack-progress-bar {
     width: 100%;
     height: 2px;
-    background: #2a2a1a;
+    background: var(--border);
     border-radius: 1px;
     margin-bottom: 5px;
     overflow: hidden;
@@ -289,14 +306,14 @@
     transition: width 0.6s ease;
   }
 
-  .pack-count { font-size: 8px; color: var(--gold-soft); letter-spacing: 0.06em; }
-  .pack-count strong { color: var(--gold); }
-  .pack-loading { font-size: 8px; color: #4a4030; font-style: italic; }
+  .pack-count { font-size: 8px; color: var(--text-soft); letter-spacing: 0.06em; }
+  .pack-count strong { color: var(--green); }
+  .pack-loading { font-size: 8px; color: #b0a080; font-style: italic; }
 
   .packs-divider {
     width: 100%;
     height: 1px;
-    background: linear-gradient(to right, #2a2a1a, transparent);
+    background: linear-gradient(to right, var(--border), transparent);
     margin-bottom: 16px;
   }
 
@@ -315,6 +332,19 @@
     aspect-ratio: 5 / 7.5;
     perspective: 1000px;
     cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease, filter 0.15s ease;
+    will-change: transform;
+  }
+
+  .scene:hover {
+    filter: drop-shadow(0 12px 24px rgba(0,0,0,0.15)) drop-shadow(0 4px 8px rgba(0,0,0,0.08));
+  }
+
+  .scene:active {
+    transform: scale(0.97) translateY(2px) !important;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1)) !important;
+    transition: transform 0.08s ease, filter 0.08s ease;
   }
 
   .card-inner {
@@ -322,7 +352,7 @@
     height: 100%;
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   .scene.flipped .card-inner { transform: rotateY(180deg); }
@@ -343,6 +373,7 @@
     display: flex;
     flex-direction: column;
     padding: 12px;
+    transition: background 0.2s ease;
   }
 
   .card-eyebrow {
@@ -354,6 +385,8 @@
     margin-bottom: 5px;
     font-weight: 700;
     opacity: 0.7;
+    position: relative;
+    z-index: 2;
   }
 
   .card-num {
@@ -365,6 +398,8 @@
   }
 
   .card-rule {
+    position: relative;
+    z-index: 2;
     width: 100%;
     height: 1px;
     background: linear-gradient(to right, transparent, #c4a86a, transparent);
@@ -378,6 +413,8 @@
     overflow: hidden;
     background: var(--cream-dark);
     margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
   }
 
   .photo-frame img {
@@ -419,21 +456,26 @@
   }
 
   .card-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    font-weight: 700;
+    font-family: 'Spectral', serif;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--ink);
     text-align: center;
     line-height: 1.15;
+    position: relative;
+    z-index: 2;
   }
 
   .card-sci {
-    font-family: 'IM Fell English', serif;
+    font-family: 'Spectral', serif;
     font-style: italic;
-    font-size: 9px;
+    font-weight: 500;
+    font-size: 10px;
     color: var(--ink-soft);
     text-align: center;
     margin-top: 2px;
+    position: relative;
+    z-index: 2;
   }
 
   .card-sighting-label {
@@ -450,6 +492,8 @@
     justify-content: space-between;
     align-items: center;
     gap: 4px;
+    position: relative;
+    z-index: 2;
   }
 
   .card-loc {
@@ -627,7 +671,7 @@
 
   .modal-overlay.open {
     display: flex;
-    animation: fadeIn 0.2s ease;
+    animation: fadeIn 0.18s ease;
   }
 
   @keyframes fadeIn {
@@ -637,14 +681,15 @@
 
   .modal-card-wrap {
     position: relative;
-    width: min(380px, 88vw);
-    height: min(570px, 88vh);
+    width: min(460px, 92vw);
+    height: min(690px, 90vh);
     animation: zoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   @keyframes zoomIn {
-    from { transform: scale(0.75); opacity: 0; }
-    to   { transform: scale(1);    opacity: 1; }
+    0%   { transform: scale(0.82) translateY(12px); opacity: 0; }
+    70%  { transform: scale(1.02) translateY(-2px); opacity: 1; }
+    100% { transform: scale(1)    translateY(0);    opacity: 1; }
   }
 
   .modal-card-wrap #modal-card-content {
@@ -695,30 +740,494 @@
   #modal-card-inner.flipped { transform: rotateY(180deg); }
 
   /* Larger text inside modal for readability */
-  .modal-card-wrap .card-name     { font-size: 22px; }
-  .modal-card-wrap .card-sci      { font-size: 12px; }
-  .modal-card-wrap .card-eyebrow  { font-size: 9px; }
+  .modal-card-wrap .card-name     { font-size: 30px; }
+  .modal-card-wrap .card-sci      { font-size: 16px; }
+  .modal-card-wrap .card-eyebrow  { font-size: 11px; }
   .modal-card-wrap .card-loc,
-  .modal-card-wrap .card-date     { font-size: 8px; }
-  .modal-card-wrap .rarity-badge  { font-size: 8px; padding: 3px 8px; }
-  .modal-card-wrap .card-sighting-label { font-size: 8px; }
-  .modal-card-wrap .back-name     { font-size: 20px; }
-  .modal-card-wrap .back-sci      { font-size: 11px; }
-  .modal-card-wrap .stat-item-label { font-size: 8px; }
-  .modal-card-wrap .stat-item-value { font-size: 13px; }
-  .modal-card-wrap .back-desc     { font-size: 13px; line-height: 1.65; }
+  .modal-card-wrap .card-date     { font-size: 10px; }
+  .modal-card-wrap .rarity-badge  { font-size: 10px; padding: 4px 11px; }
+  .modal-card-wrap .season-pill   { font-size: 10px; padding: 4px 11px; }
+  .modal-card-wrap .card-sighting-label { font-size: 10px; }
+  .modal-card-wrap .back-name     { font-size: 26px; }
+  .modal-card-wrap .back-sci      { font-size: 14px; }
+  .modal-card-wrap .stat-item-label { font-size: 10px; }
+  .modal-card-wrap .stat-item-value { font-size: 16px; }
+  .modal-card-wrap .back-desc     { font-size: 15px; line-height: 1.7; }
+  .modal-card-wrap .seasonal-label { font-size: 10px; }
+  .modal-card-wrap .seasonal-icon { width: 24px; height: 24px; }
+  .modal-card-wrap .seasonal-dot { font-size: 12px; }
   .modal-card-wrap .sighting-loc,
-  .modal-card-wrap .sighting-date { font-size: 10px; }
-  .modal-card-wrap .sighting-label { font-size: 8px; }
-  .modal-card-wrap .back-footer span { font-size: 8px; }
+  .modal-card-wrap .sighting-date { font-size: 13px; }
+  .modal-card-wrap .sighting-label { font-size: 10px; }
+  .modal-card-wrap .back-footer span { font-size: 10px; }
   .modal-card-wrap .photo-credit  { font-size: 8px; }
 
-  /* ── SEASONAL ── */
+  /* ── SEASON PILL ── */
+  .season-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: var(--green);
+    color: var(--green-text);
+    flex-shrink: 0;
+  }
+
   .season-badge {
     font-size: 13px;
     line-height: 1;
     flex-shrink: 0;
   }
+
+  /* ── PACK SKINS ── */
+  /* Texture layer sits behind content */
+  .card-texture {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .tex-grid {
+    opacity: 0.5;
+    background-image:
+      linear-gradient(#c2ccc8 1px, transparent 1px),
+      linear-gradient(90deg, #c2ccc8 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .tex-woodgrain {
+    opacity: 0.4;
+    background-image: repeating-linear-gradient(88deg,
+      #e4d7b4 0px, #efe4c8 3px, #e4d7b4 6px, #e9ddbd 11px);
+  }
+
+  /* Motif — one ghosted place-object */
+  .card-motif {
+    position: absolute;
+    z-index: 0;
+    right: 14px;
+    top: 34px;
+    width: 64px;
+    height: 64px;
+    pointer-events: none;
+  }
+
+  /* Brooklyn skin — flat forest (Prospect Park) version for grid */
+  .card-front.skin-brooklyn { background: #f1ecd8; border-color: #3f5a34; }
+  .skin-brooklyn .card-motif { fill: #3f5a2e; color: #3f5a2e; opacity: 0.12; }
+  .skin-brooklyn .card-eyebrow { color: #3f5a2e; opacity: 1; }
+  .skin-brooklyn .card-rule { background: linear-gradient(to right, transparent, #6a8556, transparent); }
+  .skin-brooklyn .photo-frame { background: #d4d8bc; }
+  .skin-brooklyn .card-name { color: #33421f; }
+  .skin-brooklyn .card-sci { color: #5c7040; }
+  .skin-brooklyn .corner svg path { stroke: #4a5a34; }
+  .skin-brooklyn .corner svg circle { fill: #4a5a34; }
+  .skin-brooklyn .season-pill { background: #5a7042; color: #e4ecd0; }
+  .skin-brooklyn .rarity-badge { background: #3a4a24; color: #d4dcae; }
+  /* Dappled canopy light instead of the industrial blueprint grid */
+  .skin-brooklyn .tex-grid {
+    opacity: 1;
+    background-image:
+      radial-gradient(circle at 20% 25%, rgba(255,255,255,0.45) 0px, transparent 22px),
+      radial-gradient(circle at 72% 15%, rgba(255,255,255,0.3) 0px, transparent 16px),
+      radial-gradient(circle at 45% 60%, rgba(120,140,90,0.1) 0px, transparent 26px),
+      radial-gradient(circle at 85% 72%, rgba(255,255,255,0.28) 0px, transparent 20px);
+    background-size: auto;
+  }
+
+  /* ============ PREMIUM BROOKLYN — MODAL ONLY ============ */
+  /* Applied only inside the modal so the grid stays flat & fast. */
+  .modal-card-wrap .premium-brooklyn {
+    border: none !important;
+    background: transparent !important;
+    border-radius: 18px;
+    overflow: hidden;
+    padding: 0 !important;
+  }
+  /* Forest-green metal rim */
+  .modal-card-wrap .premium-brooklyn .pk-metal {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    padding: 11px;
+    z-index: 0;
+    background: linear-gradient(135deg,
+      #7a9264 0%, #3f5a34 14%, #6a8556 28%, #34492b 42%,
+      #5e7a4c 56%, #2e4126 72%, #6f8b5a 88%, #3a5230 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -2px 3px rgba(0,0,0,0.45);
+  }
+  .modal-card-wrap .premium-brooklyn .pk-metal::before {
+    content: ""; position: absolute; inset: 0; border-radius: 18px;
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0px, transparent 3px),
+      radial-gradient(circle at 65% 55%, rgba(255,255,255,0.08) 0px, transparent 2px),
+      radial-gradient(circle at 45% 80%, rgba(0,0,0,0.06) 0px, transparent 3px);
+    background-size: 14px 14px; pointer-events: none;
+  }
+  /* Inner cream face carrying the existing content */
+  .modal-card-wrap .premium-brooklyn .pk-face {
+    position: absolute;
+    inset: 11px;
+    border-radius: 6px;
+    background: #f1ecd8;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(90deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 4px rgba(0,0,0,0.1);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 18px 14px;
+    overflow: hidden;
+  }
+  /* Dappled canopy light */
+  .modal-card-wrap .premium-brooklyn .pk-face::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0.5;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.5) 0px, transparent 34px),
+      radial-gradient(circle at 70% 12%, rgba(255,255,255,0.35) 0px, transparent 26px),
+      radial-gradient(circle at 40% 55%, rgba(120,140,90,0.12) 0px, transparent 40px),
+      radial-gradient(circle at 85% 70%, rgba(255,255,255,0.3) 0px, transparent 30px),
+      radial-gradient(circle at 10% 85%, rgba(120,140,90,0.1) 0px, transparent 36px);
+  }
+
+  /* Wrap-around bronze-green corner caps */
+  .modal-card-wrap .premium-brooklyn .pk-cap {
+    position: absolute;
+    width: 62px; height: 62px; z-index: 6;
+    background: linear-gradient(135deg, #7a8c5e 0%, #4a5a34 30%, #647a48 55%, #3a4828 80%, #6a7d4e 100%);
+    filter: drop-shadow(2px 3px 3px rgba(24,30,16,0.4));
+  }
+  .modal-card-wrap .premium-brooklyn .pk-cap::before {
+    content: ""; position: absolute; inset: 3px; border-radius: inherit;
+    background: linear-gradient(135deg, #b8c090 0%, #7a8c5e 28%, #9aab74 50%, #5a6c3e 74%, #94a56c 100%);
+    box-shadow: inset 0 1.5px 1.5px rgba(255,255,255,0.55), inset 0 -1.5px 2px rgba(0,0,0,0.4);
+  }
+  /* front caps: no rivets (moved to card back) */
+  .modal-card-wrap .premium-brooklyn .pk-tl { top: -4px; left: -4px; border-top-left-radius: 20px;
+    clip-path: polygon(0 0, 100% 0, 100% 32%, 32% 32%, 32% 100%, 0 100%); }
+  .modal-card-wrap .premium-brooklyn .pk-tr { top: -4px; right: -4px; border-top-right-radius: 20px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 68% 100%, 68% 32%, 0 32%); }
+  .modal-card-wrap .premium-brooklyn .pk-bl { bottom: -4px; left: -4px; border-bottom-left-radius: 20px;
+    clip-path: polygon(0 0, 32% 0, 32% 68%, 100% 68%, 100% 100%, 0 100%); }
+  .modal-card-wrap .premium-brooklyn .pk-br { bottom: -4px; right: -4px; border-bottom-right-radius: 20px;
+    clip-path: polygon(68% 0, 100% 0, 100% 32%, 100% 100%, 0 100%, 0 68%, 68% 68%); }
+  .modal-card-wrap .premium-brooklyn .pk-tl::before { clip-path: polygon(0 0, 100% 0, 100% 27%, 27% 27%, 27% 100%, 0 100%); }
+  .modal-card-wrap .premium-brooklyn .pk-tr::before { clip-path: polygon(0 0, 100% 0, 100% 100%, 73% 100%, 73% 27%, 0 27%); }
+  .modal-card-wrap .premium-brooklyn .pk-bl::before { clip-path: polygon(0 0, 27% 0, 27% 73%, 100% 73%, 100% 100%, 0 100%); }
+  .modal-card-wrap .premium-brooklyn .pk-br::before { clip-path: polygon(73% 0, 100% 0, 100% 27%, 100% 100%, 0 100%, 0 73%, 73% 73%); }
+
+
+  /* Specular sheen tracking the cursor */
+  .modal-card-wrap .premium-brooklyn .pk-sheen {
+    position: absolute; inset: 0; border-radius: 18px; z-index: 7; pointer-events: none;
+    background: radial-gradient(circle 220px at var(--mx,30%) var(--my,20%),
+      rgba(255,255,255,0.2), rgba(255,255,255,0) 60%);
+    mix-blend-mode: soft-light;
+  }
+
+  /* ============ FLAT PREMIUM BROOKLYN — GRID ============ */
+  /* Same visual layers as the modal premium card, but static (no tilt/sheen).
+     Applied to grid cards so they look identical, just non-interactive. */
+  .premium-flat {
+    border: none !important;
+    background: transparent !important;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 0 !important;
+  }
+  .premium-flat .pk-metal {
+    position: absolute; inset: 0; border-radius: 10px; padding: 7px; z-index: 0;
+    background: linear-gradient(135deg,
+      #7a9264 0%, #3f5a34 14%, #6a8556 28%, #34492b 42%,
+      #5e7a4c 56%, #2e4126 72%, #6f8b5a 88%, #3a5230 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -2px 3px rgba(0,0,0,0.45);
+  }
+  .premium-flat .pk-metal::before {
+    content: ""; position: absolute; inset: 0; border-radius: 10px;
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0px, transparent 3px),
+      radial-gradient(circle at 65% 55%, rgba(255,255,255,0.08) 0px, transparent 2px);
+    background-size: 14px 14px; pointer-events: none;
+  }
+  .premium-flat .pk-face {
+    position: absolute; inset: 7px; border-radius: 4px;
+    background: #f1ecd8;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(90deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 4px rgba(0,0,0,0.1);
+    z-index: 1; display: flex; flex-direction: column; padding: 12px 11px 9px; overflow: hidden;
+  }
+  .premium-flat .pk-face::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0.5;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.5) 0px, transparent 22px),
+      radial-gradient(circle at 70% 12%, rgba(255,255,255,0.35) 0px, transparent 17px),
+      radial-gradient(circle at 40% 55%, rgba(120,140,90,0.12) 0px, transparent 26px),
+      radial-gradient(circle at 85% 70%, rgba(255,255,255,0.3) 0px, transparent 20px);
+  }
+  /* Corner caps — scaled for grid size */
+  .premium-flat .pk-cap {
+    position: absolute; width: 40px; height: 40px; z-index: 6;
+    background: linear-gradient(135deg, #7a8c5e 0%, #4a5a34 30%, #647a48 55%, #3a4828 80%, #6a7d4e 100%);
+    filter: drop-shadow(1.5px 2px 2px rgba(24,30,16,0.4));
+  }
+  .premium-flat .pk-cap::before {
+    content: ""; position: absolute; inset: 2px; border-radius: inherit;
+    background: linear-gradient(135deg, #b8c090 0%, #7a8c5e 28%, #9aab74 50%, #5a6c3e 74%, #94a56c 100%);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -1px 1.5px rgba(0,0,0,0.4);
+  }
+  /* flat caps: no rivets (front is clean) */
+  .premium-flat .pk-tl { top: -3px; left: -3px; border-top-left-radius: 13px;
+    clip-path: polygon(0 0, 100% 0, 100% 32%, 32% 32%, 32% 100%, 0 100%); }
+  .premium-flat .pk-tr { top: -3px; right: -3px; border-top-right-radius: 13px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 68% 100%, 68% 32%, 0 32%); }
+  .premium-flat .pk-bl { bottom: -3px; left: -3px; border-bottom-left-radius: 13px;
+    clip-path: polygon(0 0, 32% 0, 32% 68%, 100% 68%, 100% 100%, 0 100%); }
+  .premium-flat .pk-br { bottom: -3px; right: -3px; border-bottom-right-radius: 13px;
+    clip-path: polygon(68% 0, 100% 0, 100% 32%, 100% 100%, 0 100%, 0 68%, 68% 68%); }
+  .premium-flat .pk-tl::before { clip-path: polygon(0 0, 100% 0, 100% 27%, 27% 27%, 27% 100%, 0 100%); }
+  .premium-flat .pk-tr::before { clip-path: polygon(0 0, 100% 0, 100% 100%, 73% 100%, 73% 27%, 0 27%); }
+  .premium-flat .pk-bl::before { clip-path: polygon(0 0, 27% 0, 27% 73%, 100% 73%, 100% 100%, 0 100%); }
+  .premium-flat .pk-br::before { clip-path: polygon(73% 0, 100% 0, 100% 27%, 100% 100%, 0 100%, 0 73%, 73% 73%); }
+
+
+  /* Content sits above the dappled layer */
+  .premium-flat .card-eyebrow,
+  .premium-flat .card-rule,
+  .premium-flat .photo-frame,
+  .premium-flat .card-name,
+  .premium-flat .card-sci,
+  .premium-flat .card-bottom { position: relative; z-index: 2; }
+  .premium-flat .card-eyebrow { color: #3f5a2e; }
+  .premium-flat .photo-frame { background: linear-gradient(135deg,#5a7042,#37451f); padding: 3px; }
+  .premium-flat .card-name { color: #33421f; text-shadow: 0 -1px 0 rgba(0,0,0,0.16), 0 1px 0 rgba(255,255,255,0.65); }
+  .premium-flat .card-sci { color: #5c7040; }
+  .premium-flat .season-pill { background: linear-gradient(#5a7042,#47592f); color: #e4ecd0; }
+  .premium-flat .rarity-badge { background: linear-gradient(#3a4a24,#2c3a1a); color: #d4dcae; }
+  .premium-flat .corner, .premium-flat .card-texture, .premium-flat .card-motif { display: none; }
+
+  /* Push existing content above the face's dappled layer */
+  .modal-card-wrap .premium-brooklyn .card-eyebrow,
+  .modal-card-wrap .premium-brooklyn .card-rule,
+  .modal-card-wrap .premium-brooklyn .photo-frame,
+  .modal-card-wrap .premium-brooklyn .card-name,
+  .modal-card-wrap .premium-brooklyn .card-sci,
+  .modal-card-wrap .premium-brooklyn .card-bottom { position: relative; z-index: 2; }
+
+  /* Premium card BACK — rivets live here (clinch points), clean linen face */
+  .modal-card-wrap .card-back.premium-brooklyn { padding: 0 !important; background: transparent !important; border: none !important; overflow: hidden; border-radius: 18px; }
+  .modal-card-wrap .card-back.premium-brooklyn .pk-face-back {
+    position: absolute; inset: 11px; border-radius: 6px;
+    background: #f1ecd8;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(90deg, rgba(160,150,110,0.07) 0px, rgba(160,150,110,0.07) 1px, transparent 1px, transparent 3px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 4px rgba(0,0,0,0.1);
+    z-index: 1; display: flex; flex-direction: column; padding: 22px 20px 16px; overflow: hidden;
+  }
+  /* Rivets on the BACK caps (clinch points) */
+  .modal-card-wrap .card-back.premium-brooklyn .pk-cap::after {
+    content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d4dcae, #52642f 70%);
+    box-shadow: inset 0 -1px 1px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.25); z-index: 2;
+  }
+  .modal-card-wrap .card-back.premium-brooklyn .pk-tl::after { top: 11px; left: 11px; }
+  .modal-card-wrap .card-back.premium-brooklyn .pk-tr::after { top: 11px; right: 11px; }
+  .modal-card-wrap .card-back.premium-brooklyn .pk-bl::after { bottom: 11px; left: 11px; }
+  .modal-card-wrap .card-back.premium-brooklyn .pk-br::after { bottom: 11px; right: 11px; }
+  /* Back content above face layer, forest-tinted */
+  .modal-card-wrap .card-back.premium-brooklyn .back-header,
+  .modal-card-wrap .card-back.premium-brooklyn .back-rule,
+  .modal-card-wrap .card-back.premium-brooklyn .stat-grid,
+  .modal-card-wrap .card-back.premium-brooklyn #modal-seasonal,
+  .modal-card-wrap .card-back.premium-brooklyn .back-desc,
+  .modal-card-wrap .card-back.premium-brooklyn .sighting-footer { position: relative; z-index: 2; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-name { color: #33421f; font-family: 'Spectral', serif; font-weight: 700; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-sci { font-family: 'Spectral', serif; font-style: italic; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-sci { color: #5c7040; }
+  .modal-card-wrap .card-back.premium-brooklyn .stat-item-value { color: #2e3a1c; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-desc { color: #3a3320; }
+  .modal-card-wrap .card-back.premium-brooklyn .rarity-badge { background: linear-gradient(#3a4a24,#2c3a1a); color: #d4dcae; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-rule { background: linear-gradient(to right, transparent, #b0a878, transparent); }
+  /* Premium back: use the extra space — larger gaps, roomier rhythm */
+  .modal-card-wrap .card-back.premium-brooklyn .back-header { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-rule { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-brooklyn .stat-grid { gap: 16px 18px; margin-bottom: 6px; }
+  .modal-card-wrap .card-back.premium-brooklyn #modal-seasonal { margin: 4px 0; }
+  .modal-card-wrap .card-back.premium-brooklyn .seasonal-dots { gap: 14px; margin-top: 8px; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-desc { margin: 6px 0 10px; }
+  .modal-card-wrap .card-back.premium-brooklyn .sighting-footer { margin-top: auto; }
+  .modal-card-wrap .card-back.premium-brooklyn .sighting-row { margin-top: 4px; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-footer { margin-top: 10px; }
+
+  /* Forest tints for premium content */
+  .modal-card-wrap .premium-brooklyn .card-eyebrow { color: #3f5a2e; }
+  .modal-card-wrap .premium-brooklyn .photo-frame { background: linear-gradient(135deg,#5a7042,#37451f); padding: 4px; }
+  .modal-card-wrap .premium-brooklyn .card-name { color: #33421f; text-shadow: 0 -1px 0 rgba(0,0,0,0.16), 0 1px 0 rgba(255,255,255,0.65); }
+  .modal-card-wrap .premium-brooklyn .card-sci { color: #5c7040; }
+  .modal-card-wrap .premium-brooklyn .season-pill { background: linear-gradient(#5a7042,#47592f); color: #e4ecd0; }
+  .modal-card-wrap .premium-brooklyn .rarity-badge { background: linear-gradient(#3a4a24,#2c3a1a); color: #d4dcae; }
+  /* Hide the flat skin's corner SVGs & texture in premium mode */
+  .modal-card-wrap .premium-brooklyn .corner,
+  .modal-card-wrap .premium-brooklyn .card-texture,
+  .modal-card-wrap .premium-brooklyn .card-motif { display: none; }
+
+  /* ============ PREMIUM HINSDALE — MODAL ONLY ============ */
+  .modal-card-wrap .premium-hinsdale {
+    border: none !important; background: transparent !important;
+    border-radius: 18px; overflow: hidden; padding: 0 !important;
+  }
+  /* Federal-green reeded rim */
+  .modal-card-wrap .premium-hinsdale .pk-metal {
+    position: absolute; inset: 0; border-radius: 18px; padding: 12px; z-index: 0;
+    background: linear-gradient(135deg,#4a6340 0%,#2c4025 18%,#3e5636 34%,#22331d 50%,#3a5232 66%,#1e2e1a 82%,#435c3a 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.25), inset 0 -2px 3px rgba(0,0,0,0.5);
+  }
+  .modal-card-wrap .premium-hinsdale .pk-metal::before {
+    content:""; position: absolute; inset: 0; border-radius: 18px; pointer-events: none;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 1px, transparent 1px 4px, rgba(0,0,0,0.12) 4px 5px, transparent 5px 8px);
+  }
+  /* Parchment face */
+  .modal-card-wrap .premium-hinsdale .pk-face {
+    position: absolute; inset: 12px; border-radius: 7px;
+    background: #ece0c2;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(180,150,100,0.14) 0px, transparent 60px),
+      radial-gradient(circle at 88% 82%, rgba(160,130,85,0.16) 0px, transparent 70px),
+      radial-gradient(circle at 70% 20%, rgba(200,175,130,0.12) 0px, transparent 50px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 6px rgba(90,70,40,0.18);
+    z-index: 1; display: flex; flex-direction: column; padding: 20px 18px 14px; overflow: hidden;
+  }
+  .modal-card-wrap .premium-hinsdale .pk-face::before {
+    content:""; position: absolute; inset: 0; z-index: 0; opacity: 0.5; pointer-events: none;
+    background-image:
+      radial-gradient(circle at 30% 40%, rgba(150,120,70,0.08) 0px, transparent 4px),
+      radial-gradient(circle at 65% 25%, rgba(150,120,70,0.06) 0px, transparent 3px),
+      radial-gradient(circle at 50% 75%, rgba(120,95,55,0.07) 0px, transparent 5px);
+    background-size: 40px 40px, 55px 55px, 48px 48px;
+  }
+  /* Acorn corner ornaments — sit proud of the card with layered shadow */
+  .modal-card-wrap .premium-hinsdale .pk-orn {
+    position: absolute; width: 42px; height: 42px; z-index: 6;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.35)) drop-shadow(2px 4px 3px rgba(30,20,10,0.5)) drop-shadow(4px 7px 8px rgba(30,20,10,0.3));
+  }
+  .modal-card-wrap .premium-hinsdale .pk-orn svg { width: 100%; height: 100%; display: block; }
+  .modal-card-wrap .premium-hinsdale .orn-tl { top: 9px; left: 9px; }
+  .modal-card-wrap .premium-hinsdale .orn-tr { top: 9px; right: 9px; transform: scaleX(-1); }
+  .modal-card-wrap .premium-hinsdale .orn-bl { bottom: 9px; left: 9px; transform: scaleY(-1); }
+  .modal-card-wrap .premium-hinsdale .orn-br { bottom: 9px; right: 9px; transform: scale(-1,-1); }
+  /* Sheen */
+  .modal-card-wrap .premium-hinsdale .pk-sheen {
+    position: absolute; inset: 0; border-radius: 18px; z-index: 7; pointer-events: none;
+    background: radial-gradient(circle 220px at var(--mx,30%) var(--my,20%), rgba(255,255,255,0.22), rgba(255,255,255,0) 60%);
+    mix-blend-mode: soft-light;
+  }
+  /* Content above face layer, Hinsdale tints */
+  .modal-card-wrap .premium-hinsdale .card-eyebrow,
+  .modal-card-wrap .premium-hinsdale .card-rule,
+  .modal-card-wrap .premium-hinsdale .photo-frame,
+  .modal-card-wrap .premium-hinsdale .card-name,
+  .modal-card-wrap .premium-hinsdale .card-sci,
+  .modal-card-wrap .premium-hinsdale .card-bottom { position: relative; z-index: 2; }
+  .modal-card-wrap .premium-hinsdale .card-eyebrow { color: #5a4420; }
+  .modal-card-wrap .premium-hinsdale .card-rule { background: linear-gradient(to right, transparent, #9a7a44, transparent); }
+  .modal-card-wrap .premium-hinsdale .photo-frame { background: linear-gradient(135deg,#5a4326,#33240f); padding: 4px; }
+  .modal-card-wrap .premium-hinsdale .card-name { color: #3e2f14; text-shadow: 0 -1px 0 rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.55); }
+  .modal-card-wrap .premium-hinsdale .card-sci { color: #6a5228; }
+  .modal-card-wrap .premium-hinsdale .season-pill { background: linear-gradient(#3e5636,#28401e); color: #dce8c8; }
+  .modal-card-wrap .premium-hinsdale .rarity-badge { background: linear-gradient(#5a4326,#3a2612); color: #ecd8b8; }
+
+  /* Premium Hinsdale BACK */
+  .modal-card-wrap .card-back.premium-hinsdale { padding: 0 !important; background: transparent !important; border: none !important; overflow: hidden; border-radius: 18px; }
+  .modal-card-wrap .card-back.premium-hinsdale .pk-face-back {
+    position: absolute; inset: 12px; border-radius: 7px;
+    background: #ece0c2;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(180,150,100,0.14) 0px, transparent 60px),
+      radial-gradient(circle at 88% 82%, rgba(160,130,85,0.16) 0px, transparent 70px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 6px rgba(90,70,40,0.18);
+    z-index: 1; display: flex; flex-direction: column; padding: 22px 20px 16px; overflow: hidden;
+  }
+  .modal-card-wrap .card-back.premium-hinsdale .back-header,
+  .modal-card-wrap .card-back.premium-hinsdale .back-rule,
+  .modal-card-wrap .card-back.premium-hinsdale .stat-grid,
+  .modal-card-wrap .card-back.premium-hinsdale #modal-seasonal,
+  .modal-card-wrap .card-back.premium-hinsdale .back-desc,
+  .modal-card-wrap .card-back.premium-hinsdale .sighting-footer { position: relative; z-index: 2; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-name { color: #3e2f14; font-family: 'Spectral', serif; font-weight: 700; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-sci { color: #6a5228; font-family: 'Spectral', serif; font-style: italic; }
+  .modal-card-wrap .card-back.premium-hinsdale .stat-item-value { color: #3a2c12; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-desc { color: #3a2e18; }
+  .modal-card-wrap .card-back.premium-hinsdale .rarity-badge { background: linear-gradient(#5a4326,#3a2612); color: #ecd8b8; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-rule { background: linear-gradient(to right, transparent, #b09a5a, transparent); }
+  .modal-card-wrap .card-back.premium-hinsdale .back-header { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-rule { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-hinsdale .stat-grid { gap: 16px 18px; margin-bottom: 6px; }
+  .modal-card-wrap .card-back.premium-hinsdale #modal-seasonal { margin: 4px 0; }
+  .modal-card-wrap .card-back.premium-hinsdale .seasonal-dots { gap: 14px; margin-top: 8px; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-desc { margin: 6px 0 10px; }
+  .modal-card-wrap .card-back.premium-hinsdale .sighting-footer { margin-top: auto; }
+  .modal-card-wrap .card-back.premium-brooklyn .seasonal-icon { color: #3f5a2e; }
+  .modal-card-wrap .card-back.premium-hinsdale .seasonal-icon { color: #5a4420; }
+  .modal-card-wrap .premium-hinsdale .corner,
+  .modal-card-wrap .premium-hinsdale .card-texture,
+  .modal-card-wrap .premium-hinsdale .card-motif { display: none; }
+
+  /* ============ FLAT PREMIUM HINSDALE — GRID ============ */
+  .premium-flat-hd { border: none !important; background: transparent !important; border-radius: 10px; overflow: hidden; padding: 0 !important; }
+  .premium-flat-hd .pk-metal {
+    position: absolute; inset: 0; border-radius: 10px; padding: 8px; z-index: 0;
+    background: linear-gradient(135deg,#4a6340 0%,#2c4025 18%,#3e5636 34%,#22331d 50%,#3a5232 66%,#1e2e1a 82%,#435c3a 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.25), inset 0 -2px 3px rgba(0,0,0,0.5);
+  }
+  .premium-flat-hd .pk-metal::before {
+    content:""; position:absolute; inset:0; border-radius:10px; pointer-events:none;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 1px, transparent 1px 4px, rgba(0,0,0,0.12) 4px 5px, transparent 5px 8px);
+  }
+  .premium-flat-hd .pk-face {
+    position: absolute; inset: 8px; border-radius: 4px;
+    background: #ece0c2;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(180,150,100,0.14) 0px, transparent 40px),
+      radial-gradient(circle at 88% 82%, rgba(160,130,85,0.16) 0px, transparent 46px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 4px rgba(90,70,40,0.15);
+    z-index: 1; display: flex; flex-direction: column; padding: 12px 11px 9px; overflow: hidden;
+  }
+  .premium-flat-hd .pk-orn { position: absolute; width: 28px; height: 28px; z-index: 6;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.3)) drop-shadow(1.5px 2.5px 2px rgba(30,20,10,0.5)); }
+  .premium-flat-hd .pk-orn svg { width: 100%; height: 100%; display: block; }
+  .premium-flat-hd .orn-tl { top: 6px; left: 6px; }
+  .premium-flat-hd .orn-tr { top: 6px; right: 6px; transform: scaleX(-1); }
+  .premium-flat-hd .orn-bl { bottom: 6px; left: 6px; transform: scaleY(-1); }
+  .premium-flat-hd .orn-br { bottom: 6px; right: 6px; transform: scale(-1,-1); }
+  .premium-flat-hd .card-eyebrow, .premium-flat-hd .card-rule, .premium-flat-hd .photo-frame,
+  .premium-flat-hd .card-name, .premium-flat-hd .card-sci, .premium-flat-hd .card-bottom { position: relative; z-index: 2; }
+  .premium-flat-hd .card-eyebrow { color: #5a4420; }
+  .premium-flat-hd .card-rule { background: linear-gradient(to right, transparent, #9a7a44, transparent); }
+  .premium-flat-hd .photo-frame { background: linear-gradient(135deg,#5a4326,#33240f); padding: 3px; }
+  .premium-flat-hd .card-name { color: #3e2f14; text-shadow: 0 -1px 0 rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.55); }
+  .premium-flat-hd .card-sci { color: #6a5228; }
+  .premium-flat-hd .season-pill { background: linear-gradient(#3e5636,#28401e); color: #dce8c8; }
+  .premium-flat-hd .rarity-badge { background: linear-gradient(#5a4326,#3a2612); color: #ecd8b8; }
+  .premium-flat-hd .corner, .premium-flat-hd .card-texture, .premium-flat-hd .card-motif { display: none; }
+
+  /* Hinsdale skin */
+  .card-front.skin-hinsdale { background: #f4ebd0; border-color: #8a7538; }
+  .skin-hinsdale .card-motif { fill: #8a7538; opacity: 0.12; }
+  .skin-hinsdale .card-eyebrow { color: #6a5628; opacity: 1; }
+  .skin-hinsdale .card-rule { background: linear-gradient(to right, transparent, #b09a52, transparent); }
+  .skin-hinsdale .photo-frame { background: #e6d8b6; }
+  .skin-hinsdale .card-name { color: #3a2e12; }
+  .skin-hinsdale .card-sci { color: #6a5628; }
+  .skin-hinsdale .corner svg path { stroke: #8a7538; }
+  .skin-hinsdale .corner svg circle { fill: #8a7538; }
+  .skin-hinsdale .season-pill { background: #8a7538; color: #f4ead0; }
+  .skin-hinsdale .rarity-badge { background: #6b5a2a; color: #f0e4c4; }
+  .skin-hinsdale .tex-woodgrain { opacity: 0.5; }
 
   .seasonal-row {
     margin-top: 2px;
@@ -745,7 +1254,12 @@
     gap: 2px;
   }
 
-  .seasonal-emoji { font-size: 13px; line-height: 1; }
+  .seasonal-icon { width: 18px; height: 18px; display: block; color: var(--ink-soft); }
+  .seasonal-icon svg { width: 100%; height: 100%; display: block; }
+  /* Absent seasons: faded; present/rare: full-strength engraved */
+  .seasonal-item.absent .seasonal-icon { opacity: 0.28; }
+  .seasonal-item.rare .seasonal-icon { opacity: 0.6; }
+  .seasonal-item.present .seasonal-icon { opacity: 1; }
 
   .seasonal-dot {
     font-size: 9px;
@@ -777,12 +1291,24 @@
     transform: rotate(2.5deg) translateY(-4px) translateX(4px);
     opacity: 0.7;
     z-index: 1;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .stack-scene .stack-ghost:nth-child(2) {
     transform: rotate(-1.5deg) translateY(-2px) translateX(-3px);
     opacity: 0.5;
     z-index: 0;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s;
+  }
+
+  .stack-scene:hover .stack-ghost:nth-child(1) {
+    transform: rotate(6deg) translateY(-12px) translateX(10px);
+    opacity: 0.65;
+  }
+
+  .stack-scene:hover .stack-ghost:nth-child(2) {
+    transform: rotate(-4deg) translateY(-8px) translateX(-8px);
+    opacity: 0.45;
   }
 
   /* Count badge on stacked cards */
@@ -855,8 +1381,8 @@
     width: 100%;
     height: 100%;
     border-radius: 10px;
-    border: 1px dashed #252318;
-    background: #141410;
+    border: 1px dashed #d8ceb8;
+    background: #ece8de;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -876,7 +1402,7 @@
     font-family: 'Playfair Display', serif;
     font-size: 12px;
     font-weight: 700;
-    color: #302e20;
+    color: #b0a080;
     text-align: center;
     line-height: 1.2;
   }
@@ -885,7 +1411,7 @@
     font-family: 'IM Fell English', serif;
     font-style: italic;
     font-size: 8px;
-    color: #252318;
+    color: #c0b898;
     text-align: center;
     margin-top: 4px;
   }
@@ -898,8 +1424,8 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #252318;
-    border: 1px solid #252318;
+    color: #c0b898;
+    border: 1px solid #d0c8b0;
     padding: 2px 6px;
     border-radius: 2px;
   }
@@ -911,7 +1437,7 @@
     font-size: 6px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #252318;
+    color: #c0b898;
   }
 
   /* Show more */
@@ -923,9 +1449,9 @@
   }
 
   .show-more-btn {
-    background: transparent;
-    border: 1px solid #3a3020;
-    color: #6a5830;
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
     font-family: 'Space Mono', monospace;
     font-size: 9px;
     letter-spacing: 0.1em;
@@ -936,20 +1462,20 @@
     transition: all 0.15s;
   }
 
-  .show-more-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
+  .show-more-btn:hover { border-color: var(--green); color: var(--green); }
 
   /* ── LOADING / ERROR ── */
   .loading-state {
     text-align: center;
     padding: 80px 20px;
-    color: var(--gold-soft);
+    color: var(--text-soft);
     grid-column: 1 / -1;
   }
 
   .loading-title {
     font-family: 'Playfair Display', serif;
     font-size: 20px;
-    color: var(--cream);
+    color: var(--text);
     margin-bottom: 8px;
   }
 
@@ -974,9 +1500,9 @@
     text-align: center;
     padding: 24px;
     font-size: 8px;
-    color: #3a3020;
+    color: #b0a080;
     letter-spacing: 0.08em;
-    border-top: 1px solid #1e1e14;
+    border-top: 1px solid var(--border);
   }
 
   /* ── RESPONSIVE ── */
@@ -996,8 +1522,7 @@
 <div class="header">
   <div class="header-top">
     <div>
-      <div class="eyebrow">Field Guide Collection</div>
-      <div class="title">Life List</div>
+      <div class="title">Peck Deck</div>
     </div>
     <div class="stats" id="stats" style="display:none">
       <div class="stat-block">
@@ -1052,11 +1577,11 @@
 </div>
 
 <div class="packs-section" id="packs-section" style="display:none">
-  <button class="packs-toggle" id="packs-toggle" onclick="togglePacks()">
+  <button class="packs-toggle open" id="packs-toggle" onclick="togglePacks()">
     <span class="packs-toggle-label">Packs</span>
     <span class="packs-toggle-arrow">▾</span>
   </button>
-  <div class="packs-grid" id="packs-grid"></div>
+  <div class="packs-grid open" id="packs-grid"></div>
   <div class="packs-divider"></div>
 </div>
 
@@ -1341,6 +1866,57 @@ function seasonFromDate(dateStr) {
   return null;
 }
 
+function seasonName(dateStr) {
+  const s = seasonFromDate(dateStr);
+  return s ? s.label : '';
+}
+
+// ── Pack skins: palette + texture + motif keyed to a region ──
+// Each card gets skinned by the most specific region it belongs to.
+const PACK_SKINS = {
+  'US-NY-047': {  // Brooklyn
+    id: 'brooklyn',
+    bg: '#eceeec', frame: '#3d4f52', rule: '#7a8c82',
+    photoBg: '#d6ddda', name: '#26332c', sci: '#4a5c52',
+    label: '#4a5c52', seasonPill: '#3d4f52', seasonText: '#dbe4e0',
+    rarityPill: '#2b3a44', rarityText: '#cdd8dc',
+    texture: 'grid', motif: 'leaf'
+  },
+  'US-IL-043': {  // Hinsdale
+    id: 'hinsdale',
+    bg: '#f7f0dc', frame: '#8a7538', rule: '#b09a52',
+    photoBg: '#ece0c4', name: '#3a2e12', sci: '#7a6530',
+    label: '#9a8550', seasonPill: '#8a7538', seasonText: '#f4ead0',
+    rarityPill: '#6b5a2a', rarityText: '#f0e4c4',
+    texture: 'woodgrain', motif: 'oakleaf'
+  }
+};
+
+function packSkinForBird(bird) {
+  const region = LOC_TO_REGION[bird.locId] || bird.country || '';
+  // Try exact, then progressively broader region prefixes
+  if (PACK_SKINS[region]) return PACK_SKINS[region];
+  return null; // default (unskinned) card
+}
+
+// SVG motifs for pack skins
+const MOTIF_SVG = {
+  watertower: '<svg class="card-motif" viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="34" rx="2"/><path d="M30 30 L50 14 L70 30 Z"/><rect x="34" y="64" width="4" height="24"/><rect x="62" y="64" width="4" height="24"/><rect x="46" y="64" width="4" height="24"/><rect x="54" y="64" width="4" height="24"/><rect x="28" y="44" width="44" height="3"/></svg>',
+  oakleaf: '<svg class="card-motif" viewBox="0 0 100 100"><path d="M50 6 C54 16 60 18 60 18 C56 20 58 26 58 26 C62 26 66 24 66 24 C63 30 66 34 66 34 C70 32 74 28 74 28 C71 36 74 40 74 40 C78 38 82 34 82 34 C78 44 80 48 80 48 C74 50 68 48 64 52 C60 56 56 62 52 64 L52 88 L48 88 L48 64 C44 62 40 56 36 52 C32 48 26 50 20 48 C20 48 22 44 18 34 C18 34 22 38 26 40 C26 40 29 36 26 28 C26 28 30 32 34 34 C34 34 37 30 34 24 C34 24 38 26 42 26 C42 26 44 20 40 18 C40 18 46 16 50 6 Z"/></svg>',
+  leaf: '<svg class="card-motif" viewBox="0 0 100 100"><path d="M50 90 C50 90 20 70 20 42 C20 22 34 10 50 10 C66 10 80 22 80 42 C80 70 50 90 50 90 Z M50 20 L50 84 M50 34 L36 44 M50 34 L64 44 M50 50 L34 62 M50 50 L66 62" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>'
+};
+
+// Acorn & oak-leaf corner ornament for Hinsdale (one SVG, flipped per corner via CSS)
+const ACORN_ORNAMENT = '<svg viewBox="0 0 40 40"><path d="M3 3 Q14 5 18 14 Q20 12 19 9 Q23 13 22 17 Q26 16 27 13 Q28 19 24 22 Q28 23 31 21 Q29 27 23 27 Q20 28 17 26 Q9 22 3 3 Z" fill="#4e6a40"/><path d="M6 20 Q13 14 20 20 Q20 23 13 23 Q6 23 6 20 Z" fill="#8a6a26"/><circle cx="10" cy="19.5" r="0.8" fill="#5a4014"/><circle cx="13" cy="19" r="0.8" fill="#5a4014"/><circle cx="16" cy="19.5" r="0.8" fill="#5a4014"/><path d="M7 23 Q7 32 13 34 Q19 32 19 23 Z" fill="#a87e3c"/><path d="M7 23 Q7 32 13 34 Q13 28 13 23 Z" fill="#8a6630"/><rect x="12" y="11" width="1.6" height="4" rx="0.8" fill="#5a4014"/></svg>';
+
+function acornCorners(prefix) {
+  return `
+    <div class="${prefix} orn-tl">${ACORN_ORNAMENT}</div>
+    <div class="${prefix} orn-tr">${ACORN_ORNAMENT}</div>
+    <div class="${prefix} orn-bl">${ACORN_ORNAMENT}</div>
+    <div class="${prefix} orn-br">${ACORN_ORNAMENT}</div>`;
+}
+
 // ── Seasonal presence lookup ──
 // Hardcoded from eBird bar chart data per species per sighting region.
 // Key format: speciesCode_countryCode
@@ -1449,22 +2025,37 @@ function getSeasonalPresence(speciesCode, country, date) {
   };
 }
 
+// Fine-lined engraved botanical season icons (stroke = currentColor so they inherit pack tint)
+const SEASON_ICONS = {
+  // Cherry blossom — spring
+  spring: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.1"><g stroke-linecap="round" stroke-linejoin="round">' +
+    [0,72,144,216,288].map(a => `<g transform="rotate(${a} 16 16)"><path d="M16 16 C13 13 13 8 16 6 C19 8 19 13 16 16Z"/><path d="M16 6.5 L16 8.5" stroke-width="0.8"/></g>`).join('') +
+    '<circle cx="16" cy="16" r="1.6"/>' +
+    [0,72,144,216,288].map(a => `<line x1="16" y1="16" x2="${16+3*Math.cos((a-90)*Math.PI/180)}" y2="${16+3*Math.sin((a-90)*Math.PI/180)}" stroke-width="0.7"/>`).join('') +
+    '</g></svg>',
+  // Radiant sun — summer
+  summer: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="16" cy="16" r="6"/>' +
+    Array.from({length:12}).map((_,i)=>{const a=i*30*Math.PI/180;const r1=8.5,r2=12.5;return `<line x1="${16+r1*Math.cos(a)}" y1="${16+r1*Math.sin(a)}" x2="${16+r2*Math.cos(a)}" y2="${16+r2*Math.sin(a)}" stroke-linecap="round"/>`;}).join('') +
+    '<circle cx="16" cy="16" r="2.2" stroke-width="0.8"/></svg>',
+  // Maple leaf — fall
+  fall: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"><path d="M16 27 L16 20 M16 20 L16 6 M16 8 L11 11 L12.5 12 L8 15 L10 16 L6.5 19 L13 18 L12.5 21 L16 20 M16 8 L21 11 L19.5 12 L24 15 L22 16 L25.5 19 L19 18 L19.5 21 L16 20"/></svg>',
+  // Snowflake — winter
+  winter: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">' +
+    [0,60,120].map(a=>`<g transform="rotate(${a} 16 16)"><line x1="16" y1="4" x2="16" y2="28"/><path d="M16 8 L13 6 M16 8 L19 6 M16 24 L13 26 M16 24 L19 26" stroke-width="0.85"/><path d="M16 13 L13.5 11.5 M16 13 L18.5 11.5 M16 19 L13.5 20.5 M16 19 L18.5 20.5" stroke-width="0.7"/></g>`).join('') +
+    '<circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"/></svg>',
+};
+
 function seasonalPresenceHTML(presence) {
   if (!presence) return '';
   const dot = { present: '●', rare: '◐', absent: '○' };
-  const seasons = [
-    { key:'spring', emoji:'🌸' },
-    { key:'summer', emoji:'☀️' },
-    { key:'fall',   emoji:'🍁' },
-    { key:'winter', emoji:'❄️' },
-  ];
+  const seasons = ['spring','summer','fall','winter'];
   return `
     <div class="seasonal-label">Seasonal Presence</div>
     <div class="seasonal-dots">
-      ${seasons.map(s => `
-        <div class="seasonal-item ${presence[s.key]||'absent'}">
-          <span class="seasonal-emoji">${s.emoji}</span>
-          <span class="seasonal-dot">${dot[presence[s.key]]||'○'}</span>
+      ${seasons.map(key => `
+        <div class="seasonal-item ${presence[key]||'absent'}">
+          <span class="seasonal-icon">${SEASON_ICONS[key]}</span>
+          <span class="seasonal-dot">${dot[presence[key]]||'○'}</span>
         </div>`).join('')}
     </div>`;
 }
@@ -1498,8 +2089,7 @@ function cardFrontHTML(bird, index) {
   const badgeClass = rarityClass(rarity);
   const badgeLabel = rarity || 'Common';
   const fullCountry = countryName(country);
-  const season = seasonFromDate(date);
-  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
+  const sName = seasonName(date);
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
   const city = cityFromBird(bird);
   const locationEyebrow = [city, fullCountry].filter(Boolean).join(', ').toUpperCase();
@@ -1508,8 +2098,46 @@ function cardFrontHTML(bird, index) {
     ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
     : `<div class="no-photo">No photo</div>`;
 
+  // Pack skin
+  const skin = packSkinForBird(bird);
+  const skinClass = skin ? `skin-${skin.id}` : '';
+  const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
+  const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
+
+  // Flat premium treatment — grid cards mirror the modal's look (static)
+  const isFlatPremium = skin && (skin.id === 'brooklyn' || skin.id === 'hinsdale');
+  if (isFlatPremium) {
+    const isHd = skin.id === 'hinsdale';
+    const flatClass = isHd ? 'premium-flat-hd' : 'premium-flat';
+    const cornerEls = isHd
+      ? acornCorners('pk-orn')
+      : '<div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div>';
+    return `
+    <div class="card-face card-front ${flatClass}">
+      <div class="pk-metal"></div>
+      ${cornerEls}
+      <div class="pk-face">
+        <div class="card-eyebrow">${locationEyebrow}${dateEyebrow ? ' &nbsp;·&nbsp; ' + dateEyebrow : ''}</div>
+        <div class="card-rule"></div>
+        <div class="photo-frame">
+          ${photoBlock}
+          ${photoUrl ? `<span class="photo-credit">© ${licenseShort}</span>` : ''}
+        </div>
+        <div class="card-rule"></div>
+        <div class="card-name">${commonName}</div>
+        <div class="card-sci">${sciName}</div>
+        <div class="card-bottom">
+          ${sName ? `<span class="season-pill">${sName}</span>` : '<span></span>'}
+          <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+      </div>
+    </div>`;
+  }
+
   return `
-  <div class="card-face card-front">
+  <div class="card-face card-front ${skinClass}">
+    ${textureEl}
+    ${motifEl}
     <div class="corner c-tl">${CORNER_SVG}</div>
     <div class="corner c-tr">${CORNER_SVG}</div>
     <div class="corner c-bl">${CORNER_SVG}</div>
@@ -1524,8 +2152,7 @@ function cardFrontHTML(bird, index) {
     <div class="card-name">${commonName}</div>
     <div class="card-sci">${sciName}</div>
     <div class="card-bottom">
-      <span class="card-num">No. ${String(index+1).padStart(3,'0')}</span>
-      ${seasonBadge}
+      ${sName ? `<span class="season-pill">${sName}</span>` : '<span></span>'}
       <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
     </div>
   </div>`;
@@ -1562,10 +2189,10 @@ function cardBackHTML(bird, index) {
     <div class="seasonal-row" id="seasonal-${index}">
       <div class="seasonal-label">Seasonal Presence</div>
       <div class="seasonal-dots">
-        <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.spring}</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.summer}</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.fall}</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.winter}</span><span class="seasonal-dot">○</span></div>
       </div>
     </div>
     <div class="back-rule"></div>
@@ -1577,8 +2204,7 @@ function cardBackHTML(bird, index) {
         <span class="sighting-date">${formatDate(date)}</span>
       </div>
       <div class="back-footer">
-        <span>#${String(index+1).padStart(3,'0')} · Life List</span>
-        <span>mvogts</span>
+        <span>Life List</span>
       </div>
     </div>
   </div>`;
@@ -1674,6 +2300,40 @@ function stackHTML(group) {
 let modalGroupIndices = [];
 let modalGroupPos = 0;
 
+// Premium card: tilt toward cursor + move the specular sheen (modal only)
+function attachPremiumTilt() {
+  const inner = document.getElementById('modal-card-inner');
+  const sheenFront = document.getElementById('pk-sheen');
+  const sheenBack = document.getElementById('pk-sheen-back');
+  if (!inner || !sheenFront) return; // only present for premium cards
+
+  const scene = inner.parentElement;
+  const SLOW = 'transform 0.65s cubic-bezier(0.4,0.2,0.2,1)';
+  const FAST = 'transform 0.08s ease-out';
+  scene.onmousemove = (e) => {
+    const flipped = inner.classList.contains('flipped');
+    const r = inner.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    const ry = (px - 0.5) * 18;
+    const rx = (0.5 - py) * 13;
+    inner.style.transition = FAST; // responsive tilt
+    const base = flipped ? 180 : 0;
+    inner.style.transform = `rotateY(${base + ry}deg) rotateX(${rx}deg)`;
+    const s = flipped ? sheenBack : sheenFront;
+    if (s) {
+      const mx = flipped ? (100 - px*100) : (px*100);
+      s.style.setProperty('--mx', mx + '%');
+      s.style.setProperty('--my', (py*100) + '%');
+    }
+  };
+  scene.onmouseleave = () => {
+    const flipped = inner.classList.contains('flipped');
+    inner.style.transition = SLOW; // smooth settle
+    inner.style.transform = flipped ? 'rotateY(180deg)' : '';
+  };
+}
+
 function openModalGroup(indices, pos) {
   modalGroupIndices = indices;
   modalGroupPos = pos;
@@ -1683,6 +2343,7 @@ function openModalGroup(indices, pos) {
   modalFlipped = false;
   const content = document.getElementById('modal-card-content');
   content.innerHTML = buildModalCardHTML(bird, indices[pos]);
+  attachPremiumTilt();
 
   const inner = document.getElementById('modal-card-inner');
   if (inner) inner.classList.remove('flipped');
@@ -1747,6 +2408,7 @@ function openModal(index, sciName, commonName) {
 
   const content = document.getElementById('modal-card-content');
   content.innerHTML = buildModalCardHTML(bird, index);
+  attachPremiumTilt();
 
   // Ensure card starts on front face
   const inner = document.getElementById('modal-card-inner');
@@ -1785,11 +2447,12 @@ function closeModal() {
 
 function flipModalCard() {
   const inner = document.getElementById('modal-card-inner');
-  console.log('flipModalCard called, inner:', inner);
-  if (!inner) { console.error('modal-card-inner not found'); return; }
+  if (!inner) return;
   const isFlipped = inner.classList.contains('flipped');
+  // Smooth flip, and clear inline tilt so the CSS .flipped rotateY takes over
+  inner.style.transition = 'transform 0.65s cubic-bezier(0.4,0.2,0.2,1)';
+  inner.style.transform = '';
   inner.classList.toggle('flipped', !isFlipped);
-  console.log('now flipped:', !isFlipped);
 }
 
 function handleModalOverlayClick(e) {
@@ -1814,8 +2477,7 @@ function buildModalCardHTML(bird, index) {
   const since = daysSince(date);
   const status = exoticLabel(exotic);
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
-  const season = seasonFromDate(date);
-  const seasonBadge = season ? `<span class="season-badge" title="${season.label}">${season.emoji}</span>` : '';
+  const sName = seasonName(date);
 
   const photoBlock = photoUrl
     ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
@@ -1825,10 +2487,34 @@ function buildModalCardHTML(bird, index) {
   const locationEyebrow = [city, fullCountry].filter(Boolean).join(', ').toUpperCase();
   const dateEyebrow = date ? `${['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][parseInt(date.split('-')[1])-1]} ${date.split('-')[0]}` : '';
 
+  const skin = packSkinForBird(bird);
+  const skinClass = skin ? `skin-${skin.id}` : '';
+  const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
+  const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
+
+  // Premium dimensional treatment — modal only (Brooklyn & Hinsdale)
+  const isPremium = skin && (skin.id === 'brooklyn' || skin.id === 'hinsdale');
+  const isHd = skin && skin.id === 'hinsdale';
+  const premiumClass = isHd ? 'premium-hinsdale' : (isPremium ? 'premium-brooklyn' : '');
+  const premiumMetal = isPremium ? '<div class="pk-metal"></div>' : '';
+  const cornerMarkup = isHd
+    ? acornCorners('pk-orn')
+    : '<div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div>';
+  const premiumCaps = isPremium ? `
+        ${cornerMarkup}
+        <div class="pk-sheen" id="pk-sheen"></div>` : '';
+  const faceOpen = isPremium ? '<div class="pk-face">' : '';
+  const faceClose = isPremium ? '</div>' : '';
+
   return `
   <div class="scene" style="width:100%;height:100%;aspect-ratio:unset;cursor:pointer;perspective:1000px" onclick="flipModalCard()">
     <div class="card-inner" id="modal-card-inner" style="width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0.2,0.2,1)">
-      <div class="card-face card-front">
+      <div class="card-face card-front ${skinClass} ${premiumClass}">
+        ${premiumMetal}
+        ${premiumCaps}
+        ${faceOpen}
+        ${textureEl}
+        ${motifEl}
         <div class="corner c-tl">${CORNER_SVG}</div>
         <div class="corner c-tr">${CORNER_SVG}</div>
         <div class="corner c-bl">${CORNER_SVG}</div>
@@ -1843,12 +2529,14 @@ function buildModalCardHTML(bird, index) {
         <div class="card-name">${commonName}</div>
         <div class="card-sci">${sciName}</div>
         <div class="card-bottom">
-          <span class="card-num">No. ${String(index+1).padStart(3,'0')}</span>
-          ${seasonBadge}
+          ${sName ? `<span class="season-pill">${sName}</span>` : '<span></span>'}
           <span class="rarity-badge ${badgeClass}">${badgeLabel}</span>
         </div>
+        ${faceClose}
       </div>
-      <div class="card-face card-back">
+      <div class="card-face card-back ${premiumClass}">
+        ${isPremium ? '<div class="pk-metal"></div>' + cornerMarkup + '<div class="pk-sheen" id="pk-sheen-back"></div>' : ''}
+        ${isPremium ? '<div class="pk-face pk-face-back">' : ''}
         <div class="back-header">
           <div>
             <div class="back-name">${commonName}</div>
@@ -1869,10 +2557,10 @@ function buildModalCardHTML(bird, index) {
         <div id="modal-seasonal">
           <div class="seasonal-label">Seasonal Presence</div>
           <div class="seasonal-dots">
-            <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.spring}</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.summer}</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.fall}</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.winter}</span><span class="seasonal-dot">○</span></div>
           </div>
         </div>
         <div class="back-rule"></div>
@@ -1884,10 +2572,10 @@ function buildModalCardHTML(bird, index) {
             <span class="sighting-date">${formatDate(date)}</span>
           </div>
           <div class="back-footer">
-            <span>#${String(index+1).padStart(3,'0')} · Life List</span>
-            <span>mvogts</span>
+            <span>Life List</span>
           </div>
         </div>
+        ${isPremium ? '</div>' : ''}
       </div>
     </div>
   </div>`;
@@ -1903,7 +2591,7 @@ let allBirds = [];
 let activeFilter = 'all';
 let activeSearch = '';
 let activeSort = 'default';
-let currentPackId = null;
+let currentPackId = 'lifelist';
 let packState = null;
 
 // ── Filtering + sorting ──
@@ -2018,7 +2706,7 @@ function setupFilters() {
 }
 
 // ── Packs ──
-let packsOpen = false;
+let packsOpen = true;
 let packsLoaded = false;
 
 function togglePacks() {
@@ -2036,7 +2724,17 @@ function togglePacks() {
 // Render pack shells immediately (no API calls) so layout is instant
 function renderPackShells() {
   const grid = document.getElementById('packs-grid');
-  grid.innerHTML = PACKS.map(pack => `
+
+  // Life List pill — always first, acts as "show everything" filter
+  const lifeListPill = `
+    <div class="pack-card life-list-pill active" id="pack-lifelist" onclick="filterByPack('lifelist')">
+      <div class="pack-type">📖 Full Collection</div>
+      <div class="pack-name">Life List</div>
+      <div class="pack-progress-bar"><div class="pack-progress-fill" style="width:100%"></div></div>
+      <div class="pack-count"><strong>${allBirds.length}</strong> species total</div>
+    </div>`;
+
+  const packPills = PACKS.map(pack => `
     <div class="pack-card" id="pack-${pack.id}" onclick="filterByPack('${pack.id}')">
       <div class="pack-type">${pack.emoji} ${pack.type}</div>
       <div class="pack-name">${pack.name}</div>
@@ -2044,6 +2742,8 @@ function renderPackShells() {
       <div class="pack-count" id="count-${pack.id}"><span class="pack-loading">Open to load…</span></div>
     </div>
   `).join('');
+
+  grid.innerHTML = lifeListPill + packPills;
 }
 
 // Load pack counts — only called when user opens the packs panel
@@ -2074,10 +2774,24 @@ async function renderPacks() {
 async function filterByPack(packId) {
   const packEl = document.getElementById(`pack-${packId}`);
 
-  if (currentPackId === packId) {
-    currentPackId = null;
+  // Life List — always resets to full collection
+  if (packId === 'lifelist') {
+    currentPackId = 'lifelist';
     packState = null;
     document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+    packEl.classList.add('active');
+    document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+    activeFilter = 'all';
+    renderGallery(applyFiltersAndSort(allBirds));
+    return;
+  }
+
+  if (currentPackId === packId) {
+    // Clicking active pack again returns to Life List
+    currentPackId = 'lifelist';
+    packState = null;
+    document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('pack-lifelist').classList.add('active');
     document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
     activeFilter = 'all';
     renderGallery(applyFiltersAndSort(allBirds));
@@ -2154,7 +2868,7 @@ function parseCSV(text) {
 }
 
 // ── Load data ──
-const SHEET_CACHE_KEY = 'birdlist_csv_v7'; // bumped to clear stale cache
+const SHEET_CACHE_KEY = 'birdlist_csv_v8'; // bumped to clear stale cache
 const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 async function loadData() {
@@ -2222,6 +2936,8 @@ async function loadData() {
     // defer until user actually opens the packs panel
     document.getElementById('packs-section').style.display = 'block';
     renderPackShells(); // render empty pack cards immediately
+    packsLoaded = true;
+    loadPackCounts(); // packs start open, so load counts immediately
 
   } catch(e) {
     gallery.innerHTML = `
@@ -2232,7 +2948,44 @@ async function loadData() {
   }
 }
 
+// ── Physical card tilt on mouse move ──
+function addTiltEffect(el) {
+  el.addEventListener('mousemove', function(e) {
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+    const tiltX = dy * -8;
+    const tiltY = dx * 8;
+    el.style.transform = `translateY(-6px) scale(1.02) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+  });
+
+  el.addEventListener('mouseleave', function() {
+    el.style.transform = '';
+    el.style.transition = 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), filter 0.4s ease';
+    setTimeout(() => { el.style.transition = ''; }, 400);
+  });
+
+  el.addEventListener('mouseenter', function() {
+    el.style.transition = 'transform 0.1s ease, filter 0.15s ease';
+  });
+}
+
+// Apply tilt to cards whenever the gallery DOM changes (avoids recursion)
+const _galleryEl = document.getElementById('gallery');
+if (_galleryEl) {
+  const _tiltObserver = new MutationObserver(() => {
+    document.querySelectorAll('.scene:not([data-tilt]), .stack-scene:not([data-tilt])').forEach(el => {
+      el.setAttribute('data-tilt', '1');
+      addTiltEffect(el);
+    });
+  });
+  _tiltObserver.observe(_galleryEl, { childList: true, subtree: true });
+}
+
 loadData();
+
 </script>
 </body>
 </html>
