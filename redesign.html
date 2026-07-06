@@ -2132,23 +2132,34 @@ let modalGroupPos = 0;
 // Premium card: tilt toward cursor + move the specular sheen (modal only)
 function attachPremiumTilt() {
   const inner = document.getElementById('modal-card-inner');
-  const sheen = document.getElementById('pk-sheen');
-  if (!inner || !sheen) return; // only present for premium cards
+  const sheenFront = document.getElementById('pk-sheen');
+  const sheenBack = document.getElementById('pk-sheen-back');
+  if (!inner || !sheenFront) return; // only present for premium cards
 
   const scene = inner.parentElement;
+  const SLOW = 'transform 0.65s cubic-bezier(0.4,0.2,0.2,1)';
+  const FAST = 'transform 0.08s ease-out';
   scene.onmousemove = (e) => {
-    if (inner.classList.contains('flipped')) return; // don't tilt while flipped
+    const flipped = inner.classList.contains('flipped');
     const r = inner.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width;
     const py = (e.clientY - r.top) / r.height;
     const ry = (px - 0.5) * 18;
     const rx = (0.5 - py) * 13;
-    inner.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
-    sheen.style.setProperty('--mx', (px*100) + '%');
-    sheen.style.setProperty('--my', (py*100) + '%');
+    inner.style.transition = FAST; // responsive tilt
+    const base = flipped ? 180 : 0;
+    inner.style.transform = `rotateY(${base + ry}deg) rotateX(${rx}deg)`;
+    const s = flipped ? sheenBack : sheenFront;
+    if (s) {
+      const mx = flipped ? (100 - px*100) : (px*100);
+      s.style.setProperty('--mx', mx + '%');
+      s.style.setProperty('--my', (py*100) + '%');
+    }
   };
   scene.onmouseleave = () => {
-    if (!inner.classList.contains('flipped')) inner.style.transform = '';
+    const flipped = inner.classList.contains('flipped');
+    inner.style.transition = SLOW; // smooth settle
+    inner.style.transform = flipped ? 'rotateY(180deg)' : '';
   };
 }
 
@@ -2267,7 +2278,8 @@ function flipModalCard() {
   const inner = document.getElementById('modal-card-inner');
   if (!inner) return;
   const isFlipped = inner.classList.contains('flipped');
-  // Clear any inline tilt transform so the CSS .flipped rotateY can take over
+  // Smooth flip, and clear inline tilt so the CSS .flipped rotateY takes over
+  inner.style.transition = 'transform 0.65s cubic-bezier(0.4,0.2,0.2,1)';
   inner.style.transform = '';
   inner.classList.toggle('flipped', !isFlipped);
 }
@@ -2351,7 +2363,7 @@ function buildModalCardHTML(bird, index) {
         ${faceClose}
       </div>
       <div class="card-face card-back ${premiumClass}">
-        ${isPremium ? '<div class="pk-metal"></div><div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div>' : ''}
+        ${isPremium ? '<div class="pk-metal"></div><div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div><div class="pk-sheen" id="pk-sheen-back"></div>' : ''}
         ${isPremium ? '<div class="pk-face pk-face-back">' : ''}
         <div class="back-header">
           <div>
