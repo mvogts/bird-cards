@@ -754,7 +754,7 @@
   .modal-card-wrap .stat-item-value { font-size: 16px; }
   .modal-card-wrap .back-desc     { font-size: 15px; line-height: 1.7; }
   .modal-card-wrap .seasonal-label { font-size: 10px; }
-  .modal-card-wrap .seasonal-emoji { font-size: 17px; }
+  .modal-card-wrap .seasonal-icon { width: 24px; height: 24px; }
   .modal-card-wrap .seasonal-dot { font-size: 12px; }
   .modal-card-wrap .sighting-loc,
   .modal-card-wrap .sighting-date { font-size: 13px; }
@@ -1171,6 +1171,8 @@
   .modal-card-wrap .card-back.premium-hinsdale .seasonal-dots { gap: 14px; margin-top: 8px; }
   .modal-card-wrap .card-back.premium-hinsdale .back-desc { margin: 6px 0 10px; }
   .modal-card-wrap .card-back.premium-hinsdale .sighting-footer { margin-top: auto; }
+  .modal-card-wrap .card-back.premium-brooklyn .seasonal-icon { color: #3f5a2e; }
+  .modal-card-wrap .card-back.premium-hinsdale .seasonal-icon { color: #5a4420; }
   .modal-card-wrap .premium-hinsdale .corner,
   .modal-card-wrap .premium-hinsdale .card-texture,
   .modal-card-wrap .premium-hinsdale .card-motif { display: none; }
@@ -1252,7 +1254,12 @@
     gap: 2px;
   }
 
-  .seasonal-emoji { font-size: 13px; line-height: 1; }
+  .seasonal-icon { width: 18px; height: 18px; display: block; color: var(--ink-soft); }
+  .seasonal-icon svg { width: 100%; height: 100%; display: block; }
+  /* Absent seasons: faded; present/rare: full-strength engraved */
+  .seasonal-item.absent .seasonal-icon { opacity: 0.28; }
+  .seasonal-item.rare .seasonal-icon { opacity: 0.6; }
+  .seasonal-item.present .seasonal-icon { opacity: 1; }
 
   .seasonal-dot {
     font-size: 9px;
@@ -2018,22 +2025,37 @@ function getSeasonalPresence(speciesCode, country, date) {
   };
 }
 
+// Fine-lined engraved botanical season icons (stroke = currentColor so they inherit pack tint)
+const SEASON_ICONS = {
+  // Cherry blossom — spring
+  spring: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.1"><g stroke-linecap="round" stroke-linejoin="round">' +
+    [0,72,144,216,288].map(a => `<g transform="rotate(${a} 16 16)"><path d="M16 16 C13 13 13 8 16 6 C19 8 19 13 16 16Z"/><path d="M16 6.5 L16 8.5" stroke-width="0.8"/></g>`).join('') +
+    '<circle cx="16" cy="16" r="1.6"/>' +
+    [0,72,144,216,288].map(a => `<line x1="16" y1="16" x2="${16+3*Math.cos((a-90)*Math.PI/180)}" y2="${16+3*Math.sin((a-90)*Math.PI/180)}" stroke-width="0.7"/>`).join('') +
+    '</g></svg>',
+  // Radiant sun — summer
+  summer: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="16" cy="16" r="6"/>' +
+    Array.from({length:12}).map((_,i)=>{const a=i*30*Math.PI/180;const r1=8.5,r2=12.5;return `<line x1="${16+r1*Math.cos(a)}" y1="${16+r1*Math.sin(a)}" x2="${16+r2*Math.cos(a)}" y2="${16+r2*Math.sin(a)}" stroke-linecap="round"/>`;}).join('') +
+    '<circle cx="16" cy="16" r="2.2" stroke-width="0.8"/></svg>',
+  // Maple leaf — fall
+  fall: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"><path d="M16 27 L16 20 M16 20 L16 6 M16 8 L11 11 L12.5 12 L8 15 L10 16 L6.5 19 L13 18 L12.5 21 L16 20 M16 8 L21 11 L19.5 12 L24 15 L22 16 L25.5 19 L19 18 L19.5 21 L16 20"/></svg>',
+  // Snowflake — winter
+  winter: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">' +
+    [0,60,120].map(a=>`<g transform="rotate(${a} 16 16)"><line x1="16" y1="4" x2="16" y2="28"/><path d="M16 8 L13 6 M16 8 L19 6 M16 24 L13 26 M16 24 L19 26" stroke-width="0.85"/><path d="M16 13 L13.5 11.5 M16 13 L18.5 11.5 M16 19 L13.5 20.5 M16 19 L18.5 20.5" stroke-width="0.7"/></g>`).join('') +
+    '<circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"/></svg>',
+};
+
 function seasonalPresenceHTML(presence) {
   if (!presence) return '';
   const dot = { present: '●', rare: '◐', absent: '○' };
-  const seasons = [
-    { key:'spring', emoji:'🌸' },
-    { key:'summer', emoji:'☀️' },
-    { key:'fall',   emoji:'🍁' },
-    { key:'winter', emoji:'❄️' },
-  ];
+  const seasons = ['spring','summer','fall','winter'];
   return `
     <div class="seasonal-label">Seasonal Presence</div>
     <div class="seasonal-dots">
-      ${seasons.map(s => `
-        <div class="seasonal-item ${presence[s.key]||'absent'}">
-          <span class="seasonal-emoji">${s.emoji}</span>
-          <span class="seasonal-dot">${dot[presence[s.key]]||'○'}</span>
+      ${seasons.map(key => `
+        <div class="seasonal-item ${presence[key]||'absent'}">
+          <span class="seasonal-icon">${SEASON_ICONS[key]}</span>
+          <span class="seasonal-dot">${dot[presence[key]]||'○'}</span>
         </div>`).join('')}
     </div>`;
 }
@@ -2167,10 +2189,10 @@ function cardBackHTML(bird, index) {
     <div class="seasonal-row" id="seasonal-${index}">
       <div class="seasonal-label">Seasonal Presence</div>
       <div class="seasonal-dots">
-        <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.spring}</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.summer}</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.fall}</span><span class="seasonal-dot">○</span></div>
+        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.winter}</span><span class="seasonal-dot">○</span></div>
       </div>
     </div>
     <div class="back-rule"></div>
@@ -2182,8 +2204,7 @@ function cardBackHTML(bird, index) {
         <span class="sighting-date">${formatDate(date)}</span>
       </div>
       <div class="back-footer">
-        <span>#${String(index+1).padStart(3,'0')} · Life List</span>
-        <span>mvogts</span>
+        <span>Life List</span>
       </div>
     </div>
   </div>`;
@@ -2536,10 +2557,10 @@ function buildModalCardHTML(bird, index) {
         <div id="modal-seasonal">
           <div class="seasonal-label">Seasonal Presence</div>
           <div class="seasonal-dots">
-            <div class="seasonal-item absent"><span class="seasonal-emoji">🌸</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">☀️</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">🍁</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-emoji">❄️</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.spring}</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.summer}</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.fall}</span><span class="seasonal-dot">○</span></div>
+            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.winter}</span><span class="seasonal-dot">○</span></div>
           </div>
         </div>
         <div class="back-rule"></div>
@@ -2552,7 +2573,6 @@ function buildModalCardHTML(bird, index) {
           </div>
           <div class="back-footer">
             <span>Life List</span>
-            <span>mvogts</span>
           </div>
         </div>
         ${isPremium ? '</div>' : ''}
