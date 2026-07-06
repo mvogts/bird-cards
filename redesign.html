@@ -1076,6 +1076,143 @@
   .modal-card-wrap .premium-brooklyn .card-texture,
   .modal-card-wrap .premium-brooklyn .card-motif { display: none; }
 
+  /* ============ PREMIUM HINSDALE — MODAL ONLY ============ */
+  .modal-card-wrap .premium-hinsdale {
+    border: none !important; background: transparent !important;
+    border-radius: 18px; overflow: hidden; padding: 0 !important;
+  }
+  /* Federal-green reeded rim */
+  .modal-card-wrap .premium-hinsdale .pk-metal {
+    position: absolute; inset: 0; border-radius: 18px; padding: 12px; z-index: 0;
+    background: linear-gradient(135deg,#4a6340 0%,#2c4025 18%,#3e5636 34%,#22331d 50%,#3a5232 66%,#1e2e1a 82%,#435c3a 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.25), inset 0 -2px 3px rgba(0,0,0,0.5);
+  }
+  .modal-card-wrap .premium-hinsdale .pk-metal::before {
+    content:""; position: absolute; inset: 0; border-radius: 18px; pointer-events: none;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 1px, transparent 1px 4px, rgba(0,0,0,0.12) 4px 5px, transparent 5px 8px);
+  }
+  /* Parchment face */
+  .modal-card-wrap .premium-hinsdale .pk-face {
+    position: absolute; inset: 12px; border-radius: 7px;
+    background: #ece0c2;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(180,150,100,0.14) 0px, transparent 60px),
+      radial-gradient(circle at 88% 82%, rgba(160,130,85,0.16) 0px, transparent 70px),
+      radial-gradient(circle at 70% 20%, rgba(200,175,130,0.12) 0px, transparent 50px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 6px rgba(90,70,40,0.18);
+    z-index: 1; display: flex; flex-direction: column; padding: 20px 18px 14px; overflow: hidden;
+  }
+  .modal-card-wrap .premium-hinsdale .pk-face::before {
+    content:""; position: absolute; inset: 0; z-index: 0; opacity: 0.5; pointer-events: none;
+    background-image:
+      radial-gradient(circle at 30% 40%, rgba(150,120,70,0.08) 0px, transparent 4px),
+      radial-gradient(circle at 65% 25%, rgba(150,120,70,0.06) 0px, transparent 3px),
+      radial-gradient(circle at 50% 75%, rgba(120,95,55,0.07) 0px, transparent 5px);
+    background-size: 40px 40px, 55px 55px, 48px 48px;
+  }
+  /* Acorn corner ornaments — sit proud of the card with layered shadow */
+  .modal-card-wrap .premium-hinsdale .pk-orn {
+    position: absolute; width: 42px; height: 42px; z-index: 6;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.35)) drop-shadow(2px 4px 3px rgba(30,20,10,0.5)) drop-shadow(4px 7px 8px rgba(30,20,10,0.3));
+  }
+  .modal-card-wrap .premium-hinsdale .pk-orn svg { width: 100%; height: 100%; display: block; }
+  .modal-card-wrap .premium-hinsdale .orn-tl { top: 9px; left: 9px; }
+  .modal-card-wrap .premium-hinsdale .orn-tr { top: 9px; right: 9px; transform: scaleX(-1); }
+  .modal-card-wrap .premium-hinsdale .orn-bl { bottom: 9px; left: 9px; transform: scaleY(-1); }
+  .modal-card-wrap .premium-hinsdale .orn-br { bottom: 9px; right: 9px; transform: scale(-1,-1); }
+  /* Sheen */
+  .modal-card-wrap .premium-hinsdale .pk-sheen {
+    position: absolute; inset: 0; border-radius: 18px; z-index: 7; pointer-events: none;
+    background: radial-gradient(circle 220px at var(--mx,30%) var(--my,20%), rgba(255,255,255,0.22), rgba(255,255,255,0) 60%);
+    mix-blend-mode: soft-light;
+  }
+  /* Content above face layer, Hinsdale tints */
+  .modal-card-wrap .premium-hinsdale .card-eyebrow,
+  .modal-card-wrap .premium-hinsdale .card-rule,
+  .modal-card-wrap .premium-hinsdale .photo-frame,
+  .modal-card-wrap .premium-hinsdale .card-name,
+  .modal-card-wrap .premium-hinsdale .card-sci,
+  .modal-card-wrap .premium-hinsdale .card-bottom { position: relative; z-index: 2; }
+  .modal-card-wrap .premium-hinsdale .card-eyebrow { color: #5a4420; }
+  .modal-card-wrap .premium-hinsdale .card-rule { background: linear-gradient(to right, transparent, #9a7a44, transparent); }
+  .modal-card-wrap .premium-hinsdale .photo-frame { background: linear-gradient(135deg,#5a4326,#33240f); padding: 4px; }
+  .modal-card-wrap .premium-hinsdale .card-name { color: #3e2f14; text-shadow: 0 -1px 0 rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.55); }
+  .modal-card-wrap .premium-hinsdale .card-sci { color: #6a5228; }
+  .modal-card-wrap .premium-hinsdale .season-pill { background: linear-gradient(#3e5636,#28401e); color: #dce8c8; }
+  .modal-card-wrap .premium-hinsdale .rarity-badge { background: linear-gradient(#5a4326,#3a2612); color: #ecd8b8; }
+
+  /* Premium Hinsdale BACK */
+  .modal-card-wrap .card-back.premium-hinsdale { padding: 0 !important; background: transparent !important; border: none !important; overflow: hidden; border-radius: 18px; }
+  .modal-card-wrap .card-back.premium-hinsdale .pk-face-back {
+    position: absolute; inset: 12px; border-radius: 7px;
+    background: #ece0c2;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(180,150,100,0.14) 0px, transparent 60px),
+      radial-gradient(circle at 88% 82%, rgba(160,130,85,0.16) 0px, transparent 70px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 6px rgba(90,70,40,0.18);
+    z-index: 1; display: flex; flex-direction: column; padding: 22px 20px 16px; overflow: hidden;
+  }
+  .modal-card-wrap .card-back.premium-hinsdale .back-header,
+  .modal-card-wrap .card-back.premium-hinsdale .back-rule,
+  .modal-card-wrap .card-back.premium-hinsdale .stat-grid,
+  .modal-card-wrap .card-back.premium-hinsdale #modal-seasonal,
+  .modal-card-wrap .card-back.premium-hinsdale .back-desc,
+  .modal-card-wrap .card-back.premium-hinsdale .sighting-footer { position: relative; z-index: 2; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-name { color: #3e2f14; font-family: 'Spectral', serif; font-weight: 700; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-sci { color: #6a5228; font-family: 'Spectral', serif; font-style: italic; }
+  .modal-card-wrap .card-back.premium-hinsdale .stat-item-value { color: #3a2c12; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-desc { color: #3a2e18; }
+  .modal-card-wrap .card-back.premium-hinsdale .rarity-badge { background: linear-gradient(#5a4326,#3a2612); color: #ecd8b8; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-rule { background: linear-gradient(to right, transparent, #b09a5a, transparent); }
+  .modal-card-wrap .card-back.premium-hinsdale .back-header { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-rule { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-hinsdale .stat-grid { gap: 16px 18px; margin-bottom: 6px; }
+  .modal-card-wrap .card-back.premium-hinsdale #modal-seasonal { margin: 4px 0; }
+  .modal-card-wrap .card-back.premium-hinsdale .seasonal-dots { gap: 14px; margin-top: 8px; }
+  .modal-card-wrap .card-back.premium-hinsdale .back-desc { margin: 6px 0 10px; }
+  .modal-card-wrap .card-back.premium-hinsdale .sighting-footer { margin-top: auto; }
+  .modal-card-wrap .premium-hinsdale .corner,
+  .modal-card-wrap .premium-hinsdale .card-texture,
+  .modal-card-wrap .premium-hinsdale .card-motif { display: none; }
+
+  /* ============ FLAT PREMIUM HINSDALE — GRID ============ */
+  .premium-flat-hd { border: none !important; background: transparent !important; border-radius: 10px; overflow: hidden; padding: 0 !important; }
+  .premium-flat-hd .pk-metal {
+    position: absolute; inset: 0; border-radius: 10px; padding: 8px; z-index: 0;
+    background: linear-gradient(135deg,#4a6340 0%,#2c4025 18%,#3e5636 34%,#22331d 50%,#3a5232 66%,#1e2e1a 82%,#435c3a 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.25), inset 0 -2px 3px rgba(0,0,0,0.5);
+  }
+  .premium-flat-hd .pk-metal::before {
+    content:""; position:absolute; inset:0; border-radius:10px; pointer-events:none;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 1px, transparent 1px 4px, rgba(0,0,0,0.12) 4px 5px, transparent 5px 8px);
+  }
+  .premium-flat-hd .pk-face {
+    position: absolute; inset: 8px; border-radius: 4px;
+    background: #ece0c2;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(180,150,100,0.14) 0px, transparent 40px),
+      radial-gradient(circle at 88% 82%, rgba(160,130,85,0.16) 0px, transparent 46px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 4px rgba(90,70,40,0.15);
+    z-index: 1; display: flex; flex-direction: column; padding: 12px 11px 9px; overflow: hidden;
+  }
+  .premium-flat-hd .pk-orn { position: absolute; width: 28px; height: 28px; z-index: 6;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.3)) drop-shadow(1.5px 2.5px 2px rgba(30,20,10,0.5)); }
+  .premium-flat-hd .pk-orn svg { width: 100%; height: 100%; display: block; }
+  .premium-flat-hd .orn-tl { top: 6px; left: 6px; }
+  .premium-flat-hd .orn-tr { top: 6px; right: 6px; transform: scaleX(-1); }
+  .premium-flat-hd .orn-bl { bottom: 6px; left: 6px; transform: scaleY(-1); }
+  .premium-flat-hd .orn-br { bottom: 6px; right: 6px; transform: scale(-1,-1); }
+  .premium-flat-hd .card-eyebrow, .premium-flat-hd .card-rule, .premium-flat-hd .photo-frame,
+  .premium-flat-hd .card-name, .premium-flat-hd .card-sci, .premium-flat-hd .card-bottom { position: relative; z-index: 2; }
+  .premium-flat-hd .card-eyebrow { color: #5a4420; }
+  .premium-flat-hd .card-rule { background: linear-gradient(to right, transparent, #9a7a44, transparent); }
+  .premium-flat-hd .photo-frame { background: linear-gradient(135deg,#5a4326,#33240f); padding: 3px; }
+  .premium-flat-hd .card-name { color: #3e2f14; text-shadow: 0 -1px 0 rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.55); }
+  .premium-flat-hd .card-sci { color: #6a5228; }
+  .premium-flat-hd .season-pill { background: linear-gradient(#3e5636,#28401e); color: #dce8c8; }
+  .premium-flat-hd .rarity-badge { background: linear-gradient(#5a4326,#3a2612); color: #ecd8b8; }
+  .premium-flat-hd .corner, .premium-flat-hd .card-texture, .premium-flat-hd .card-motif { display: none; }
+
   /* Hinsdale skin */
   .card-front.skin-hinsdale { background: #f4ebd0; border-color: #8a7538; }
   .skin-hinsdale .card-motif { fill: #8a7538; opacity: 0.12; }
@@ -1762,6 +1899,17 @@ const MOTIF_SVG = {
   leaf: '<svg class="card-motif" viewBox="0 0 100 100"><path d="M50 90 C50 90 20 70 20 42 C20 22 34 10 50 10 C66 10 80 22 80 42 C80 70 50 90 50 90 Z M50 20 L50 84 M50 34 L36 44 M50 34 L64 44 M50 50 L34 62 M50 50 L66 62" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>'
 };
 
+// Acorn & oak-leaf corner ornament for Hinsdale (one SVG, flipped per corner via CSS)
+const ACORN_ORNAMENT = '<svg viewBox="0 0 40 40"><path d="M3 3 Q14 5 18 14 Q20 12 19 9 Q23 13 22 17 Q26 16 27 13 Q28 19 24 22 Q28 23 31 21 Q29 27 23 27 Q20 28 17 26 Q9 22 3 3 Z" fill="#4e6a40"/><path d="M6 20 Q13 14 20 20 Q20 23 13 23 Q6 23 6 20 Z" fill="#8a6a26"/><circle cx="10" cy="19.5" r="0.8" fill="#5a4014"/><circle cx="13" cy="19" r="0.8" fill="#5a4014"/><circle cx="16" cy="19.5" r="0.8" fill="#5a4014"/><path d="M7 23 Q7 32 13 34 Q19 32 19 23 Z" fill="#a87e3c"/><path d="M7 23 Q7 32 13 34 Q13 28 13 23 Z" fill="#8a6630"/><rect x="12" y="11" width="1.6" height="4" rx="0.8" fill="#5a4014"/></svg>';
+
+function acornCorners(prefix) {
+  return `
+    <div class="${prefix} orn-tl">${ACORN_ORNAMENT}</div>
+    <div class="${prefix} orn-tr">${ACORN_ORNAMENT}</div>
+    <div class="${prefix} orn-bl">${ACORN_ORNAMENT}</div>
+    <div class="${prefix} orn-br">${ACORN_ORNAMENT}</div>`;
+}
+
 // ── Seasonal presence lookup ──
 // Hardcoded from eBird bar chart data per species per sighting region.
 // Key format: speciesCode_countryCode
@@ -1934,16 +2082,18 @@ function cardFrontHTML(bird, index) {
   const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
   const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
 
-  // Flat premium treatment — Brooklyn grid cards mirror the modal's look (static)
-  const isFlatPremium = skin && skin.id === 'brooklyn';
+  // Flat premium treatment — grid cards mirror the modal's look (static)
+  const isFlatPremium = skin && (skin.id === 'brooklyn' || skin.id === 'hinsdale');
   if (isFlatPremium) {
+    const isHd = skin.id === 'hinsdale';
+    const flatClass = isHd ? 'premium-flat-hd' : 'premium-flat';
+    const cornerEls = isHd
+      ? acornCorners('pk-orn')
+      : '<div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div>';
     return `
-    <div class="card-face card-front premium-flat">
+    <div class="card-face card-front ${flatClass}">
       <div class="pk-metal"></div>
-      <div class="pk-cap pk-tl"></div>
-      <div class="pk-cap pk-tr"></div>
-      <div class="pk-cap pk-bl"></div>
-      <div class="pk-cap pk-br"></div>
+      ${cornerEls}
       <div class="pk-face">
         <div class="card-eyebrow">${locationEyebrow}${dateEyebrow ? ' &nbsp;·&nbsp; ' + dateEyebrow : ''}</div>
         <div class="card-rule"></div>
@@ -2321,15 +2471,16 @@ function buildModalCardHTML(bird, index) {
   const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
   const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
 
-  // Premium dimensional treatment — Brooklyn only, modal only
-  const isPremium = skin && skin.id === 'brooklyn';
-  const premiumClass = isPremium ? 'premium-brooklyn' : '';
+  // Premium dimensional treatment — modal only (Brooklyn & Hinsdale)
+  const isPremium = skin && (skin.id === 'brooklyn' || skin.id === 'hinsdale');
+  const isHd = skin && skin.id === 'hinsdale';
+  const premiumClass = isHd ? 'premium-hinsdale' : (isPremium ? 'premium-brooklyn' : '');
   const premiumMetal = isPremium ? '<div class="pk-metal"></div>' : '';
+  const cornerMarkup = isHd
+    ? acornCorners('pk-orn')
+    : '<div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div>';
   const premiumCaps = isPremium ? `
-        <div class="pk-cap pk-tl"></div>
-        <div class="pk-cap pk-tr"></div>
-        <div class="pk-cap pk-bl"></div>
-        <div class="pk-cap pk-br"></div>
+        ${cornerMarkup}
         <div class="pk-sheen" id="pk-sheen"></div>` : '';
   const faceOpen = isPremium ? '<div class="pk-face">' : '';
   const faceClose = isPremium ? '</div>' : '';
@@ -2363,7 +2514,7 @@ function buildModalCardHTML(bird, index) {
         ${faceClose}
       </div>
       <div class="card-face card-back ${premiumClass}">
-        ${isPremium ? '<div class="pk-metal"></div><div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div><div class="pk-sheen" id="pk-sheen-back"></div>' : ''}
+        ${isPremium ? '<div class="pk-metal"></div>' + cornerMarkup + '<div class="pk-sheen" id="pk-sheen-back"></div>' : ''}
         ${isPremium ? '<div class="pk-face pk-face-back">' : ''}
         <div class="back-header">
           <div>
