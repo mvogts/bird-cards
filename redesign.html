@@ -740,22 +740,26 @@
   #modal-card-inner.flipped { transform: rotateY(180deg); }
 
   /* Larger text inside modal for readability */
-  .modal-card-wrap .card-name     { font-size: 22px; }
-  .modal-card-wrap .card-sci      { font-size: 12px; }
-  .modal-card-wrap .card-eyebrow  { font-size: 9px; }
+  .modal-card-wrap .card-name     { font-size: 30px; }
+  .modal-card-wrap .card-sci      { font-size: 16px; }
+  .modal-card-wrap .card-eyebrow  { font-size: 11px; }
   .modal-card-wrap .card-loc,
-  .modal-card-wrap .card-date     { font-size: 8px; }
-  .modal-card-wrap .rarity-badge  { font-size: 8px; padding: 3px 8px; }
-  .modal-card-wrap .card-sighting-label { font-size: 8px; }
-  .modal-card-wrap .back-name     { font-size: 20px; }
-  .modal-card-wrap .back-sci      { font-size: 11px; }
-  .modal-card-wrap .stat-item-label { font-size: 8px; }
-  .modal-card-wrap .stat-item-value { font-size: 13px; }
-  .modal-card-wrap .back-desc     { font-size: 13px; line-height: 1.65; }
+  .modal-card-wrap .card-date     { font-size: 10px; }
+  .modal-card-wrap .rarity-badge  { font-size: 10px; padding: 4px 11px; }
+  .modal-card-wrap .season-pill   { font-size: 10px; padding: 4px 11px; }
+  .modal-card-wrap .card-sighting-label { font-size: 10px; }
+  .modal-card-wrap .back-name     { font-size: 26px; }
+  .modal-card-wrap .back-sci      { font-size: 14px; }
+  .modal-card-wrap .stat-item-label { font-size: 10px; }
+  .modal-card-wrap .stat-item-value { font-size: 16px; }
+  .modal-card-wrap .back-desc     { font-size: 15px; line-height: 1.7; }
+  .modal-card-wrap .seasonal-label { font-size: 10px; }
+  .modal-card-wrap .seasonal-emoji { font-size: 17px; }
+  .modal-card-wrap .seasonal-dot { font-size: 12px; }
   .modal-card-wrap .sighting-loc,
-  .modal-card-wrap .sighting-date { font-size: 10px; }
-  .modal-card-wrap .sighting-label { font-size: 8px; }
-  .modal-card-wrap .back-footer span { font-size: 8px; }
+  .modal-card-wrap .sighting-date { font-size: 13px; }
+  .modal-card-wrap .sighting-label { font-size: 10px; }
+  .modal-card-wrap .back-footer span { font-size: 10px; }
   .modal-card-wrap .photo-credit  { font-size: 8px; }
 
   /* ── SEASON PILL ── */
@@ -1049,6 +1053,16 @@
   .modal-card-wrap .card-back.premium-brooklyn .back-desc { color: #3a3320; }
   .modal-card-wrap .card-back.premium-brooklyn .rarity-badge { background: linear-gradient(#3a4a24,#2c3a1a); color: #d4dcae; }
   .modal-card-wrap .card-back.premium-brooklyn .back-rule { background: linear-gradient(to right, transparent, #b0a878, transparent); }
+  /* Premium back: use the extra space — larger gaps, roomier rhythm */
+  .modal-card-wrap .card-back.premium-brooklyn .back-header { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-rule { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-brooklyn .stat-grid { gap: 16px 18px; margin-bottom: 6px; }
+  .modal-card-wrap .card-back.premium-brooklyn #modal-seasonal { margin: 4px 0; }
+  .modal-card-wrap .card-back.premium-brooklyn .seasonal-dots { gap: 14px; margin-top: 8px; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-desc { margin: 6px 0 10px; }
+  .modal-card-wrap .card-back.premium-brooklyn .sighting-footer { margin-top: auto; }
+  .modal-card-wrap .card-back.premium-brooklyn .sighting-row { margin-top: 4px; }
+  .modal-card-wrap .card-back.premium-brooklyn .back-footer { margin-top: 10px; }
 
   /* Forest tints for premium content */
   .modal-card-wrap .premium-brooklyn .card-eyebrow { color: #3f5a2e; }
