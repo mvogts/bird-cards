@@ -2167,6 +2167,13 @@ function cardBackHTML(bird, index) {
   const since = daysSince(date);
   const status = exoticLabel(exotic);
 
+  // Real seasonal data at render time; hide the row entirely when we have none
+  const presence = getSeasonalPresence(speciesCode, country, date);
+  const seasonalBlock = presence
+    ? `${seasonalPresenceHTML(presence)}
+    <div class="back-rule"></div>`
+    : '';
+
   return `
   <div class="card-face card-back">
     <div class="back-header">
@@ -2186,16 +2193,7 @@ function cardBackHTML(bird, index) {
       <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
     </div>
     <div class="back-rule"></div>
-    <div class="seasonal-row" id="seasonal-${index}">
-      <div class="seasonal-label">Seasonal Presence</div>
-      <div class="seasonal-dots">
-        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.spring}</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.summer}</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.fall}</span><span class="seasonal-dot">○</span></div>
-        <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.winter}</span><span class="seasonal-dot">○</span></div>
-      </div>
-    </div>
-    <div class="back-rule"></div>
+    ${seasonalBlock}
     <p class="back-desc loading" id="desc-${index}">Loading field notes…</p>
     <div class="sighting-footer">
       <div class="sighting-label">First Sighting</div>
@@ -2340,7 +2338,6 @@ function openModalGroup(indices, pos) {
   const bird = allBirds[indices[pos]];
   if (!bird) return;
 
-  modalFlipped = false;
   const content = document.getElementById('modal-card-content');
   content.innerHTML = buildModalCardHTML(bird, indices[pos]);
   attachPremiumTilt();
@@ -2392,17 +2389,7 @@ function navigateModal(dir) {
   if (newPos < 0 || newPos >= modalGroupIndices.length) return;
   openModalGroup(modalGroupIndices, newPos);
 }
-let modalFlipped = false;
-let modalIndex = null;
-let modalSciName = null;
-let modalCommonName = null;
-
 function openModal(index, sciName, commonName) {
-  modalFlipped = false;
-  modalIndex = index;
-  modalSciName = sciName;
-  modalCommonName = commonName;
-
   const bird = allBirds[index];
   if (!bird) return;
 
@@ -2441,8 +2428,6 @@ function openModal(index, sciName, commonName) {
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
   document.body.style.overflow = '';
-  modalIndex = null;
-  modalFlipped = false;
 }
 
 function flipModalCard() {
@@ -2478,6 +2463,13 @@ function buildModalCardHTML(bird, index) {
   const status = exoticLabel(exotic);
   const licenseShort = photoLicense === 'Wikimedia Commons' ? 'Wikimedia' : (photoLicense || '');
   const sName = seasonName(date);
+
+  // Real seasonal data; hide the row (and its divider) when we have none
+  const modalPresence = getSeasonalPresence(speciesCode, country, date);
+  const modalSeasonalBlock = modalPresence
+    ? `<div id="modal-seasonal">${seasonalPresenceHTML(modalPresence)}</div>
+        <div class="back-rule"></div>`
+    : '<div id="modal-seasonal"></div>';
 
   const photoBlock = photoUrl
     ? `<img data-src="${photoUrl}" alt="${commonName}" onerror="this.parentElement.innerHTML='<div class=no-photo>No photo</div>'">`
@@ -2554,16 +2546,7 @@ function buildModalCardHTML(bird, index) {
           <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
         </div>
         <div class="back-rule"></div>
-        <div id="modal-seasonal">
-          <div class="seasonal-label">Seasonal Presence</div>
-          <div class="seasonal-dots">
-            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.spring}</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.summer}</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.fall}</span><span class="seasonal-dot">○</span></div>
-            <div class="seasonal-item absent"><span class="seasonal-icon">${SEASON_ICONS.winter}</span><span class="seasonal-dot">○</span></div>
-          </div>
-        </div>
-        <div class="back-rule"></div>
+        ${modalSeasonalBlock}
         <p class="back-desc loading" id="modal-desc">Loading field notes…</p>
         <div class="sighting-footer">
           <div class="sighting-label">First Sighting</div>
@@ -2579,11 +2562,6 @@ function buildModalCardHTML(bird, index) {
       </div>
     </div>
   </div>`;
-}
-
-async function handleFlip(el, sciName, commonName, index) {
-  // Open modal instead of flipping in place
-  openModal(index, sciName, commonName);
 }
 
 // ── State ──
@@ -2746,30 +2724,37 @@ function renderPackShells() {
   grid.innerHTML = lifeListPill + packPills;
 }
 
-// Load pack counts — only called when user opens the packs panel
+// Load pack counts — only called when user opens the packs panel.
+// Runs sequentially and only pauses between *uncached* eBird calls, so we
+// never hammer the API with 10+ simultaneous requests (avoids rate-limiting).
 async function loadPackCounts() {
-  for (const pack of PACKS) {
-    (async () => {
-      const myBirds = await getBirdsForPack(pack.id);
-      const userCount = new Set(myBirds.map(b => b.speciesCode || b.commonName)).size;
-      const codes = await getRegionSpeciesCodes(pack.id);
-      const total = codes.length;
-      const pct = total ? Math.round((userCount / total) * 100) : 0;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-      const countEl = document.getElementById(`count-${pack.id}`);
-      const fillEl = document.getElementById(`fill-${pack.id}`);
-      if (countEl) countEl.innerHTML = total
-        ? `<strong>${userCount}</strong> / ${total.toLocaleString()} species &nbsp;·&nbsp; ${pct}%`
-        : `<strong>${userCount}</strong> species`;
-      if (fillEl) fillEl.style.width = `${pct}%`;
-    })();
+  for (const pack of PACKS) {
+    // Local filter — no network
+    const myBirds = await getBirdsForPack(pack.id);
+    const userCount = new Set(myBirds.map(b => b.speciesCode || b.commonName)).size;
+
+    // Show the user's own count immediately, even before the total arrives
+    const countEl = document.getElementById(`count-${pack.id}`);
+    if (countEl) countEl.innerHTML = `<strong>${userCount}</strong> species`;
+
+    // Network call for region total (cached after first fetch)
+    const wasCached = cacheGet('ebird_' + `/product/spplist/${pack.id}`) !== null;
+    const codes = await getRegionSpeciesCodes(pack.id);
+    const total = codes.length;
+    const pct = total ? Math.round((userCount / total) * 100) : 0;
+
+    const fillEl = document.getElementById(`fill-${pack.id}`);
+    if (countEl && total) countEl.innerHTML =
+      `<strong>${userCount}</strong> / ${total.toLocaleString()} species &nbsp;·&nbsp; ${pct}%`;
+    if (fillEl) fillEl.style.width = `${pct}%`;
+
+    // Only pause if we actually hit the network this round
+    if (!wasCached) await sleep(250);
   }
 }
 
-async function renderPacks() {
-  // Legacy — now handled by renderPackShells + loadPackCounts
-  renderPackShells();
-}
 
 async function filterByPack(packId) {
   const packEl = document.getElementById(`pack-${packId}`);
@@ -2812,13 +2797,8 @@ async function filterByPack(packId) {
       <div class="loading-sub">Fetching species list from eBird</div>
     </div>`;
 
-  const [myBirds, unseenSpecies] = await Promise.all([
-    getBirdsForPack(packId),
-    (async () => {
-      const myB = await getBirdsForPack(packId);
-      return getUnseenForPack(packId, myB);
-    })()
-  ]);
+  const myBirds = await getBirdsForPack(packId);
+  const unseenSpecies = await getUnseenForPack(packId, myBirds);
 
   packState = { myBirds, unseenSpecies };
   renderPackGallery(myBirds, unseenSpecies, false);
