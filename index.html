@@ -1913,12 +1913,17 @@ const LOC_TO_REGION = {
   // St. Barths
   "L71693109": "BL",  "L71778790": "BL",  "L71880744": "BL",
   "L71819252": "BL",  "L71886946": "BL",
+  "L72197269": "BL",
   // Brooklyn (US-NY-047)
   "L51659146": "US-NY-047",  "L51657930": "US-NY-047",
   "L51614987": "US-NY-047",  "L62700968": "US-NY-047",
   "L66121421": "US-NY-047",  "L66563730": "US-NY-047",
   "L66572290": "US-NY-047",  "L66578148": "US-NY-047",
-  "L66584382": "US-NY-047",
+  "L66584382": "US-NY-047",  "L72383996": "US-NY-047",
+  "L73862953": "US-NY-047",
+  // Long Island — Suffolk County (US-NY-103)
+  "L5199505":  "US-NY-103",  // Bellport Bay Yacht Club
+  "L74339273": "US-NY-103",  // Medford
   // Manhattan (US-NY-061)
   "L52785029": "US-NY-061",  "L53053791": "US-NY-061",
   // Queens (US-NY-081)
@@ -1945,6 +1950,8 @@ const REGION_TO_CITY = {
   "US-NY-047": "Brooklyn",
   "US-NY-061": "Manhattan",
   "US-NY-081": "Queens",
+  "US-NY-103": "Long Island",
+  "US-NY-059": "Long Island",
   "US-NY-005": "The Bronx",
   "US-NY-085": "Staten Island",
   "US-NY":     "New York",
@@ -3181,7 +3188,7 @@ function parseCSV(text) {
 }
 
 // ── Load data ──
-const SHEET_CACHE_KEY = 'birdlist_csv_v9'; // bumped to clear stale cache
+const SHEET_CACHE_KEY = 'birdlist_csv_v10'; // bumped to clear stale cache
 const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 async function loadData() {
