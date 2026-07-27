@@ -1217,6 +1217,229 @@
   .premium-flat-hd .rarity-badge { background: linear-gradient(#5a4326,#3a2612); color: #ecd8b8; }
   .premium-flat-hd .corner, .premium-flat-hd .card-texture, .premium-flat-hd .card-motif { display: none; }
 
+  /* ============ PREMIUM RIO (COPACABANA) — MODAL ============ */
+  /* Identity axis = the photo border, not the corners. The calçada wave
+     (Copacabana promenade mosaic) frames the bird on all four sides. */
+  .modal-card-wrap .premium-rio {
+    border: none !important; background: transparent !important;
+    border-radius: 18px; overflow: hidden; padding: 0 !important;
+  }
+  .modal-card-wrap .premium-rio .pk-metal {
+    position: absolute; inset: 0; border-radius: 18px; padding: 12px; z-index: 0;
+    background: linear-gradient(135deg,#d9b676 0%,#a67c3e 16%,#e0c188 30%,#946a30 46%,#cfa860 60%,#875f28 74%,#dcbd7e 90%,#9a7032 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.40), inset 0 -2px 3px rgba(0,0,0,0.40);
+  }
+  .modal-card-wrap .premium-rio .pk-face {
+    position: absolute; inset: 12px; border-radius: 7px;
+    background: #f2e7cf;
+    background-image: radial-gradient(circle at 20% 15%, rgba(220,200,160,0.40) 0px, transparent 70px),radial-gradient(circle at 82% 88%, rgba(200,175,130,0.30) 0px, transparent 80px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 5px rgba(120,90,50,0.15);
+    z-index: 1; display: flex; flex-direction: column; padding: 20px 18px 14px; overflow: hidden;
+  }
+  .modal-card-wrap .premium-rio .pk-sheen {
+    position: absolute; inset: 0; border-radius: 18px; z-index: 7; pointer-events: none;
+    background: radial-gradient(circle 220px at var(--mx,30%) var(--my,20%), rgba(255,255,255,0.24), rgba(255,255,255,0) 60%);
+    mix-blend-mode: soft-light;
+  }
+  .modal-card-wrap .premium-rio .card-eyebrow,
+  .modal-card-wrap .premium-rio .card-rule,
+  .modal-card-wrap .premium-rio .photo-frame,
+  .modal-card-wrap .premium-rio .card-name,
+  .modal-card-wrap .premium-rio .card-sci,
+  .modal-card-wrap .premium-rio .card-bottom { position: relative; z-index: 2; }
+  .modal-card-wrap .premium-rio .card-eyebrow { color: #7a5a28; }
+  .modal-card-wrap .premium-rio .card-rule { background: linear-gradient(to right, transparent, #b89250, transparent); }
+  /* the calçada photo border */
+  .modal-card-wrap .premium-rio .photo-frame {
+    padding: 18px; border-radius: 3px; background-color: #f4efe2;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="22" viewBox="0 0 70 22"><rect width="70" height="22" fill="%23f4efe2"/><path d="M0 6 C 8.75 6 8.75 2 17.5 2 S 26.25 6 35 6 S 43.75 2 52.5 2 S 61.25 6 70 6 L 70 16 C 61.25 16 61.25 12 52.5 12 S 43.75 16 35 16 S 26.25 12 17.5 12 S 8.75 16 0 16 Z" fill="%231a1510"/></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="22" viewBox="0 0 70 22"><rect width="70" height="22" fill="%23f4efe2"/><path d="M0 6 C 8.75 6 8.75 2 17.5 2 S 26.25 6 35 6 S 43.75 2 52.5 2 S 61.25 6 70 6 L 70 16 C 61.25 16 61.25 12 52.5 12 S 43.75 16 35 16 S 26.25 12 17.5 12 S 8.75 16 0 16 Z" fill="%231a1510"/></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="70" viewBox="0 0 22 70"><rect width="22" height="70" fill="%23f4efe2"/><path d="M6 0 C 6 8.75 2 8.75 2 17.5 S 6 26.25 6 35 S 2 43.75 2 52.5 S 6 61.25 6 70 L 16 70 C 16 61.25 12 61.25 12 52.5 S 16 43.75 16 35 S 12 26.25 12 17.5 S 16 8.75 16 0 Z" fill="%231a1510"/></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="70" viewBox="0 0 22 70"><rect width="22" height="70" fill="%23f4efe2"/><path d="M6 0 C 6 8.75 2 8.75 2 17.5 S 6 26.25 6 35 S 2 43.75 2 52.5 S 6 61.25 6 70 L 16 70 C 16 61.25 12 61.25 12 52.5 S 16 43.75 16 35 S 12 26.25 12 17.5 S 16 8.75 16 0 Z" fill="%231a1510"/></svg>');
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-position: top, bottom, left, right;
+    box-shadow: 0 2px 6px rgba(40,28,12,0.30);
+  }
+  .modal-card-wrap .premium-rio .card-name { color: #4a3416; text-shadow: 0 -1px 0 rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.55); }
+  .modal-card-wrap .premium-rio .card-sci { color: #7a5a2a; }
+  .modal-card-wrap .premium-rio .season-pill { background: linear-gradient(#2f5666,#1c3a46); color: #cfe4ec; }
+  .modal-card-wrap .premium-rio .rarity-badge { background: linear-gradient(#9a6a2e,#6e4a1c); color: #f0dcb0; }
+  /* Rio back */
+  .modal-card-wrap .card-back.premium-rio { padding: 0 !important; background: transparent !important; border: none !important; overflow: hidden; border-radius: 18px; }
+  .modal-card-wrap .card-back.premium-rio .pk-face-back {
+    position: absolute; inset: 12px; border-radius: 7px;
+    background: #f2e7cf; background-image: radial-gradient(circle at 20% 15%, rgba(220,200,160,0.40) 0px, transparent 70px),radial-gradient(circle at 82% 88%, rgba(200,175,130,0.30) 0px, transparent 80px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 5px rgba(120,90,50,0.15);
+    z-index: 1; display: flex; flex-direction: column; padding: 22px 20px 16px; overflow: hidden;
+  }
+  .modal-card-wrap .card-back.premium-rio .back-header,
+  .modal-card-wrap .card-back.premium-rio .back-rule,
+  .modal-card-wrap .card-back.premium-rio .stat-grid,
+  .modal-card-wrap .card-back.premium-rio #modal-seasonal,
+  .modal-card-wrap .card-back.premium-rio .back-desc,
+  .modal-card-wrap .card-back.premium-rio .sighting-footer { position: relative; z-index: 2; }
+  .modal-card-wrap .card-back.premium-rio .back-name { color: #4a3416; font-family: 'Spectral', serif; font-weight: 700; }
+  .modal-card-wrap .card-back.premium-rio .back-sci { color: #7a5a2a; font-family: 'Spectral', serif; font-style: italic; }
+  .modal-card-wrap .card-back.premium-rio .stat-item-value { color: #40300f; }
+  .modal-card-wrap .card-back.premium-rio .back-desc { color: #3e3018; }
+  .modal-card-wrap .card-back.premium-rio .rarity-badge { background: linear-gradient(#9a6a2e,#6e4a1c); color: #f0dcb0; }
+  .modal-card-wrap .card-back.premium-rio .back-rule { background: linear-gradient(to right, transparent, #c0a068, transparent); }
+  .modal-card-wrap .card-back.premium-rio .seasonal-icon { color: #7a5a28; }
+  .modal-card-wrap .card-back.premium-rio .back-header { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-rio .back-rule { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-rio .stat-grid { gap: 16px 18px; margin-bottom: 6px; }
+  .modal-card-wrap .card-back.premium-rio .seasonal-dots { gap: 14px; margin-top: 8px; }
+  .modal-card-wrap .card-back.premium-rio .back-desc { margin: 6px 0 10px; }
+  .modal-card-wrap .card-back.premium-rio .sighting-footer { margin-top: auto; }
+  .modal-card-wrap .premium-rio .corner,
+  .modal-card-wrap .premium-rio .card-texture,
+  .modal-card-wrap .premium-rio .card-motif { display: none; }
+
+  /* ============ FLAT PREMIUM RIO — GRID ============ */
+  .premium-flat-rio { border: none !important; background: transparent !important; border-radius: 10px; overflow: hidden; padding: 0 !important; }
+  .premium-flat-rio .pk-metal {
+    position: absolute; inset: 0; border-radius: 10px; padding: 8px; z-index: 0;
+    background: linear-gradient(135deg,#d9b676 0%,#a67c3e 16%,#e0c188 30%,#946a30 46%,#cfa860 60%,#875f28 74%,#dcbd7e 90%,#9a7032 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.40), inset 0 -2px 3px rgba(0,0,0,0.40);
+  }
+  .premium-flat-rio .pk-face {
+    position: absolute; inset: 8px; border-radius: 4px;
+    background: #f2e7cf; background-image: radial-gradient(circle at 20% 15%, rgba(220,200,160,0.40) 0px, transparent 70px),radial-gradient(circle at 82% 88%, rgba(200,175,130,0.30) 0px, transparent 80px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 4px rgba(120,90,50,0.12);
+    z-index: 1; display: flex; flex-direction: column; padding: 12px 11px 9px; overflow: hidden;
+  }
+  .premium-flat-rio .card-eyebrow, .premium-flat-rio .card-rule, .premium-flat-rio .photo-frame,
+  .premium-flat-rio .card-name, .premium-flat-rio .card-sci, .premium-flat-rio .card-bottom { position: relative; z-index: 2; }
+  .premium-flat-rio .card-eyebrow { color: #7a5a28; }
+  .premium-flat-rio .card-rule { background: linear-gradient(to right, transparent, #b89250, transparent); }
+  .premium-flat-rio .photo-frame {
+    padding: 11px; border-radius: 2px; background-color: #f4efe2;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="22" viewBox="0 0 70 22"><rect width="70" height="22" fill="%23f4efe2"/><path d="M0 6 C 8.75 6 8.75 2 17.5 2 S 26.25 6 35 6 S 43.75 2 52.5 2 S 61.25 6 70 6 L 70 16 C 61.25 16 61.25 12 52.5 12 S 43.75 16 35 16 S 26.25 12 17.5 12 S 8.75 16 0 16 Z" fill="%231a1510"/></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="22" viewBox="0 0 70 22"><rect width="70" height="22" fill="%23f4efe2"/><path d="M0 6 C 8.75 6 8.75 2 17.5 2 S 26.25 6 35 6 S 43.75 2 52.5 2 S 61.25 6 70 6 L 70 16 C 61.25 16 61.25 12 52.5 12 S 43.75 16 35 16 S 26.25 12 17.5 12 S 8.75 16 0 16 Z" fill="%231a1510"/></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="70" viewBox="0 0 22 70"><rect width="22" height="70" fill="%23f4efe2"/><path d="M6 0 C 6 8.75 2 8.75 2 17.5 S 6 26.25 6 35 S 2 43.75 2 52.5 S 6 61.25 6 70 L 16 70 C 16 61.25 12 61.25 12 52.5 S 16 43.75 16 35 S 12 26.25 12 17.5 S 16 8.75 16 0 Z" fill="%231a1510"/></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="70" viewBox="0 0 22 70"><rect width="22" height="70" fill="%23f4efe2"/><path d="M6 0 C 6 8.75 2 8.75 2 17.5 S 6 26.25 6 35 S 2 43.75 2 52.5 S 6 61.25 6 70 L 16 70 C 16 61.25 12 61.25 12 52.5 S 16 43.75 16 35 S 12 26.25 12 17.5 S 16 8.75 16 0 Z" fill="%231a1510"/></svg>');
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-position: top, bottom, left, right;
+    background-size: 44px 14px, 44px 14px, 14px 44px, 14px 44px;
+  }
+  .premium-flat-rio .card-name { color: #4a3416; text-shadow: 0 -1px 0 rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.55); }
+  .premium-flat-rio .card-sci { color: #7a5a2a; }
+  .premium-flat-rio .season-pill { background: linear-gradient(#2f5666,#1c3a46); color: #cfe4ec; }
+  .premium-flat-rio .rarity-badge { background: linear-gradient(#9a6a2e,#6e4a1c); color: #f0dcb0; }
+  .premium-flat-rio .corner, .premium-flat-rio .card-texture, .premium-flat-rio .card-motif { display: none; }
+
+  /* ============ PREMIUM LONG ISLAND — MODAL ============ */
+  /* South-shore maritime: oxidized-copper verdigris rim, salt-washed shingle
+     face, twisted rope corners. */
+  .modal-card-wrap .premium-li {
+    border: none !important; background: transparent !important;
+    border-radius: 18px; overflow: hidden; padding: 0 !important;
+  }
+  .modal-card-wrap .premium-li .pk-metal {
+    position: absolute; inset: 0; border-radius: 18px; padding: 12px; z-index: 0;
+    background: linear-gradient(135deg,#8fc0b2 0%,#3d6b60 15%,#7ab0a1 29%,#2c554c 44%,#69a394 58%,#24463f 73%,#82b8a9 88%,#315c53 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.30), inset 0 -2px 3px rgba(0,0,0,0.45);
+  }
+  /* mottled patina speckle over the copper */
+  .modal-card-wrap .premium-li .pk-metal::before {
+    content:""; position:absolute; inset:0; border-radius:18px; pointer-events:none;
+    background-image:
+      radial-gradient(circle at 25% 30%, rgba(200,230,220,0.18) 0px, transparent 4px),
+      radial-gradient(circle at 70% 60%, rgba(20,60,52,0.16) 0px, transparent 3px),
+      radial-gradient(circle at 45% 85%, rgba(190,225,214,0.12) 0px, transparent 5px);
+    background-size: 26px 26px, 34px 34px, 30px 30px;
+  }
+  .modal-card-wrap .premium-li .pk-face {
+    position: absolute; inset: 12px; border-radius: 7px;
+    background: #e7e9e5;
+    background-image: repeating-linear-gradient(0deg, rgba(120,130,125,0.05) 0 1px, transparent 1px 6px),radial-gradient(circle at 18% 20%, rgba(255,255,255,0.45) 0px, transparent 70px),radial-gradient(circle at 85% 85%, rgba(150,170,165,0.18) 0px, transparent 80px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 5px rgba(60,80,75,0.15);
+    z-index: 1; display: flex; flex-direction: column; padding: 20px 18px 14px; overflow: hidden;
+  }
+  /* rope corner ornaments sit proud of the card */
+  .modal-card-wrap .premium-li .pk-orn {
+    position: absolute; width: 46px; height: 46px; z-index: 6;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.35)) drop-shadow(2px 4px 3px rgba(20,40,36,0.5)) drop-shadow(4px 7px 8px rgba(20,40,36,0.28));
+  }
+  .modal-card-wrap .premium-li .pk-orn svg { width: 100%; height: 100%; display: block; }
+  .modal-card-wrap .premium-li .orn-tl { top: 8px; left: 8px; }
+  .modal-card-wrap .premium-li .orn-tr { top: 8px; right: 8px; transform: scaleX(-1); }
+  .modal-card-wrap .premium-li .orn-bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+  .modal-card-wrap .premium-li .orn-br { bottom: 8px; right: 8px; transform: scale(-1,-1); }
+  .modal-card-wrap .premium-li .pk-sheen {
+    position: absolute; inset: 0; border-radius: 18px; z-index: 7; pointer-events: none;
+    background: radial-gradient(circle 220px at var(--mx,30%) var(--my,20%), rgba(255,255,255,0.22), rgba(255,255,255,0) 60%);
+    mix-blend-mode: soft-light;
+  }
+  .modal-card-wrap .premium-li .card-eyebrow,
+  .modal-card-wrap .premium-li .card-rule,
+  .modal-card-wrap .premium-li .photo-frame,
+  .modal-card-wrap .premium-li .card-name,
+  .modal-card-wrap .premium-li .card-sci,
+  .modal-card-wrap .premium-li .card-bottom { position: relative; z-index: 2; }
+  .modal-card-wrap .premium-li .card-eyebrow { color: #2f5a51; }
+  .modal-card-wrap .premium-li .card-rule { background: linear-gradient(to right, transparent, #6a9188, transparent); }
+  .modal-card-wrap .premium-li .photo-frame { background: linear-gradient(135deg,#2c4456,#16242e); padding: 4px; }
+  .modal-card-wrap .premium-li .card-name { color: #22403a; text-shadow: 0 -1px 0 rgba(0,0,0,0.14), 0 1px 0 rgba(255,255,255,0.6); }
+  .modal-card-wrap .premium-li .card-sci { color: #46685f; }
+  .modal-card-wrap .premium-li .season-pill { background: linear-gradient(#3d6b60,#274a43); color: #d6ece4; }
+  .modal-card-wrap .premium-li .rarity-badge { background: linear-gradient(#2c4456,#182833); color: #cfe0ec; }
+  /* Long Island back */
+  .modal-card-wrap .card-back.premium-li { padding: 0 !important; background: transparent !important; border: none !important; overflow: hidden; border-radius: 18px; }
+  .modal-card-wrap .card-back.premium-li .pk-face-back {
+    position: absolute; inset: 12px; border-radius: 7px;
+    background: #e7e9e5; background-image: repeating-linear-gradient(0deg, rgba(120,130,125,0.05) 0 1px, transparent 1px 6px),radial-gradient(circle at 18% 20%, rgba(255,255,255,0.45) 0px, transparent 70px),radial-gradient(circle at 85% 85%, rgba(150,170,165,0.18) 0px, transparent 80px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 5px rgba(60,80,75,0.15);
+    z-index: 1; display: flex; flex-direction: column; padding: 22px 20px 16px; overflow: hidden;
+  }
+  .modal-card-wrap .card-back.premium-li .back-header,
+  .modal-card-wrap .card-back.premium-li .back-rule,
+  .modal-card-wrap .card-back.premium-li .stat-grid,
+  .modal-card-wrap .card-back.premium-li #modal-seasonal,
+  .modal-card-wrap .card-back.premium-li .back-desc,
+  .modal-card-wrap .card-back.premium-li .sighting-footer { position: relative; z-index: 2; }
+  .modal-card-wrap .card-back.premium-li .back-name { color: #22403a; font-family: 'Spectral', serif; font-weight: 700; }
+  .modal-card-wrap .card-back.premium-li .back-sci { color: #46685f; font-family: 'Spectral', serif; font-style: italic; }
+  .modal-card-wrap .card-back.premium-li .stat-item-value { color: #1f3a34; }
+  .modal-card-wrap .card-back.premium-li .back-desc { color: #24352f; }
+  .modal-card-wrap .card-back.premium-li .rarity-badge { background: linear-gradient(#2c4456,#182833); color: #cfe0ec; }
+  .modal-card-wrap .card-back.premium-li .back-rule { background: linear-gradient(to right, transparent, #86a8a0, transparent); }
+  .modal-card-wrap .card-back.premium-li .seasonal-icon { color: #2f5a51; }
+  .modal-card-wrap .card-back.premium-li .back-header { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-li .back-rule { margin-bottom: 16px; }
+  .modal-card-wrap .card-back.premium-li .stat-grid { gap: 16px 18px; margin-bottom: 6px; }
+  .modal-card-wrap .card-back.premium-li .seasonal-dots { gap: 14px; margin-top: 8px; }
+  .modal-card-wrap .card-back.premium-li .back-desc { margin: 6px 0 10px; }
+  .modal-card-wrap .card-back.premium-li .sighting-footer { margin-top: auto; }
+  .modal-card-wrap .premium-li .corner,
+  .modal-card-wrap .premium-li .card-texture,
+  .modal-card-wrap .premium-li .card-motif { display: none; }
+
+  /* ============ FLAT PREMIUM LONG ISLAND — GRID ============ */
+  .premium-flat-li { border: none !important; background: transparent !important; border-radius: 10px; overflow: hidden; padding: 0 !important; }
+  .premium-flat-li .pk-metal {
+    position: absolute; inset: 0; border-radius: 10px; padding: 8px; z-index: 0;
+    background: linear-gradient(135deg,#8fc0b2 0%,#3d6b60 15%,#7ab0a1 29%,#2c554c 44%,#69a394 58%,#24463f 73%,#82b8a9 88%,#315c53 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.30), inset 0 -2px 3px rgba(0,0,0,0.45);
+  }
+  .premium-flat-li .pk-face {
+    position: absolute; inset: 8px; border-radius: 4px;
+    background: #e7e9e5; background-image: repeating-linear-gradient(0deg, rgba(120,130,125,0.05) 0 1px, transparent 1px 6px),radial-gradient(circle at 18% 20%, rgba(255,255,255,0.45) 0px, transparent 70px),radial-gradient(circle at 85% 85%, rgba(150,170,165,0.18) 0px, transparent 80px);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 4px rgba(60,80,75,0.12);
+    z-index: 1; display: flex; flex-direction: column; padding: 12px 11px 9px; overflow: hidden;
+  }
+  .premium-flat-li .pk-orn { position: absolute; width: 30px; height: 30px; z-index: 6;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.3)) drop-shadow(1.5px 2.5px 2px rgba(20,40,36,0.5)); }
+  .premium-flat-li .pk-orn svg { width: 100%; height: 100%; display: block; }
+  .premium-flat-li .orn-tl { top: 5px; left: 5px; }
+  .premium-flat-li .orn-tr { top: 5px; right: 5px; transform: scaleX(-1); }
+  .premium-flat-li .orn-bl { bottom: 5px; left: 5px; transform: scaleY(-1); }
+  .premium-flat-li .orn-br { bottom: 5px; right: 5px; transform: scale(-1,-1); }
+  .premium-flat-li .card-eyebrow, .premium-flat-li .card-rule, .premium-flat-li .photo-frame,
+  .premium-flat-li .card-name, .premium-flat-li .card-sci, .premium-flat-li .card-bottom { position: relative; z-index: 2; }
+  .premium-flat-li .card-eyebrow { color: #2f5a51; }
+  .premium-flat-li .card-rule { background: linear-gradient(to right, transparent, #6a9188, transparent); }
+  .premium-flat-li .photo-frame { background: linear-gradient(135deg,#2c4456,#16242e); padding: 3px; }
+  .premium-flat-li .card-name { color: #22403a; text-shadow: 0 -1px 0 rgba(0,0,0,0.14), 0 1px 0 rgba(255,255,255,0.6); }
+  .premium-flat-li .card-sci { color: #46685f; }
+  .premium-flat-li .season-pill { background: linear-gradient(#3d6b60,#274a43); color: #d6ece4; }
+  .premium-flat-li .rarity-badge { background: linear-gradient(#2c4456,#182833); color: #cfe0ec; }
+  .premium-flat-li .corner, .premium-flat-li .card-texture, .premium-flat-li .card-motif { display: none; }
+
   /* Hinsdale skin */
   .card-front.skin-hinsdale { background: #f4ebd0; border-color: #8a7538; }
   .skin-hinsdale .card-motif { fill: #8a7538; opacity: 0.12; }
@@ -1519,6 +1742,41 @@
     .stat-num { font-size: 22px; }
     .search-wrap { max-width: 100%; }
   }
+  /* ══════════════════════════════════════════════════════════════
+     iOS SAFARI FLIP FIX
+     Safari drops `backface-visibility: hidden` when an element also has
+     `overflow: hidden` + `border-radius` — which every premium card face
+     needs for its clipped rim/caps. The result on iPhone was the front
+     face's MIRRORED backside showing instead of the real card back.
+
+     Fix: don't rely on backface-visibility. Explicitly toggle `visibility`
+     at the flip midpoint, when the card is edge-on and invisible anyway,
+     so the swap is never seen. Delay = half the flip duration.
+     (grid flip 0.7s → 0.35s · modal flip 0.65s → 0.325s)
+     ══════════════════════════════════════════════════════════════ */
+
+  /* Grid cards */
+  .card-front {
+    visibility: visible;
+    transition: background 0.2s ease, visibility 0s linear 0.35s;
+  }
+  .card-back {
+    visibility: hidden;
+    transition: visibility 0s linear 0.35s;
+  }
+  .scene.flipped .card-front { visibility: hidden; }
+  .scene.flipped .card-back  { visibility: visible; }
+
+  /* Modal card (flip class sits on #modal-card-inner itself) */
+  #modal-card-inner .card-front {
+    transition: background 0.2s ease, visibility 0s linear 0.325s;
+  }
+  #modal-card-inner .card-back {
+    transition: visibility 0s linear 0.325s;
+  }
+  #modal-card-inner.flipped .card-front { visibility: hidden; }
+  #modal-card-inner.flipped .card-back  { visibility: visible; }
+
 </style>
 </head>
 <body>
@@ -1720,6 +1978,7 @@ const PACKS = [
   { id: "US-NY-061", name: "Manhattan",           type: "Borough", emoji: "🏙️" },
   // Counties
   { id: "US-IL-043", name: "Hinsdale",            type: "County",  emoji: "🏡" },
+  { id: "US-NY-103", name: "Long Island",         type: "County",  emoji: "🌊" },
 ];
 
 // ── eBird API with caching ──
@@ -1877,24 +2136,56 @@ function seasonName(dateStr) {
 
 // ── Pack skins: palette + texture + motif keyed to a region ──
 // Each card gets skinned by the most specific region it belongs to.
-const PACK_SKINS = {
-  'US-NY-047': {  // Brooklyn
-    id: 'brooklyn',
-    bg: '#eceeec', frame: '#3d4f52', rule: '#7a8c82',
-    photoBg: '#d6ddda', name: '#26332c', sci: '#4a5c52',
-    label: '#4a5c52', seasonPill: '#3d4f52', seasonText: '#dbe4e0',
-    rarityPill: '#2b3a44', rarityText: '#cdd8dc',
-    texture: 'grid', motif: 'leaf'
-  },
-  'US-IL-043': {  // Hinsdale
-    id: 'hinsdale',
-    bg: '#f7f0dc', frame: '#8a7538', rule: '#b09a52',
-    photoBg: '#ece0c4', name: '#3a2e12', sci: '#7a6530',
-    label: '#9a8550', seasonPill: '#8a7538', seasonText: '#f4ead0',
-    rarityPill: '#6b5a2a', rarityText: '#f0e4c4',
-    texture: 'woodgrain', motif: 'oakleaf'
-  }
+// Pack skins. Each entry declares how a card from that region is dressed.
+//   premium    – gets the full dimensional treatment
+//   modalClass – CSS class for the big interactive card
+//   flatClass  – CSS class for the static grid card
+//   corners    – 'caps' | 'acorn' | 'rope' | null   (null = no corner treatment)
+// Adding a pack = adding an entry here + its CSS block. No branching logic.
+const BROOKLYN_SKIN = {
+  id: 'brooklyn', premium: true,
+  modalClass: 'premium-brooklyn', flatClass: 'premium-flat',
+  corners: 'caps',
+  texture: 'grid', motif: 'leaf'
 };
+const HINSDALE_SKIN = {
+  id: 'hinsdale', premium: true,
+  modalClass: 'premium-hinsdale', flatClass: 'premium-flat-hd',
+  corners: 'acorn',
+  texture: 'woodgrain', motif: 'oakleaf'
+};
+const RIO_SKIN = {
+  id: 'rio', premium: true,
+  modalClass: 'premium-rio', flatClass: 'premium-flat-rio',
+  corners: null,          // identity comes from the calçada photo border instead
+  texture: null, motif: null
+};
+const LONGISLAND_SKIN = {
+  id: 'longisland', premium: true,
+  modalClass: 'premium-li', flatClass: 'premium-flat-li',
+  corners: 'rope',
+  texture: null, motif: null
+};
+
+const PACK_SKINS = {
+  'US-NY-047': BROOKLYN_SKIN,    // Brooklyn
+  'US-IL-043': HINSDALE_SKIN,    // Hinsdale
+  'BR-RJ':     RIO_SKIN,         // Rio de Janeiro
+  'US-NY-103': LONGISLAND_SKIN,  // Suffolk County
+  'US-NY-059': LONGISLAND_SKIN,  // Nassau County
+};
+
+// Corner markup per treatment type. `cls` is the positioning class prefix.
+function cornerMarkup(type) {
+  if (type === 'caps') {
+    return '<div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div>' +
+           '<div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div>';
+  }
+  if (type === 'acorn') return acornCorners('pk-orn');
+  if (type === 'rope')  return ropeCorners('pk-orn');
+  return '';
+}
+
 
 function packSkinForBird(bird) {
   const region = LOC_TO_REGION[bird.locId] || bird.country || '';
@@ -1919,6 +2210,25 @@ function acornCorners(prefix) {
     <div class="${prefix} orn-tr">${ACORN_ORNAMENT}</div>
     <div class="${prefix} orn-bl">${ACORN_ORNAMENT}</div>
     <div class="${prefix} orn-br">${ACORN_ORNAMENT}</div>`;
+}
+
+// Long Island: twisted maritime rope hugging each corner.
+// Built from three stacked strokes on one path — body, highlight, then a
+// dashed darker pass that reads as the rope's twist.
+const ROPE_PATH = 'M5 56 L5 15 Q5 5 15 5 L56 5';
+const ROPE_ORNAMENT =
+  '<svg viewBox="0 0 60 60">' +
+    `<path d="${ROPE_PATH}" fill="none" stroke="#a8895c" stroke-width="10" stroke-linecap="round"/>` +
+    `<path d="${ROPE_PATH}" fill="none" stroke="#d8bd8e" stroke-width="6" stroke-linecap="round" opacity="0.7"/>` +
+    `<path d="${ROPE_PATH}" fill="none" stroke="#6f5836" stroke-width="10" stroke-linecap="butt" stroke-dasharray="2 6" opacity="0.55"/>` +
+  '</svg>';
+
+function ropeCorners(prefix) {
+  return `
+    <div class="${prefix} orn-tl">${ROPE_ORNAMENT}</div>
+    <div class="${prefix} orn-tr">${ROPE_ORNAMENT}</div>
+    <div class="${prefix} orn-bl">${ROPE_ORNAMENT}</div>
+    <div class="${prefix} orn-br">${ROPE_ORNAMENT}</div>`;
 }
 
 // ── Seasonal presence lookup ──
@@ -2109,13 +2419,9 @@ function cardFrontHTML(bird, index) {
   const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
 
   // Flat premium treatment — grid cards mirror the modal's look (static)
-  const isFlatPremium = skin && (skin.id === 'brooklyn' || skin.id === 'hinsdale');
-  if (isFlatPremium) {
-    const isHd = skin.id === 'hinsdale';
-    const flatClass = isHd ? 'premium-flat-hd' : 'premium-flat';
-    const cornerEls = isHd
-      ? acornCorners('pk-orn')
-      : '<div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div>';
+  if (skin && skin.premium) {
+    const flatClass = skin.flatClass;
+    const cornerEls = cornerMarkup(skin.corners);
     return `
     <div class="card-face card-front ${flatClass}">
       <div class="pk-metal"></div>
@@ -2488,16 +2794,13 @@ function buildModalCardHTML(bird, index) {
   const textureEl = skin && skin.texture ? `<div class="card-texture tex-${skin.texture}"></div>` : '';
   const motifEl = skin && skin.motif ? MOTIF_SVG[skin.motif] : '';
 
-  // Premium dimensional treatment — modal only (Brooklyn & Hinsdale)
-  const isPremium = skin && (skin.id === 'brooklyn' || skin.id === 'hinsdale');
-  const isHd = skin && skin.id === 'hinsdale';
-  const premiumClass = isHd ? 'premium-hinsdale' : (isPremium ? 'premium-brooklyn' : '');
+  // Premium dimensional treatment — modal only, driven by the skin definition
+  const isPremium = !!(skin && skin.premium);
+  const premiumClass = isPremium ? skin.modalClass : '';
   const premiumMetal = isPremium ? '<div class="pk-metal"></div>' : '';
-  const cornerMarkup = isHd
-    ? acornCorners('pk-orn')
-    : '<div class="pk-cap pk-tl"></div><div class="pk-cap pk-tr"></div><div class="pk-cap pk-bl"></div><div class="pk-cap pk-br"></div>';
+  const cornerEls = isPremium ? cornerMarkup(skin.corners) : '';
   const premiumCaps = isPremium ? `
-        ${cornerMarkup}
+        ${cornerEls}
         <div class="pk-sheen" id="pk-sheen"></div>` : '';
   const faceOpen = isPremium ? '<div class="pk-face">' : '';
   const faceClose = isPremium ? '</div>' : '';
@@ -2531,7 +2834,7 @@ function buildModalCardHTML(bird, index) {
         ${faceClose}
       </div>
       <div class="card-face card-back ${premiumClass}">
-        ${isPremium ? '<div class="pk-metal"></div>' + cornerMarkup + '<div class="pk-sheen" id="pk-sheen-back"></div>' : ''}
+        ${isPremium ? '<div class="pk-metal"></div>' + cornerEls + '<div class="pk-sheen" id="pk-sheen-back"></div>' : ''}
         ${isPremium ? '<div class="pk-face pk-face-back">' : ''}
         <div class="back-header">
           <div>
