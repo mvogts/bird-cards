@@ -1746,36 +1746,62 @@
      iOS SAFARI FLIP FIX
      Safari drops `backface-visibility: hidden` when an element also has
      `overflow: hidden` + `border-radius` — which every premium card face
-     needs for its clipped rim/caps. The result on iPhone was the front
-     face's MIRRORED backside showing instead of the real card back.
+     needs for its clipped rim/caps. Result on iPhone: the front face's
+     MIRRORED backside showed instead of the real card back.
 
-     Fix: don't rely on backface-visibility. Explicitly toggle `visibility`
-     at the flip midpoint, when the card is edge-on and invisible anyway,
-     so the swap is never seen. Delay = half the flip duration.
-     (grid flip 0.7s → 0.35s · modal flip 0.65s → 0.325s)
+     Fix: don't rely on backface-visibility. Explicitly swap `visibility`
+     at the moment the card passes 90° (edge-on, so the swap is invisible).
+
+     TIMING IS NOT HALF THE DURATION. Both flips use ease-out curves that
+     front-load the rotation, so 90° arrives much earlier than the midpoint:
+       modal  0.65s cubic-bezier(.4,.2,.2,1)   → 90° at 31.9% = 0.207s
+       grid   0.70s cubic-bezier(.23,1,.32,1)  → 90° at 13.1% = 0.092s
+     The outgoing face hides a hair EARLY and the incoming face appears at
+     the crossing, so a mirrored face can never be shown. The tiny gap where
+     both are hidden lands while the card is edge-on and imperceptible.
+
+     If you change a flip duration or easing, recompute these.
      ══════════════════════════════════════════════════════════════ */
+  :root {
+    --flip-swap-modal: 0.207s;  /* modal: rotation hits 90° */
+    --flip-hide-modal: 0.200s;  /* modal: hide outgoing face just before (card ~9% width) */
+    --flip-swap-grid:  0.092s;  /* grid: rotation hits 90° */
+    --flip-hide-grid:  0.088s;  /* grid: hide outgoing face just before (card ~9% width) */
+  }
 
   /* Grid cards */
   .card-front {
     visibility: visible;
-    transition: background 0.2s ease, visibility 0s linear 0.35s;
+    transition: background 0.2s ease, visibility 0s linear var(--flip-swap-grid);
   }
   .card-back {
     visibility: hidden;
-    transition: visibility 0s linear 0.35s;
+    transition: visibility 0s linear var(--flip-hide-grid);
   }
-  .scene.flipped .card-front { visibility: hidden; }
-  .scene.flipped .card-back  { visibility: visible; }
+  .scene.flipped .card-front {
+    visibility: hidden;
+    transition: background 0.2s ease, visibility 0s linear var(--flip-hide-grid);
+  }
+  .scene.flipped .card-back {
+    visibility: visible;
+    transition: visibility 0s linear var(--flip-swap-grid);
+  }
 
   /* Modal card (flip class sits on #modal-card-inner itself) */
   #modal-card-inner .card-front {
-    transition: background 0.2s ease, visibility 0s linear 0.325s;
+    transition: background 0.2s ease, visibility 0s linear var(--flip-swap-modal);
   }
   #modal-card-inner .card-back {
-    transition: visibility 0s linear 0.325s;
+    transition: visibility 0s linear var(--flip-hide-modal);
   }
-  #modal-card-inner.flipped .card-front { visibility: hidden; }
-  #modal-card-inner.flipped .card-back  { visibility: visible; }
+  #modal-card-inner.flipped .card-front {
+    visibility: hidden;
+    transition: background 0.2s ease, visibility 0s linear var(--flip-hide-modal);
+  }
+  #modal-card-inner.flipped .card-back {
+    visibility: visible;
+    transition: visibility 0s linear var(--flip-swap-modal);
+  }
 
 </style>
 </head>
