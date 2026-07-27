@@ -1972,13 +1972,19 @@ const REGION_TO_CITY = {
 
 function cityFromBird(bird) {
   // Get most specific region from loc ID first
-  const region = LOC_TO_REGION[bird.locId] || bird.country || '';
+  const region = getRegionCode(bird);
   return REGION_TO_CITY[region] || REGION_TO_CITY[region.split('-').slice(0,2).join('-')] || REGION_TO_CITY[region.split('-')[0]] || bird.location || '';
 }
 
 function getRegionCode(bird) {
-  // LOC_TO_REGION gives most specific region; fall back to full state code stored in country field
-  return LOC_TO_REGION[bird.locId] || bird.country || '';
+  // Two sources: the hand-curated locId map, and the region code stored in the
+  // sheet (now county-level, written by the importer). Prefer whichever is MORE
+  // specific — i.e. has more dash-separated segments — so "US-NY-103" beats
+  // "US-NY". Falls back gracefully when only one is present.
+  const mapped = LOC_TO_REGION[bird.locId] || '';
+  const stored = bird.country || '';
+  const depth = s => s ? s.split('-').length : 0;
+  return depth(stored) > depth(mapped) ? stored : (mapped || stored);
 }
 
 // Helper: does a region code belong to a parent region?
@@ -2221,9 +2227,16 @@ function cornerMarkup(type) {
 
 
 function packSkinForBird(bird) {
-  const region = LOC_TO_REGION[bird.locId] || bird.country || '';
-  // Try exact, then progressively broader region prefixes
-  if (PACK_SKINS[region]) return PACK_SKINS[region];
+  // Walk from most specific to least: "BR-RJ-3304557" -> "BR-RJ" -> "BR".
+  // This matters because the importer now writes county/municipio-level codes,
+  // while some packs are keyed at state level (Rio = "BR-RJ").
+  let region = getRegionCode(bird);
+  while (region) {
+    if (PACK_SKINS[region]) return PACK_SKINS[region];
+    const cut = region.lastIndexOf('-');
+    if (cut < 0) break;
+    region = region.slice(0, cut);
+  }
   return null; // default (unskinned) card
 }
 
@@ -3188,7 +3201,7 @@ function parseCSV(text) {
 }
 
 // ── Load data ──
-const SHEET_CACHE_KEY = 'birdlist_csv_v10'; // bumped to clear stale cache
+const SHEET_CACHE_KEY = 'birdlist_csv_v11'; // bumped to clear stale cache
 const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 async function loadData() {
