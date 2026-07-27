@@ -2545,7 +2545,6 @@ function cardBackHTML(bird, index) {
       <div><div class="stat-item-label">Family</div><div class="stat-item-value">${family||'—'}</div></div>
       <div><div class="stat-item-label">Country</div><div class="stat-item-value">${fullCountry}</div></div>
       <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
-      <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
       <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
     </div>
     <div class="back-rule"></div>
@@ -2895,7 +2894,6 @@ function buildModalCardHTML(bird, index) {
           <div><div class="stat-item-label">Family</div><div class="stat-item-value">${family||'—'}</div></div>
           <div><div class="stat-item-label">Country</div><div class="stat-item-value">${fullCountry}</div></div>
           <div><div class="stat-item-label">First Seen</div><div class="stat-item-value">${since||'—'}</div></div>
-          <div><div class="stat-item-label">Species Code</div><div class="stat-item-value">${speciesCode||'—'}</div></div>
           <div><div class="stat-item-label">Status</div><div class="stat-item-value">${status}</div></div>
         </div>
         <div class="back-rule"></div>
@@ -3201,7 +3199,7 @@ function parseCSV(text) {
 }
 
 // ── Load data ──
-const SHEET_CACHE_KEY = 'birdlist_csv_v11'; // bumped to clear stale cache
+const SHEET_CACHE_KEY = 'birdlist_csv_v12'; // bumped to clear stale cache
 const SHEET_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 async function loadData() {
