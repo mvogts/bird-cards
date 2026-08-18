@@ -1217,10 +1217,9 @@
   .premium-flat-hd .rarity-badge { background: linear-gradient(#5a4326,#3a2612); color: #ecd8b8; }
   .premium-flat-hd .corner, .premium-flat-hd .card-texture, .premium-flat-hd .card-motif { display: none; }
 
-  /* ============ PREMIUM RIO DE JANEIRO — MODAL ============ */
+  /* ============ PREMIUM RIO (COPACABANA) — MODAL ============ */
   /* Identity axis = the photo border, not the corners. The calçada wave
-     (the classic Rio promenade mosaic, seen along Copacabana and beyond)
-     frames the bird on all four sides. */
+     (Copacabana promenade mosaic) frames the bird on all four sides. */
   .modal-card-wrap .premium-rio {
     border: none !important; background: transparent !important;
     border-radius: 18px; overflow: hidden; padding: 0 !important;
@@ -3229,8 +3228,8 @@ async function loadData() {
       sciName:     r[2]  || '',
       speciesCode: r[3]  || '',
       location:    r[4]  || '',
-      country:     r[5]  ? r[5].split('-')[0] : '',  // 2-letter country code
-      subCode:     r[5]  || '',                        // full subnational code e.g. US-NY
+      country:     r[5]  || '',                        // full region code, e.g. BR-RJ or US-NY-103
+      subCode:     r[5]  || '',                        // kept for back-compat; same as country now
       locId:       r[6]  || '',
       taxonOrder:  r[7]  || '',
       family:      r[8]  || '',
